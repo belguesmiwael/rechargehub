@@ -448,372 +448,535 @@ h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══ INIT ══ */
-const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",storageBucket:"bizflow-5b1e2.firebasestorage.app",messagingSenderId:"788764741062",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
+/* ═══════════════════════════════════════════
+   BIZFLOW TN — Client Space
+   Clean rewrite — no hidden bugs
+═══════════════════════════════════════════ */
+
+/* ── Firebase init ── */
+const FC={
+  apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",
+  authDomain:"bizflow-5b1e2.firebaseapp.com",
+  projectId:"bizflow-5b1e2",
+  storageBucket:"bizflow-5b1e2.firebasestorage.app",
+  messagingSenderId:"788764741062",
+  appId:"1:788764741062:web:0353d4bac230a3e22b36c7"
+};
 firebase.initializeApp(FC);
-const db=firebase.firestore(),auth=firebase.auth();
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-/* Protocol check */
-if(!['http:','https:','chrome-extension:'].includes(location.protocol)){
-  document.getElementById('protoWarn').style.display='flex';
+/* ── Protocol check ── */
+if (!['http:','https:','chrome-extension:'].includes(location.protocol)) {
+  document.getElementById('protoWarn').style.display = 'flex';
 }
 
-/* URL param: ?demo=1 means show form after auth */
-const wantsDemo=new URLSearchParams(location.search).get('demo')==='1';
-// Pack from estimateur
-const _urlPack=new URLSearchParams(location.search).get('pack')||'';
-if(_urlPack) sessionStorage.setItem('bz_pack',_urlPack);
-const PACK_LABELS={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
+/* ── URL params ── */
+const _p = new URLSearchParams(location.search);
+const wantsDemo = _p.get('demo') === '1';
+const urlPack = _p.get('pack') || '';
+if (urlPack) sessionStorage.setItem('bz_pack', urlPack);
 
-/* Theme */
-const tBtn=document.getElementById('themeBtn');
-const applyT=t=>{document.documentElement.setAttribute('data-theme',t);tBtn.textContent=t==='dark'?'☀️':'??';localStorage.setItem('bzt',t)};
-tBtn.onclick=()=>applyT(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
-applyT(localStorage.getItem('bzt')||'dark');
+/* ── Pack labels ── */
+const PACKS = {
+  essentiel:'🟢 Essentiel',
+  pro:'🔵 Pro ⭐',
+  partenaire:'🔴 Partenaire'
+};
 
-/* Helpers */
-const $=id=>document.getElementById(id);
-function showView(v){['authView','formView','dashView'].forEach(id=>{$(id).style.display='none'});$(v).style.display=v==='authView'?'flex':v==='formView'?'flex':'flex';if(v==='formView')$(v).style.flexDirection='column';if(v==='dashView')$(v).style.flexDirection='column'}
-function showMsg(msg,type='err'){const el=$('msgBox');el.textContent=msg;el.className='msg '+type}
-function clearMsg(){$('msgBox').className='msg'}
-function showFMsg(msg,type='err'){const el=$('formMsg');el.textContent=msg;el.className='msg '+type}
-function setBtn(id,loading,txt){const b=$(id);if(!b)return;b.disabled=loading;if(loading)b.innerHTML=`<span class="sp"></span>${txt}`;else if(b.dataset.orig)b.innerHTML=b.dataset.orig}
-function saveOrig(id){const b=$(id);if(b&&!b.dataset.orig)b.dataset.orig=b.innerHTML}
-let toT;function toast(msg,type='suc'){const t=$('toast');t.textContent=msg;t.className='toast '+type;clearTimeout(toT);requestAnimationFrame(()=>t.classList.add('on'));toT=setTimeout(()=>t.classList.remove('on'),3500)}
-
-/* Show demo badge if coming from CTA */
-if(wantsDemo){
-  $('demoBadge').style.display='flex';
-  $('authSub').textContent='Connectez-vous pour soumettre votre demande de démo gratuite';
+/* ── Theme ── */
+const _tBtn = document.getElementById('themeBtn');
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  _tBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('bzt', t);
 }
-/* Show pack badge if coming from estimateur */
-const _savedPack=sessionStorage.getItem('bz_pack');
-if(_savedPack && PACK_LABELS[_savedPack]){
-  $('packBadge').style.display='flex';
-  $('packBadgeIcon').textContent=PACK_LABELS[_savedPack].split(' ')[0];
-  $('packBadgeLabel').textContent='Pack '+PACK_LABELS[_savedPack];
+_tBtn.onclick = () => applyTheme(
+  document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+);
+applyTheme(localStorage.getItem('bzt') || 'dark');
+
+/* ── Helpers ── */
+function $(id) { return document.getElementById(id); }
+
+function showView(v) {
+  ['authView','formView','dashView'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+  });
+  const el = $(v);
+  if (!el) return;
+  el.style.display = 'flex';
+  el.style.pointerEvents = 'auto';
+  if (v === 'formView' || v === 'dashView') el.style.flexDirection = 'column';
 }
 
-/* ══ TAB SWITCH ══ */
-function switchTab(name,btn){
+function showMsg(msg, type) {
+  const el = $('msgBox');
+  el.textContent = msg;
+  el.className = 'msg ' + (type || 'err');
+}
+function clearMsg() { $('msgBox').className = 'msg'; }
+
+function showFMsg(msg, type) {
+  const el = $('formMsg');
+  el.textContent = msg;
+  el.className = 'msg ' + (type || 'err');
+}
+
+let _toastTimer;
+function toast(msg, type) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || 'suc');
+  clearTimeout(_toastTimer);
+  t.classList.add('on');
+  _toastTimer = setTimeout(() => t.classList.remove('on'), 3500);
+}
+
+function fmtD(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── Show pack badge if coming from estimateur ── */
+if (wantsDemo && $('demoBadge')) {
+  $('demoBadge').style.display = 'flex';
+}
+const _savedPack = sessionStorage.getItem('bz_pack');
+if (_savedPack && PACKS[_savedPack] && $('packBadge')) {
+  $('packBadge').style.display = 'flex';
+  if ($('packBadgeLabel')) $('packBadgeLabel').textContent = 'Pack ' + PACKS[_savedPack];
+}
+
+/* ════════════════════════════════
+   AUTH METHODS
+════════════════════════════════ */
+
+/* ── Tab switch ── */
+function switchTab(name, btn) {
   clearMsg();
-  ['pGoogle','pPhone','pEmail'].forEach(id=>$(id).classList.remove('on'));
-  document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.remove('on'));
-  $('p'+name.charAt(0).toUpperCase()+name.slice(1)).classList.add('on');
+  ['pGoogle','pPhone','pEmail'].forEach(id => $(id).classList.remove('on'));
+  document.querySelectorAll('.tabs .tab').forEach(b => b.classList.remove('on'));
+  $('p' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('on');
   btn.classList.add('on');
 }
 
-/* ══ GOOGLE — redirect (works everywhere) ══ */
-async function doGoogle(){
+/* ── Google ── */
+async function doGoogle() {
   clearMsg();
-  const p=new firebase.auth.GoogleAuthProvider();
-  p.addScope('profile');p.addScope('email');
-  // Show loading only briefly - onAuthStateChanged takes over after
-  $('gBtn').disabled=true;
-  $('gBtn').textContent='Connexion en cours...';
-  try{
-    await auth.signInWithPopup(p);
-    // Success: onAuthStateChanged will fire and navigate
-    // Don't reset button - page will change
-  }catch(e){
-    $('gBtn').disabled=false;
-    $('gBtn').textContent='Continuer avec Google';
-    if(e.code==='auth/popup-blocked'){
-      showMsg('⚠️ Popup bloqué. Autorisez les popups dans votre navigateur puis réessayez.');
-    }else if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
-      // User closed popup - no error needed
-    }else if(e.code==='auth/unauthorized-domain'){
-      showMsg('⚠️ Domaine non autorisé : ajoutez "'+location.hostname+'" dans Firebase Console → Authentication → Authorized domains');
-    }else if(e.code==='auth/operation-not-supported-in-this-environment'){
-      showMsg('⚠️ Ouvrez via http:// ou https:// (pas file://)');
-    }else{
-      showMsg('❌ '+e.code+' : '+e.message);
+  const btn = $('gBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Connexion...';
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    await auth.signInWithPopup(provider);
+    // onAuthStateChanged handles navigation
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="19" height="19"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continuer avec Google';
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+    if (e.code === 'auth/unauthorized-domain') {
+      showMsg('⚠️ Ajoutez "' + location.hostname + '" dans Firebase Console → Authentication → Authorized domains');
+    } else if (e.code === 'auth/popup-blocked') {
+      showMsg('⚠️ Popup bloqué — autorisez les popups pour ce site');
+    } else {
+      showMsg('❌ ' + e.code + ': ' + e.message);
     }
   }
 }
 
-/* ══ PHONE OTP ══ */
-let confirmResult=null,rcv=null;
+/* ── Phone OTP ── */
+let _confirmResult = null, _rcv = null;
 
-function initRC(){
-  if(rcv)return;
-  try{
-    rcv=new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'invisible',callback:()=>{},'expired-callback':()=>{if(rcv){try{rcv.clear()}catch(e){}rcv=null}}});
-  }catch(e){console.error('reCAPTCHA:',e)}
+function initRC() {
+  if (_rcv) return;
+  try {
+    _rcv = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'invisible',
+      callback: () => {},
+      'expired-callback': () => { if (_rcv) { try { _rcv.clear(); } catch(e) {} _rcv = null; } }
+    });
+  } catch(e) { console.warn('reCAPTCHA init:', e); }
 }
 
-async function sendOTP(){
+async function sendOTP() {
   clearMsg();
-  const num=$('phNum').value.trim();
-  if(num.length<8){showMsg('Numéro invalide — 8 chiffres requis');return}
-  saveOrig('sendBtn');setBtn('sendBtn',true,'Envoi SMS...');
-  try{
+  const num = $('phNum').value.trim();
+  if (num.length < 8) { showMsg('Numéro invalide — 8 chiffres requis'); return; }
+  const btn = $('sendBtn');
+  btn.disabled = true; btn.textContent = '⏳ Envoi SMS...';
+  try {
+    if (_rcv) { try { _rcv.clear(); } catch(e) {} _rcv = null; }
     initRC();
-    confirmResult=await auth.signInWithPhoneNumber('+216'+num,rcv);
-    $('phSent').textContent='+216 '+num;
-    $('ph1').style.display='none';$('ph2').style.display='block';
+    _confirmResult = await auth.signInWithPhoneNumber('+216' + num, _rcv);
+    $('phSent').textContent = '+216 ' + num;
+    $('ph1').style.display = 'none';
+    $('ph2').style.display = 'block';
     $('o1').focus();
-    showMsg('✓ SMS envoyé !','ok');
+    showMsg('✓ SMS envoyé !', 'ok');
     startTimer();
-  }catch(e){
-    console.error('OTP:',e.code,e.message);
-    let m=e.message;
-    if(e.code==='auth/invalid-phone-number')m='Numéro invalide.';
-    if(e.code==='auth/too-many-requests')m='Trop de tentatives. Réessayez dans quelques minutes.';
-    if(e.code==='auth/operation-not-supported-in-this-environment')m='⚠️ Hébergez le fichier sur http:// pour utiliser le SMS.';
-    showMsg('❌ '+m);
-    setBtn('sendBtn',false);
-    if(rcv){try{rcv.clear()}catch(e2){}rcv=null}
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Envoyer le code SMS →';
+    let m = e.message;
+    if (e.code === 'auth/invalid-phone-number') m = 'Numéro invalide.';
+    if (e.code === 'auth/too-many-requests') m = 'Trop de tentatives. Réessayez plus tard.';
+    if (e.code === 'auth/operation-not-supported-in-this-environment') m = '⚠️ Ouvrez via http:// ou https://';
+    showMsg('❌ ' + m);
+    if (_rcv) { try { _rcv.clear(); } catch(e) {} _rcv = null; }
   }
 }
 
-async function verifyOTP(){
+async function verifyOTP() {
   clearMsg();
-  const code=['o1','o2','o3','o4','o5','o6'].map(i=>$(i).value).join('');
-  if(code.length<6){showMsg('Entrez les 6 chiffres');return}
-  if(!confirmResult){showMsg('Session expirée. Renvoyez le SMS.');return}
-  saveOrig('verBtn');setBtn('verBtn',true,'Vérification...');
-  try{await confirmResult.confirm(code)}
-  catch(e){
-    let m=e.message;
-    if(e.code==='auth/invalid-verification-code')m='Code incorrect.';
-    if(e.code==='auth/code-expired')m='Code expiré. Demandez un nouveau.';
-    showMsg('❌ '+m);setBtn('verBtn',false);
+  const code = ['o1','o2','o3','o4','o5','o6'].map(i => $(i).value).join('');
+  if (code.length < 6) { showMsg('Entrez les 6 chiffres'); return; }
+  if (!_confirmResult) { showMsg('Session expirée. Renvoyez le SMS.'); return; }
+  const btn = $('verBtn');
+  btn.disabled = true; btn.textContent = '⏳ Vérification...';
+  try {
+    await _confirmResult.confirm(code);
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Vérifier →';
+    let m = e.message;
+    if (e.code === 'auth/invalid-verification-code') m = 'Code incorrect.';
+    if (e.code === 'auth/code-expired') m = 'Code expiré. Renvoyez le SMS.';
+    showMsg('❌ ' + m);
   }
 }
 
-function resetPhone(){if(rcv){try{rcv.clear()}catch(e){}rcv=null}confirmResult=null;showPh1();clearMsg()}
-function showPh1(){$('ph2').style.display='none';$('ph1').style.display='block';['o1','o2','o3','o4','o5','o6'].forEach(i=>{const el=$(i);el.value='';el.classList.remove('ok')})}
-let rtmr;function startTimer(){let s=60;const b=$('rsBtn');b.disabled=true;rtmr=setInterval(()=>{s--;b.textContent=s>0?`Renvoyer (${s}s)`:'Renvoyer';if(s<=0){clearInterval(rtmr);b.disabled=false}},1000)}
-function onxt(el,nid){el.value=el.value.replace(/\D/,'');if(el.value){el.classList.add('ok');if(nid)$(nid)?.focus();autoVer()}else el.classList.remove('ok')}
-function obck(e,pid){if(e.key==='Backspace'&&!e.target.value&&pid)$(pid)?.focus()}
-function autoVer(){const c=['o1','o2','o3','o4','o5','o6'].map(i=>$(i).value).join('');if(c.length===6)verifyOTP()}
+function resetPhone() {
+  if (_rcv) { try { _rcv.clear(); } catch(e) {} _rcv = null; }
+  _confirmResult = null;
+  showPh1(); clearMsg();
+}
+function showPh1() {
+  $('ph2').style.display = 'none';
+  $('ph1').style.display = 'block';
+  ['o1','o2','o3','o4','o5','o6'].forEach(i => { $(i).value = ''; $(i).classList.remove('ok'); });
+}
+let _rtmr;
+function startTimer() {
+  let s = 60;
+  const b = $('rsBtn');
+  b.disabled = true;
+  clearInterval(_rtmr);
+  _rtmr = setInterval(() => {
+    s--;
+    b.textContent = s > 0 ? 'Renvoyer (' + s + 's)' : 'Renvoyer';
+    if (s <= 0) { clearInterval(_rtmr); b.disabled = false; }
+  }, 1000);
+}
+function onxt(el, nid) {
+  el.value = el.value.replace(/\D/, '');
+  if (el.value) {
+    el.classList.add('ok');
+    if (nid) $(nid) && $(nid).focus();
+    autoVer();
+  } else el.classList.remove('ok');
+}
+function obck(e, pid) { if (e.key === 'Backspace' && !e.target.value && pid) $(pid) && $(pid).focus(); }
+function autoVer() {
+  const code = ['o1','o2','o3','o4','o5','o6'].map(i => $(i).value).join('');
+  if (code.length === 6) verifyOTP();
+}
 
-/* ══ EMAIL ══ */
-let emMode='login';
-function emode(m,btn){
-  emMode=m;
-  document.querySelectorAll('.etabs .etab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
-  $('nameF').style.display=m==='register'?'flex':'none';
-  $('fgotWrap').style.display=m==='login'?'block':'none';
-  $('eBtn').dataset.orig='';$('eBtn').textContent=m==='login'?'Connexion →':'Créer mon compte →';
+/* ── Email ── */
+let _emMode = 'login';
+function emode(m, btn) {
+  _emMode = m;
+  document.querySelectorAll('.etabs .etab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  $('nameF').style.display = m === 'register' ? 'flex' : 'none';
+  $('fgotWrap').style.display = m === 'login' ? 'block' : 'none';
+  $('eBtn').textContent = m === 'login' ? 'Connexion →' : 'Créer mon compte →';
   clearMsg();
 }
-async function doEmail(){
+
+async function doEmail() {
   clearMsg();
-  const email=$('eEmail').value.trim(),pass=$('ePass').value;
-  if(!email||!pass){showMsg('Email et mot de passe requis');return}
-  saveOrig('eBtn');setBtn('eBtn',true,emMode==='login'?'Connexion...':'Création...');
-  try{
-    if(emMode==='register'){
-      const name=$('eName').value.trim();
-      const cr=await auth.createUserWithEmailAndPassword(email,pass);
-      if(name)await cr.user.updateProfile({displayName:name});
-      // onAuthStateChanged will navigate
-    }else{
-      await auth.signInWithEmailAndPassword(email,pass);
-      // onAuthStateChanged will navigate
+  const email = $('eEmail').value.trim();
+  const pass = $('ePass').value;
+  if (!email || !pass) { showMsg('Email et mot de passe requis'); return; }
+  const btn = $('eBtn');
+  btn.disabled = true;
+  btn.textContent = _emMode === 'login' ? '⏳ Connexion...' : '⏳ Création...';
+  try {
+    if (_emMode === 'register') {
+      const name = $('eName').value.trim();
+      const cr = await auth.createUserWithEmailAndPassword(email, pass);
+      if (name) await cr.user.updateProfile({ displayName: name });
+    } else {
+      await auth.signInWithEmailAndPassword(email, pass);
     }
-    // Don't reset button - navigation happens in onAuthStateChanged
-  }catch(e){
-    // Reset button on error
-    const b=$(emMode==='login'?'eBtn':'eBtn');
-    b.disabled=false;
-    b.textContent=emMode==='login'?'Connexion →':'Créer mon compte →';
-    let m=e.message;
-    if(e.code==='auth/email-already-in-use')m='Email déjà utilisé. Connectez-vous à la place.';
-    else if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')m='Email ou mot de passe incorrect.';
-    else if(e.code==='auth/user-not-found')m='Aucun compte avec cet email. Créez-en un.';
-    else if(e.code==='auth/weak-password')m='Mot de passe trop court (minimum 6 caractères).';
-    else if(e.code==='auth/invalid-email')m='Adresse email invalide.';
-    else if(e.code==='auth/network-request-failed')m='Erreur réseau. Vérifiez votre connexion internet.';
-    else if(e.code==='auth/too-many-requests')m='Compte temporairement bloqué. Réessayez dans quelques minutes.';
-    else if(e.code==='auth/configuration-not-found')m='Email/Mot de passe non activé dans Firebase Console.';
-    else m=e.code+': '+e.message;
-    showMsg('❌ '+m);
+    // onAuthStateChanged handles navigation — don't reset button
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = _emMode === 'login' ? 'Connexion →' : 'Créer mon compte →';
+    let m = e.message;
+    if (e.code === 'auth/email-already-in-use')    m = 'Email déjà utilisé — connectez-vous.';
+    if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential' || e.code === 'auth/invalid-login-credentials') m = 'Email ou mot de passe incorrect.';
+    if (e.code === 'auth/user-not-found')           m = 'Aucun compte. Créez-en un.';
+    if (e.code === 'auth/weak-password')            m = 'Mot de passe trop court (min. 6 caractères).';
+    if (e.code === 'auth/invalid-email')            m = 'Email invalide.';
+    if (e.code === 'auth/network-request-failed')   m = 'Erreur réseau.';
+    if (e.code === 'auth/too-many-requests')        m = 'Trop de tentatives. Réessayez plus tard.';
+    if (e.code === 'auth/operation-not-allowed' || e.code === 'auth/configuration-not-found') m = '⚠️ Email/MDP non activé dans Firebase Console → Authentication → Sign-in method.';
+    showMsg('❌ ' + m);
   }
 }
-async function resetEmail(){
-  const email=$('eEmail').value.trim();
-  if(!email){showMsg('Entrez votre email d\'abord');return}
-  try{await auth.sendPasswordResetEmail(email);showMsg('✓ Email de réinitialisation envoyé','ok')}
-  catch(e){showMsg('❌ '+e.message)}
+
+async function resetEmail() {
+  const email = $('eEmail').value.trim();
+  if (!email) { showMsg('Entrez votre email'); return; }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showMsg('✓ Email de réinitialisation envoyé', 'ok');
+  } catch(e) { showMsg('❌ ' + e.message); }
 }
 
-/* ══ SIGN OUT ══ */
-function doSignOut(){
-  if(unsubL)unsubL();if(unsubN)unsubN();
-  auth.signOut().then(()=>{
-    showView('authView');clearMsg();
-    /* Remove demo param so next visit goes to dashboard */
-    history.replaceState({},'',location.pathname);
+/* ── Sign out ── */
+function doSignOut() {
+  if (_unsubL) _unsubL();
+  if (_unsubN) _unsubN();
+  auth.signOut().then(() => {
+    showView('authView');
+    clearMsg();
+    history.replaceState({}, '', location.pathname);
   });
 }
 
-/* Google uses popup — no redirect handling needed */
+/* ════════════════════════════════
+   AUTH STATE — main router
+════════════════════════════════ */
+let _unsubL = null, _unsubN = null;
 
-/* ══ POPULATE FORM USER ROW ══ */
-function setFormUser(u){
-  const name=(u.displayName||u.email||u.phoneNumber||'Vous').split(' ')[0];
-  $('formUserName').textContent=u.displayName||u.email||u.phoneNumber||'Connecté';
-  if(u.photoURL){
-    $('formAvImg').src=u.photoURL;$('formAvImg').style.display='block';
-    $('formAvFb').style.display='none';
-  }else{
-    $('formAvFb').textContent=(name[0]||'?').toUpperCase();
-    $('formAvFb').style.display='flex';$('formAvImg').style.display='none';
-  }
-  $('f_name').value=u.displayName||'';
-}
-
-/* ══ AUTH STATE ══ */
-let unsubL=null,unsubN=null;
-
-auth.onAuthStateChanged(u=>{
-  if(!u){
+auth.onAuthStateChanged(user => {
+  if (!user) {
     showView('authView');
     return;
   }
 
-  // Save profile silently in background
-  db.collection('users').doc(u.uid).set({
-    name:u.displayName||u.email||u.phoneNumber||'Client',
-    email:u.email||null,
-    phone:u.phoneNumber||null,
-    photoURL:u.photoURL||null,
-    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-  },{merge:true}).catch(()=>{});
+  /* Save profile silently */
+  db.collection('users').doc(user.uid).set({
+    name: user.displayName || user.email || user.phoneNumber || 'Client',
+    email: user.email || null,
+    phone: user.phoneNumber || null,
+    photoURL: user.photoURL || null,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true }).catch(() => {});
 
-  const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
-  const goForm=wantsDemo||sessionStorage.getItem('bz_goto_form')==='1';
+  const name = (user.displayName || user.email || user.phoneNumber || 'Client').split(' ')[0];
+  const goForm = wantsDemo || sessionStorage.getItem('bz_goto_form') === '1';
   sessionStorage.removeItem('bz_goto_form');
 
-  if(goForm){
-    setFormUser(u);
+  if (goForm) {
+    _setFormUser(user);
     showView('formView');
-  }else{
-    setDashUser(u,name);
+  } else {
+    _setDashUser(user, name);
     showView('dashView');
-    loadData(u.uid);
+    loadData(user.uid);
   }
 });
 
-/* ══ DASHBOARD USER ══ */
-function setDashUser(u,name){
-  $('wtitle').textContent='Bonjour '+name+' ??';
-  $('dNm').textContent=name;
-  if(u.photoURL){$('dAv').src=u.photoURL;$('dAv').style.display='block'}
-  else{$('dAvFb').textContent=(name[0]||'?').toUpperCase();$('dAvFb').style.display='flex'}
-}
-
-/* ══ FORM SUBMIT ══ */
-const selCats=new Set();
-function toggleCb(el,v){el.classList.toggle('on');selCats.has(v)?selCats.delete(v):selCats.add(v)}
-
-async function submitLead(){
-  const u=auth.currentUser;if(!u)return;
-  const name=$('f_name').value.trim(),phone=$('f_phone').value.trim(),type=$('f_type').value;
-  if(!name||!phone||!type){showFMsg('Remplissez les champs obligatoires (*)');return}
-  saveOrig('subBtn');setBtn('subBtn',true,'Envoi en cours...');
-  try{
-    const _pack=sessionStorage.getItem('bz_pack')||'';
-    const _prompt=sessionStorage.getItem('bz_prompt')||'';
-    const _feats=sessionStorage.getItem('bz_features')||'';
-    const ref=await db.collection('leads').add({
-      name,phone,type,
-      categories:[...selCats].join(', '),
-      description:$('f_desc').value.trim(),
-      userId:u.uid,userEmail:u.email||null,
-      pack:_pack, packLabel:PACK_LABELS[_pack]||'',
-      claudePrompt:_prompt,
-      features:_feats?JSON.parse(_feats):[],
-      status:'new',lang:'fr',
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    sessionStorage.removeItem('bz_pack');
-    sessionStorage.removeItem('bz_prompt');
-    sessionStorage.removeItem('bz_features');
-    await db.collection('notifications').add({
-      userId:u.uid,leadId:ref.id,
-      title:'Demande reçue !',
-      message:'Nous vous contacterons dans les 24 heures avec votre démo personnalisée.',
-      type:'new_lead',read:false,
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    /* Go to dashboard */
-    const name2=(u.displayName||u.email||'Client').split(' ')[0];
-    setDashUser(u,name2);
-    showView('dashView');
-    loadData(u.uid);
-    toast('✅ Demande envoyée ! Nous vous contacterons sous 24h.','suc');
-    /* Remove demo param from URL */
-    history.replaceState({},'',location.pathname);
-  }catch(e){
-    console.error(e);
-    showFMsg('❌ Erreur: '+e.message);
-    setBtn('subBtn',false);
+/* ════════════════════════════════
+   FORM VIEW
+════════════════════════════════ */
+function _setFormUser(u) {
+  const name = (u.displayName || u.email || u.phoneNumber || 'Vous').split(' ')[0];
+  $('formUserName').textContent = u.displayName || u.email || u.phoneNumber || 'Connecté';
+  if (u.photoURL) {
+    $('formAvImg').src = u.photoURL;
+    $('formAvImg').style.display = 'block';
+    $('formAvFb').style.display = 'none';
+  } else {
+    $('formAvFb').textContent = (name[0] || '?').toUpperCase();
+    $('formAvFb').style.display = 'flex';
+    $('formAvImg').style.display = 'none';
+  }
+  $('f_name').value = u.displayName || '';
+  /* Show pack if selected */
+  const pack = sessionStorage.getItem('bz_pack');
+  if (pack && PACKS[pack]) {
+    showFMsg('Pack sélectionné : ' + PACKS[pack], 'ok');
   }
 }
 
-/* ══ DASHBOARD DATA ══ */
-const SC={new:{l:'?? Nouvelle demande',c:'pn',s:1,p:10},contacted:{l:'?? En discussion',c:'pc',s:2,p:35},demo:{l:'?? Démo prête !',c:'pd',s:3,p:65},converted:{l:'?? Livrée !',c:'pv',s:5,p:100},closed:{l:'⚫ Fermé',c:'px',s:1,p:0}};
-function fmtD(ts){if(!ts)return'—';const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}
-function updProg(status){const c=SC[status]||SC.new;const p=$('spill');p.textContent=c.l;p.className='pill '+c.c;$('pf').style.width=c.p+'%';for(let i=1;i<=5;i++){const el=$('ps'+i);el.classList.remove('done','act');if(i<c.s)el.classList.add('done');else if(i===c.s)el.classList.add('act')}}
-
-function loadData(uid){
-  $('loadV').style.display='flex';$('mainC').style.display='none';$('noLeadV').style.display='none';
-  if(unsubL)unsubL();
-  /* No orderBy → no composite index needed, sort client-side */
-  unsubL=db.collection('leads').where('userId','==',uid)
-    .onSnapshot(rawSnap=>{
-      /* Sort client-side: newest first — no composite index needed */
-      const sorted=[...rawSnap.docs].sort((a,b)=>
-        (b.data().createdAt?.toMillis?.()??0)-(a.data().createdAt?.toMillis?.()??0)
-      );
-      const snap={empty:sorted.length===0,docs:sorted};
-      $('loadV').style.display='none';
-      if(snap.empty){$('noLeadV').style.display='block';return}
-      $('mainC').style.display='block';
-      const d={id:snap.docs[0].id,...snap.docs[0].data()};
-      $('ltitle').textContent=(d.type||'App')+' — Application sur mesure';
-      $('lsub').textContent='Soumise le '+fmtD(d.createdAt);
-      updProg(d.status||'new');
-      const dc=$('demoC');
-      if(d.demoUrl){dc.classList.add('on');$('demoLnk').href=d.demoUrl;if(d.demoMessage)$('demoMsg').textContent=d.demoMessage}
-      else dc.classList.remove('on');
-      const am=$('amsgC');
-      if(d.clientNote){am.classList.add('on');$('amsgT').textContent=d.clientNote;$('amsgD').textContent=fmtD(d.updatedAt)}
-      else am.classList.remove('on');
-      const _piHtml=d.packLabel?`<div class="ir"><span class="ik">Pack</span><span class="iv" style="font-weight:700">${d.packLabel}</span></div>`:''
-      $('leadInfo').innerHTML=
-        _piHtml+
-        `<div class="ir"><span class="ik">Type</span><span class="iv">${d.type||'—'}</span></div>`+
-        `<div class="ir"><span class="ik">Catégories</span><span class="iv">${d.categories||'—'}</span></div>`+
-        `<div class="ir"><span class="ik">Téléphone</span><span class="iv">${d.phone||'—'}</span></div>`+
-        (d.description?`<div class="ir"><span class="ik">Description</span><span class="iv" style="font-style:italic;color:var(--mu)">${d.description}</span></div>`:'')+
-        `<div class="igrid"><div class="igi"><div class="ign">${d.status==='converted'?'✓':'⏳'}</div><div class="igl">Statut</div></div><div class="igi"><div class="ign">${d.demoUrl?'✓':'⏳'}</div><div class="igl">Démo disponible</div></div></div>`;
-    },e=>{console.error(e);$('loadV').style.display='none';$('noLeadV').style.display='block'});
-
-  if(unsubN)unsubN();
-  unsubN=db.collection('notifications').where('userId','==',uid)
-    .onSnapshot(snap=>{
-      const sorted=[...snap.docs].sort((a,b)=>
-        (b.data().createdAt?.toMillis?.()??0)-(a.data().createdAt?.toMillis?.()??0)
-      ).slice(0,20);
-      const list=$('notifList'),badge=$('nbadge');
-      if(sorted.length===0){list.innerHTML='<div class="nonotif">Aucune notification</div>';return}
-      let ur=0;list.innerHTML='';
-      sorted.forEach(doc=>{const n={id:doc.id,...doc.data()};if(!n.read)ur++;
-        list.innerHTML+=`<div class="ni ${n.read?'':'unread'}"><div class="nid"></div><div style="flex:1"><div class="nit">${n.title||''}</div><div class="nim">${n.message||''}</div><div class="nidat">${fmtD(n.createdAt)}</div></div></div>`;
-      });
-      if(ur>0){badge.textContent=ur>9?'9+':ur;badge.className='nbadge on'}else badge.className='nbadge';
-    });
+const _selCats = new Set();
+function toggleCb(el, v) {
+  el.classList.toggle('on');
+  _selCats.has(v) ? _selCats.delete(v) : _selCats.add(v);
 }
 
-async function markRead(){
-  const u=auth.currentUser;if(!u)return;
-  const s=await db.collection('notifications').where('userId','==',u.uid).where('read','==',false).get();
-  const b=db.batch();s.docs.forEach(d=>b.update(d.ref,{read:true}));await b.commit();
+async function submitLead() {
+  const u = auth.currentUser;
+  if (!u) return;
+  const name = $('f_name').value.trim();
+  const phone = $('f_phone').value.trim();
+  const type = $('f_type').value;
+  if (!name || !phone || !type) { showFMsg('Remplissez les champs obligatoires (*)'); return; }
+  const btn = $('subBtn');
+  btn.disabled = true;
+  $('subTxt').textContent = '⏳ Envoi en cours...';
+  try {
+    const pack = sessionStorage.getItem('bz_pack') || '';
+    const prompt = sessionStorage.getItem('bz_prompt') || '';
+    const features = JSON.parse(sessionStorage.getItem('bz_features') || '[]');
+    const ref = await db.collection('leads').add({
+      name, phone, type,
+      categories: [..._selCats].join(', '),
+      description: $('f_desc').value.trim(),
+      userId: u.uid,
+      userEmail: u.email || null,
+      pack, packLabel: PACKS[pack] || '',
+      claudePrompt: prompt,
+      features,
+      status: 'new',
+      lang: 'fr',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('notifications').add({
+      userId: u.uid, leadId: ref.id,
+      title: 'Demande reçue !',
+      message: 'Nous vous contacterons dans les 24 heures.',
+      type: 'new_lead', read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize'].forEach(k => sessionStorage.removeItem(k));
+    const name2 = (u.displayName || u.email || 'Client').split(' ')[0];
+    _setDashUser(u, name2);
+    showView('dashView');
+    loadData(u.uid);
+    toast('✅ Demande envoyée ! Nous vous contacterons sous 24h.');
+    history.replaceState({}, '', location.pathname);
+  } catch(e) {
+    btn.disabled = false;
+    $('subTxt').textContent = '🎯 Envoyer ma demande de démo gratuite';
+    showFMsg('❌ Erreur: ' + e.message);
+  }
+}
+
+/* ════════════════════════════════
+   DASHBOARD
+════════════════════════════════ */
+function _setDashUser(u, name) {
+  $('wtitle').textContent = 'Bonjour ' + name + ' 👋';
+  $('dNm').textContent = name;
+  if (u.photoURL) { $('dAv').src = u.photoURL; $('dAv').style.display = 'block'; }
+  else { $('dAvFb').textContent = (name[0] || '?').toUpperCase(); $('dAvFb').style.display = 'flex'; }
+}
+
+const _SC = {
+  new:       { l:'🔵 Nouvelle demande', c:'pn', s:1, p:10 },
+  contacted: { l:'🟣 En discussion',    c:'pc', s:2, p:35 },
+  demo:      { l:'🟡 Démo prête !',     c:'pd', s:3, p:65 },
+  validated: { l:'🟢 Validée !',        c:'pv', s:4, p:85 },
+  converted: { l:'🟢 Livrée !',         c:'pv', s:5, p:100 },
+  closed:    { l:'⚫ Fermé',             c:'px', s:1, p:0 }
+};
+
+function _updProg(status) {
+  const cfg = _SC[status] || _SC.new;
+  const pill = $('spill');
+  pill.textContent = cfg.l;
+  pill.className = 'pill ' + cfg.c;
+  $('pf').style.width = cfg.p + '%';
+  for (let i = 1; i <= 5; i++) {
+    const el = $('ps' + i);
+    el.classList.remove('done', 'act');
+    if (i < cfg.s) el.classList.add('done');
+    else if (i === cfg.s) el.classList.add('act');
+  }
+}
+
+function loadData(uid) {
+  $('loadV').style.display = 'flex';
+  $('mainC').style.display = 'none';
+  $('noLeadV').style.display = 'none';
+  if (_unsubL) _unsubL();
+
+  _unsubL = db.collection('leads')
+    .where('userId', '==', uid)
+    .onSnapshot(rawSnap => {
+      $('loadV').style.display = 'none';
+      if (rawSnap.empty) { $('noLeadV').style.display = 'block'; return; }
+      /* Sort newest first client-side */
+      const docs = [...rawSnap.docs].sort((a, b) =>
+        (b.data().createdAt?.toMillis?.() ?? 0) - (a.data().createdAt?.toMillis?.() ?? 0)
+      );
+      const d = { id: docs[0].id, ...docs[0].data() };
+      $('mainC').style.display = 'block';
+      $('ltitle').textContent = (d.type || 'App') + ' — Application sur mesure';
+      $('lsub').textContent = 'Soumise le ' + fmtD(d.createdAt);
+      _updProg(d.status || 'new');
+
+      /* Demo link */
+      if (d.demoUrl) {
+        $('demoC').classList.add('on');
+        $('demoLnk').href = d.demoUrl;
+        if (d.demoMessage) $('demoMsg').textContent = d.demoMessage;
+      } else $('demoC').classList.remove('on');
+
+      /* Admin message */
+      if (d.clientNote) {
+        $('amsgC').classList.add('on');
+        $('amsgT').textContent = d.clientNote;
+        $('amsgD').textContent = fmtD(d.updatedAt);
+      } else $('amsgC').classList.remove('on');
+
+      /* Lead info */
+      const packHtml = d.packLabel
+        ? '<div class="ir"><span class="ik">Pack</span><span class="iv" style="font-weight:700">' + d.packLabel + '</span></div>'
+        : '';
+      $('leadInfo').innerHTML =
+        packHtml +
+        '<div class="ir"><span class="ik">Type</span><span class="iv">' + (d.type||'—') + '</span></div>' +
+        '<div class="ir"><span class="ik">Catégories</span><span class="iv">' + (d.categories||'—') + '</span></div>' +
+        '<div class="ir"><span class="ik">Téléphone</span><span class="iv">' + (d.phone||'—') + '</span></div>' +
+        (d.description ? '<div class="ir"><span class="ik">Description</span><span class="iv" style="font-style:italic;color:var(--mu)">' + d.description + '</span></div>' : '') +
+        '<div class="igrid"><div class="igi"><div class="ign">' + (d.status==='converted'?'✓':'⏳') + '</div><div class="igl">Statut</div></div>' +
+        '<div class="igi"><div class="ign">' + (d.demoUrl?'✓':'⏳') + '</div><div class="igl">Démo</div></div></div>';
+    }, e => {
+      $('loadV').style.display = 'none';
+      $('noLeadV').style.display = 'block';
+      console.error('Leads error:', e.code, e.message);
+    });
+
+  if (_unsubN) _unsubN();
+  _unsubN = db.collection('notifications')
+    .where('userId', '==', uid)
+    .onSnapshot(rawSnap => {
+      const docs = [...rawSnap.docs]
+        .sort((a, b) => (b.data().createdAt?.toMillis?.()??0) - (a.data().createdAt?.toMillis?.()??0))
+        .slice(0, 20);
+      const list = $('notifList');
+      const badge = $('nbadge');
+      if (!docs.length) { list.innerHTML = '<div class="nonotif">Aucune notification</div>'; badge.className = 'nbadge'; return; }
+      let unread = 0;
+      list.innerHTML = '';
+      docs.forEach(doc => {
+        const n = { id: doc.id, ...doc.data() };
+        if (!n.read) unread++;
+        list.innerHTML += '<div class="ni ' + (n.read ? '' : 'unread') + '"><div class="nid"></div><div style="flex:1"><div class="nit">' + (n.title||'') + '</div><div class="nim">' + (n.message||'') + '</div><div class="nidat">' + fmtD(n.createdAt) + '</div></div></div>';
+      });
+      if (unread > 0) { badge.textContent = unread > 9 ? '9+' : unread; badge.className = 'nbadge on'; }
+      else badge.className = 'nbadge';
+    }, () => {});
+}
+
+async function markRead() {
+  const u = auth.currentUser;
+  if (!u) return;
+  const snap = await db.collection('notifications').where('userId','==',u.uid).where('read','==',false).get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+  await batch.commit();
   toast('✓ Tout marqué comme lu');
 }
 </script>
