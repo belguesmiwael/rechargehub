@@ -504,20 +504,26 @@ function switchTab(name,btn){
 }
 
 /* ══ GOOGLE — redirect (works everywhere) ══ */
-function doGoogle(){
-  clearMsg();saveOrig('gBtn');setBtn('gBtn',true,'Redirection vers Google...');
+async function doGoogle(){
+  clearMsg();saveOrig('gBtn');setBtn('gBtn',true,'Connexion Google...');
   const p=new firebase.auth.GoogleAuthProvider();
   p.addScope('profile');p.addScope('email');
-  /* Save intent before redirect */
-  if(wantsDemo)sessionStorage.setItem('bz_demo','1');
-  auth.signInWithRedirect(p).catch(e=>{
+  try{
+    await auth.signInWithPopup(p);
+  }catch(e){
     setBtn('gBtn',false);
-    if(e.code==='auth/unauthorized-domain'){
-      showMsg('⚠️ Domaine non autorisé — ajoutez-le dans Firebase Console → Authentication → Authorized domains');
+    if(e.code==='auth/popup-blocked'){
+      showMsg('⚠️ Popup bloqué par votre navigateur. Autorisez les popups pour ce site.');
+    }else if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
+      clearMsg();
+    }else if(e.code==='auth/unauthorized-domain'){
+      showMsg('⚠️ Domaine non autorisé. Ajoutez '+location.hostname+' dans Firebase Console → Authentication → Authorized domains');
+    }else if(e.code==='auth/operation-not-supported-in-this-environment'){
+      showMsg('⚠️ Ouvrez ce fichier via http:// ou https:// (pas file://)');
     }else{
-      showMsg('Erreur: '+e.message);
+      showMsg('Erreur: '+e.code+' — '+e.message);
     }
-  });
+  }
 }
 
 /* ══ PHONE OTP ══ */
@@ -604,9 +610,12 @@ async function doEmail(){
     let m=e.message;
     if(e.code==='auth/email-already-in-use')m='Email déjà utilisé — connectez-vous.';
     if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')m='Email ou mot de passe incorrect.';
-    if(e.code==='auth/user-not-found')m='Aucun compte. Créez-en un.';
+    if(e.code==='auth/user-not-found')m='Aucun compte avec cet email. Créez-en un.';
     if(e.code==='auth/weak-password')m='Mot de passe trop faible (min. 6 caractères).';
-    if(e.code==='auth/invalid-email')m='Email invalide.';
+    if(e.code==='auth/invalid-email')m='Adresse email invalide.';
+    if(e.code==='auth/network-request-failed')m='Erreur réseau. Vérifiez votre connexion.';
+    if(e.code==='auth/too-many-requests')m='Trop de tentatives. Réessayez dans quelques minutes.';
+    console.error('Email auth error:',e.code,e.message);
     showMsg('❌ '+m);setBtn('eBtn',false);
   }
 }
@@ -627,26 +636,7 @@ function doSignOut(){
   });
 }
 
-/* ══ HANDLE GOOGLE REDIRECT ══ */
-auth.getRedirectResult().then(result=>{
-  if(result&&result.user){
-    /* Restore demo intent after redirect */
-    const hadDemo=sessionStorage.getItem('bz_demo')==='1';
-    sessionStorage.removeItem('bz_demo');
-    if(hadDemo){
-      /* onAuthStateChanged will fire and handle the rest */
-      sessionStorage.setItem('bz_goto_form','1');
-    }
-  }
-}).catch(e=>{
-  if(e.code&&!['auth/null-user','auth/no-auth-event'].includes(e.code)){
-    console.error('Redirect result error:',e.code,e.message);
-    if(e.code==='auth/unauthorized-domain'){
-      showView('authView');
-      showMsg('⚠️ Domaine non autorisé — ajoutez-le dans Firebase Console → Authentication → Authorized domains');
-    }
-  }
-});
+/* Google uses popup — no redirect handling needed */
 
 /* ══ POPULATE FORM USER ROW ══ */
 function setFormUser(u){
