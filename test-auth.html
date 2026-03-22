@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BizFlow - Test Auth</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<style>
+body{font-family:sans-serif;max-width:500px;margin:60px auto;padding:20px;background:#111;color:#fff}
+input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #444;background:#222;color:#fff;font-size:1rem;box-sizing:border-box}
+button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:none;background:#5c8eff;color:#fff;font-size:1rem;cursor:pointer;font-weight:700}
+button:disabled{opacity:.5;cursor:not-allowed}
+#log{background:#000;border:1px solid #333;border-radius:8px;padding:12px;margin-top:16px;font-family:monospace;font-size:.82rem;min-height:100px;white-space:pre-wrap;color:#0f0}
+.err{color:#f87171}.ok{color:#34d399}.info{color:#6c8fff}
+</style>
+</head>
+<body>
+<h2>🔐 Test Auth Firebase</h2>
+<p id="domain" style="font-size:.8rem;color:#aaa"></p>
+
+<hr style="border-color:#333;margin:16px 0">
+<b>Google</b>
+<button id="btnGoogle" onclick="testGoogle()">Tester Google Auth</button>
+
+<hr style="border-color:#333;margin:16px 0">
+<b>Email / Mot de passe</b>
+<input type="email" id="email" placeholder="Email" value="">
+<input type="password" id="pass" placeholder="Mot de passe (min 6 chars)" value="">
+<button onclick="testEmailLogin()">Connexion Email</button>
+<button onclick="testEmailRegister()">Créer un compte</button>
+
+<hr style="border-color:#333;margin:16px 0">
+<button onclick="testSignOut()" style="background:#f87171">Déconnexion</button>
+
+<div id="log">En attente...\n</div>
+
+<script>
+const FC={
+  apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",
+  authDomain:"bizflow-5b1e2.firebaseapp.com",
+  projectId:"bizflow-5b1e2"
+};
+firebase.initializeApp(FC);
+const auth=firebase.auth();
+const log=document.getElementById('log');
+
+document.getElementById('domain').textContent='Domaine: '+location.hostname+' | Protocole: '+location.protocol;
+
+function addLog(msg, type='info'){
+  const ts=new Date().toLocaleTimeString();
+  log.innerHTML+=`<span class="${type}">[${ts}] ${msg}</span>\n`;
+  log.scrollTop=log.scrollHeight;
+}
+
+// Listen to auth state
+auth.onAuthStateChanged(u=>{
+  if(u){
+    addLog('✅ AUTH STATE: Connecté — '+u.email+' ('+u.uid.slice(0,8)+'...)', 'ok');
+  } else {
+    addLog('⚪ AUTH STATE: Non connecté', 'info');
+  }
+});
+
+async function testGoogle(){
+  const btn=document.getElementById('btnGoogle');
+  btn.disabled=true; btn.textContent='En cours...';
+  addLog('→ Tentative Google signInWithPopup...', 'info');
+  try{
+    const p=new firebase.auth.GoogleAuthProvider();
+    const result=await auth.signInWithPopup(p);
+    addLog('✅ Google OK: '+result.user.email, 'ok');
+  }catch(e){
+    addLog('❌ Google ERREUR: code='+e.code, 'err');
+    addLog('   message='+e.message, 'err');
+    if(e.code==='auth/unauthorized-domain'){
+      addLog('   👉 SOLUTION: Ajoutez "'+location.hostname+'" dans Firebase Console → Authentication → Authorized domains', 'err');
+    }
+  }finally{
+    btn.disabled=false; btn.textContent='Tester Google Auth';
+  }
+}
+
+async function testEmailLogin(){
+  const email=document.getElementById('email').value.trim();
+  const pass=document.getElementById('pass').value;
+  if(!email||!pass){addLog('❌ Email et mot de passe requis','err');return}
+  addLog('→ Tentative connexion email: '+email,'info');
+  try{
+    const r=await auth.signInWithEmailAndPassword(email,pass);
+    addLog('✅ Email login OK: '+r.user.email,'ok');
+  }catch(e){
+    addLog('❌ Email login ERREUR: '+e.code,'err');
+    addLog('   '+e.message,'err');
+    if(e.code==='auth/configuration-not-found'||e.code==='auth/operation-not-allowed'){
+      addLog('   👉 SOLUTION: Activez Email/Password dans Firebase Console → Authentication → Sign-in method','err');
+    }
+    if(e.code==='auth/user-not-found'){
+      addLog('   👉 Aucun compte avec cet email. Utilisez "Créer un compte".','err');
+    }
+  }
+}
+
+async function testEmailRegister(){
+  const email=document.getElementById('email').value.trim();
+  const pass=document.getElementById('pass').value;
+  if(!email||!pass){addLog('❌ Email et mot de passe requis','err');return}
+  addLog('→ Création compte: '+email,'info');
+  try{
+    const r=await auth.createUserWithEmailAndPassword(email,pass);
+    addLog('✅ Compte créé OK: '+r.user.email,'ok');
+  }catch(e){
+    addLog('❌ Création ERREUR: '+e.code,'err');
+    addLog('   '+e.message,'err');
+  }
+}
+
+async function testSignOut(){
+  await auth.signOut();
+  addLog('→ Déconnecté','info');
+}
+
+addLog('Page chargée. Domaine: '+location.hostname,'info');
+addLog('SDK Firebase initialisé','info');
+</script>
+</body>
+</html>
