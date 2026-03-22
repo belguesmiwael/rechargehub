@@ -802,21 +802,56 @@ async function analyzeWithAI(){
 
   const allFeats=Object.values(GROUPS).flat();
 
-  const systemPrompt=`Tu es expert en développement d'applications sur mesure pour les PME tunisiennes (BizFlow TN).
-Analyse la description et réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
+  // Capture already-selected features by the client
+  const alreadySelected=[...selected];
+
+  const systemPrompt=`Tu es expert en développement d'applications web sur mesure pour les PME tunisiennes.
+
+Le client a décrit son besoin. Tu dois :
+1. Analyser sa description pour détecter les fonctionnalités nécessaires
+2. Générer un prompt COMPLET et PRÉCIS pour programmer son application spécifique
+
+Réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
 Format :
 {
-  "selected":["nom exact de fonctionnalité"],
-  "complexity":"simple"|"moyenne"|"avancee",
-  "monetizable":true|false,
-  "businessType":"type détecté",
-  "explanation":"2-3 phrases max en français",
-  "megaPrompt":"prompt complet de génération"
+  "selected": ["nom exact parmi la liste disponible"],
+  "complexity": "simple" | "moyenne" | "avancee",
+  "monetizable": true | false,
+  "businessType": "type de business détecté (ex: Café, Pharmacie, Épicerie...)",
+  "explanation": "2-3 phrases décrivant l'app détectée en français",
+  "megaPrompt": "LE MEGA PROMPT ICI"
 }
-Fonctionnalités disponibles : ${JSON.stringify(allFeats)}
-Règles complexity: simple=1-3 modules, moyenne=3-6 ou auth, avancee=6+ ou multi-users.
-monetizable=true si revendable à d'autres entreprises similaires.
-Pour megaPrompt : prompt détaillé pour coder l'app en HTML+CSS+JS+Firebase, design glassmorphism dark/light, données tunisiennes (DT, noms TN, +216), fichier HTML unique.`;
+
+Fonctionnalités disponibles à sélectionner : ${JSON.stringify(allFeats)}
+Fonctionnalités déjà cochées par le client : ${JSON.stringify(alreadySelected)}
+(inclure les deux dans selected si pertinentes)
+
+Règles complexity: simple=1-3 modules, moyenne=3-6 ou avec auth, avancee=6+ ou multi-utilisateurs.
+monetizable=true si cette app peut être revendue à d'autres entreprises du même secteur.
+
+Pour le megaPrompt, génère un prompt ULTRA DÉTAILLÉ qui décrit l'application DU CLIENT (pas BizFlow).
+Le megaPrompt doit commencer par :
+"Crée une application web complète pour [décrire le business du client].
+
+Contexte : [décrire en détail le business du client et son problème]
+
+Fonctionnalités requises :
+[liste détaillée de toutes les fonctionnalités avec sous-détails]
+
+Données et interface :
+[spécifier les données tunisiennes : DT, noms tunisiens, numéros +216, etc.]
+
+Stack technique :
+- Fichier HTML unique autonome (tout inclus : HTML + CSS + JS)
+- Firebase Firestore pour les données en temps réel
+- Firebase Auth pour l'authentification
+- Design moderne : dark/light mode, responsive mobile
+- Interface en français (ou arabe si mentionné)
+
+Détails spécifiques à implémenter :
+[décrire chaque écran, chaque formulaire, chaque tableau de bord]
+
+Livrable : fichier HTML unique complet, fonctionnel, prêt à déployer."`;
 
   try{
     const r=await fetch('https://api.openai.com/v1/chat/completions',{
