@@ -505,23 +505,29 @@ function switchTab(name,btn){
 
 /* ══ GOOGLE — redirect (works everywhere) ══ */
 async function doGoogle(){
-  clearMsg();saveOrig('gBtn');setBtn('gBtn',true,'Connexion Google...');
+  clearMsg();
   const p=new firebase.auth.GoogleAuthProvider();
   p.addScope('profile');p.addScope('email');
+  // Show loading only briefly - onAuthStateChanged takes over after
+  $('gBtn').disabled=true;
+  $('gBtn').textContent='Connexion en cours...';
   try{
     await auth.signInWithPopup(p);
+    // Success: onAuthStateChanged will fire and navigate
+    // Don't reset button - page will change
   }catch(e){
-    setBtn('gBtn',false);
+    $('gBtn').disabled=false;
+    $('gBtn').textContent='Continuer avec Google';
     if(e.code==='auth/popup-blocked'){
-      showMsg('⚠️ Popup bloqué par votre navigateur. Autorisez les popups pour ce site.');
+      showMsg('⚠️ Popup bloqué. Autorisez les popups dans votre navigateur puis réessayez.');
     }else if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
-      clearMsg();
+      // User closed popup - no error needed
     }else if(e.code==='auth/unauthorized-domain'){
-      showMsg('⚠️ Domaine non autorisé. Ajoutez '+location.hostname+' dans Firebase Console → Authentication → Authorized domains');
+      showMsg('⚠️ Domaine non autorisé : ajoutez "'+location.hostname+'" dans Firebase Console → Authentication → Authorized domains');
     }else if(e.code==='auth/operation-not-supported-in-this-environment'){
-      showMsg('⚠️ Ouvrez ce fichier via http:// ou https:// (pas file://)');
+      showMsg('⚠️ Ouvrez via http:// ou https:// (pas file://)');
     }else{
-      showMsg('Erreur: '+e.code+' — '+e.message);
+      showMsg('❌ '+e.code+' : '+e.message);
     }
   }
 }
@@ -603,21 +609,28 @@ async function doEmail(){
       const name=$('eName').value.trim();
       const cr=await auth.createUserWithEmailAndPassword(email,pass);
       if(name)await cr.user.updateProfile({displayName:name});
+      // onAuthStateChanged will navigate
     }else{
-      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       await auth.signInWithEmailAndPassword(email,pass);
+      // onAuthStateChanged will navigate
     }
+    // Don't reset button - navigation happens in onAuthStateChanged
   }catch(e){
+    // Reset button on error
+    const b=$(emMode==='login'?'eBtn':'eBtn');
+    b.disabled=false;
+    b.textContent=emMode==='login'?'Connexion →':'Créer mon compte →';
     let m=e.message;
-    if(e.code==='auth/email-already-in-use')m='Email déjà utilisé — connectez-vous.';
-    if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')m='Email ou mot de passe incorrect.';
-    if(e.code==='auth/user-not-found')m='Aucun compte avec cet email. Créez-en un.';
-    if(e.code==='auth/weak-password')m='Mot de passe trop faible (min. 6 caractères).';
-    if(e.code==='auth/invalid-email')m='Adresse email invalide.';
-    if(e.code==='auth/network-request-failed')m='Erreur réseau. Vérifiez votre connexion.';
-    if(e.code==='auth/too-many-requests')m='Trop de tentatives. Réessayez dans quelques minutes.';
-    console.error('Email auth error:',e.code,e.message);
-    showMsg('❌ '+m);setBtn('eBtn',false);
+    if(e.code==='auth/email-already-in-use')m='Email déjà utilisé. Connectez-vous à la place.';
+    else if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')m='Email ou mot de passe incorrect.';
+    else if(e.code==='auth/user-not-found')m='Aucun compte avec cet email. Créez-en un.';
+    else if(e.code==='auth/weak-password')m='Mot de passe trop court (minimum 6 caractères).';
+    else if(e.code==='auth/invalid-email')m='Adresse email invalide.';
+    else if(e.code==='auth/network-request-failed')m='Erreur réseau. Vérifiez votre connexion internet.';
+    else if(e.code==='auth/too-many-requests')m='Compte temporairement bloqué. Réessayez dans quelques minutes.';
+    else if(e.code==='auth/configuration-not-found')m='Email/Mot de passe non activé dans Firebase Console.';
+    else m=e.code+': '+e.message;
+    showMsg('❌ '+m);
   }
 }
 async function resetEmail(){
@@ -656,23 +669,22 @@ function setFormUser(u){
 /* ══ AUTH STATE ══ */
 let unsubL=null,unsubN=null;
 
-// Set persistence first
-try{auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)}catch(e){}
+auth.onAuthStateChanged(u=>{
+  if(!u){
+    showView('authView');
+    return;
+  }
 
-auth.onAuthStateChanged(async u=>{
-  if(!u){showView('authView');return}
-
-  /* Save user profile - fire and forget, don't await */
+  // Save profile silently in background
   db.collection('users').doc(u.uid).set({
     name:u.displayName||u.email||u.phoneNumber||'Client',
-    email:u.email||null,phone:u.phoneNumber||null,
+    email:u.email||null,
+    phone:u.phoneNumber||null,
     photoURL:u.photoURL||null,
     updatedAt:firebase.firestore.FieldValue.serverTimestamp()
   },{merge:true}).catch(()=>{});
 
   const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
-
-  /* Decide where to go */
   const goForm=wantsDemo||sessionStorage.getItem('bz_goto_form')==='1';
   sessionStorage.removeItem('bz_goto_form');
 
