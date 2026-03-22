@@ -281,7 +281,7 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
       Obtenez votre clé sur <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> · Elle est sauvegardée localement, jamais envoyée ailleurs.
     </div>
     <div class="api-key-row">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
       <button class="btn-api-save" onclick="saveApiKey()">Sauvegarder</button>
     </div>
     <div class="api-status" id="apiStatus"></div>
@@ -302,7 +302,7 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     Analyser avec l'IA → Générer mon estimation
   </button>
   <div class="no-key-banner" id="noKeyBanner">
-    ⚠️ <strong>Clé API manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em>, saisissez votre clé API Anthropic (<code>sk-ant-api03-...</code>) et sauvegardez. Sans clé, sélectionnez les modules manuellement.
+    ⚠️ <strong>Clé API manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em>, saisissez votre clé API OpenAI (<code>sk-...</code>) et sauvegardez. Sans clé, sélectionnez les modules manuellement.
   </div>
   <div class="loader" id="loader"><div class="spin"></div><span id="loaderTxt">Analyse en cours…</span></div>
   <div class="ai-note" id="aiNote"></div>
@@ -511,7 +511,7 @@ function loadApiKey(){
 
 function saveApiKey(){
   const val=document.getElementById('apiKeyInput').value.trim();
-  if(!val){ alert('Entrez une clé API valide (commence par sk-ant-)'); return; }
+  if(!val){ alert('Entrez une clé API valide (commence par sk-)'); return; }
   apiKey=val;
   localStorage.setItem('ep3_apikey',apiKey);
   updateApiStatus();
@@ -790,7 +790,7 @@ async function analyzeWithAI(){
   if(desc.length<8){document.getElementById('descInput').focus();return;}
 
   // Check API key
-  if(!apiKey||!apiKey.startsWith('sk-ant-')){
+  if(!apiKey||!apiKey.startsWith('sk-')){
     document.getElementById('noKeyBanner').style.display='block';
     document.getElementById('noKeyBanner').scrollIntoView({behavior:'smooth',block:'center'});
     return;
@@ -819,34 +819,34 @@ monetizable=true si revendable à d'autres entreprises similaires.
 Pour megaPrompt : prompt détaillé pour coder l'app en HTML+CSS+JS+Firebase, design glassmorphism dark/light, données tunisiennes (DT, noms TN, +216), fichier HTML unique.`;
 
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
+        'Authorization':'Bearer '+apiKey
       },
       body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
+        model:'gpt-4o-mini',
         max_tokens:2000,
-        system:systemPrompt,
-        messages:[{role:'user',content:desc}]
+        messages:[
+          {role:'system',content:systemPrompt},
+          {role:'user',content:desc}
+        ],
+        response_format:{type:'json_object'}
       })
     });
 
     if(!r.ok){
       const err=await r.json().catch(()=>({}));
       const msg=err?.error?.message||'HTTP '+r.status;
-      // Specific error messages
-      if(r.status===401) throw new Error('Clé API invalide. Vérifiez votre clé dans le panneau admin.');
-      if(r.status===403) throw new Error('Accès refusé. Clé API incorrecte ou expirée.');
-      if(r.status===429) throw new Error('Limite d'utilisation atteinte. Attendez quelques secondes et réessayez.');
+      if(r.status===401) throw new Error('Clé API invalide. Vérifiez votre clé OpenAI dans le panneau admin.');
+      if(r.status===429) throw new Error('Limite d'utilisation atteinte ou crédits insuffisants. Vérifiez votre compte OpenAI.');
+      if(r.status===403) throw new Error('Accès refusé. Vérifiez votre clé API OpenAI.');
       throw new Error(msg);
     }
 
     const data=await r.json();
-    const txt=data.content?.map(b=>b.text||'').join('')||'';
+    const txt=data.choices?.[0]?.message?.content||'{}';
     const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
 
     // Apply AI selections to UI
