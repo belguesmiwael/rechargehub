@@ -309,7 +309,7 @@ h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif}
 </div>
 
 <!-- ══ FORM ══ -->
-<div id="formView">
+<div id="formView" style="display:none!important">
   <div class="form-card">
     <h2>🚀 Votre démo gratuite</h2>
     <p class="sub">Décrivez votre business en 2 minutes</p>
@@ -406,7 +406,7 @@ h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif}
       <div class="ic"><h4>📋 Votre demande</h4><div id="leadInfo"></div></div>
 
       <div style="text-align:center;padding:8px 0">
-        <a href="/client?demo=1" style="font-size:.78rem;color:var(--ac)">+ Nouvelle demande</a>
+        <a href="/client?demo=1" style="font-size:.78rem;color:var(--ac)">+ Nouvelle estimation</a>
       </div>
     </div>
 
@@ -619,21 +619,52 @@ auth.onAuthStateChanged(async u=>{
 
   sessionStorage.removeItem('bz_goto_form');
   try{
+    // Check existing leads
     const ex=await db.collection('leads').where('userId','==',u.uid).limit(1).get();
     let hasLeads=!ex.empty;
     if(!hasLeads&&u.email){
       const byEmail=await db.collection('leads').where('userEmail','==',u.email).limit(1).get();
       if(!byEmail.empty){
         hasLeads=true;
-        // link
         const batch=db.batch();
         byEmail.docs.forEach(d=>{if(!d.data().userId)batch.update(d.ref,{userId:u.uid})});
         await batch.commit().catch(()=>{});
       }
     }
-    if(hasLeads&&!wantsDemo){setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);}
-    else{setFormUser(u);showView('formView');}
-  }catch(e){console.warn(e);if(wantsDemo){setFormUser(u);showView('formView');}else{setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);}}
+    // If client has data from estimateur → create lead automatically
+    const _pack=sessionStorage.getItem('bz_pack')||'';
+    const _prompt=sessionStorage.getItem('bz_prompt')||'';
+    const _feats=sessionStorage.getItem('bz_features')||'';
+    const _complexity=sessionStorage.getItem('bz_complexity')||'';
+    const _monetize=sessionStorage.getItem('bz_monetize')||'0';
+    if(!hasLeads&&_pack){
+      // Auto-create lead from estimateur
+      const ref=await db.collection('leads').add({
+        name:u.displayName||name,
+        phone:u.phoneNumber||'',
+        type:'À définir',
+        categories:_feats?JSON.parse(_feats).join(', '):'',
+        description:'',
+        userId:u.uid,userEmail:u.email||null,userPhone:u.phoneNumber||null,
+        pack:_pack,packLabel:PACK_LABELS[_pack]||'',
+        claudePrompt:_prompt,
+        features:_feats?JSON.parse(_feats):[],
+        complexity:_complexity,
+        monetize:_monetize==='1',
+        status:'new',lang:'fr',
+        createdAt:FS.serverTimestamp()
+      });
+      await db.collection('messages').add({leadId:ref.id,userId:u.uid,from:'system',type:'system',
+        text:'Demande reçue !'+(PACK_LABELS[_pack]?' Pack '+PACK_LABELS[_pack]+'.':'')+' L\'équipe BizFlow va vous contacter dans les 24 heures.',
+        createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
+      ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize'].forEach(k=>sessionStorage.removeItem(k));
+    }
+    // Always go to dashboard
+    setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);
+  }catch(e){
+    console.warn(e);
+    setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);
+  }
 });
 
 /* ══ FORM SUBMIT ══ */
