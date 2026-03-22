@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimateur · App Sur Mesure</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07090f;
+  --s1:#0c1018;
+  --s2:#111622;
+  --s3:#16202f;
+  --border:#1b2840;
+  --border2:#243550;
+  --c-cyan:#00d4ff;
+  --c-violet:#7c3aed;
+  --c-green:#10b981;
+  --c-amber:#f59e0b;
+  --c-rose:#f43f5e;
+  --text:#dde6f5;
+  --muted:#4d6585;
+  --muted2:#8aa0be;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 90% 45% at 15% -5%,rgba(0,212,255,.055) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 40% at 85% 105%,rgba(124,58,237,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 30% at 50% 60%,rgba(16,185,129,.025) 0%,transparent 60%);
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+
+/* HEADER */
+header{padding:52px 0 36px;text-align:center}
+.live-badge{display:inline-flex;align-items:center;gap:9px;background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.18);border-radius:100px;padding:7px 18px;font-size:11.5px;font-weight:600;letter-spacing:.07em;color:var(--c-cyan);text-transform:uppercase;margin-bottom:22px}
+.dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--c-cyan);animation:dpulse 1.8s infinite;flex-shrink:0}
+@keyframes dpulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,212,255,.5)}50%{opacity:.6;box-shadow:0 0 0 5px rgba(0,212,255,0)}}
+h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5.5vw,50px);font-weight:900;line-height:1.06;letter-spacing:-.025em;margin-bottom:18px}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--c-cyan),#5bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{color:var(--muted2);font-size:15.5px;max-width:560px;margin:0 auto;line-height:1.7}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:22px;padding:30px;margin-bottom:18px;position:relative;overflow:hidden;transition:border-color .3s}
+.card-shine{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);opacity:0;transition:opacity .35s}
+.card:hover{border-color:rgba(0,212,255,.18)}.card:hover .card-shine{opacity:1}
+.c-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.c-title .ico{font-size:19px}
+.stepn{min-width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);color:var(--c-cyan);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif}
+.c-title .rhint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
+
+/* TEXTAREA */
+textarea{width:100%;min-height:106px;resize:vertical;background:var(--s2);border:1px solid var(--border);border-radius:13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:14px 16px;outline:none;transition:border-color .25s,box-shadow .25s}
+textarea:focus{border-color:var(--c-cyan);box-shadow:0 0 0 3px rgba(0,212,255,.07)}
+textarea::placeholder{color:var(--muted)}
+
+/* AI BUTTON */
+.btn-ai{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;width:100%;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(124,58,237,.12));border:1px solid rgba(0,212,255,.3);border-radius:13px;padding:14px 24px;color:var(--c-cyan);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s;letter-spacing:.025em}
+.btn-ai:hover:not(:disabled){background:linear-gradient(135deg,rgba(0,212,255,.17),rgba(124,58,237,.2));transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,255,.1)}
+.btn-ai:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* SECTION LABEL */
+.slbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:22px 0 11px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px}
+.feat-item{background:var(--s2);border:1px solid var(--border);border-radius:13px;padding:12px 14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:3px;position:relative;user-select:none}
+.feat-item:hover{border-color:rgba(0,212,255,.22);background:rgba(0,212,255,.03)}
+.feat-item.sel{border-color:var(--c-cyan);background:rgba(0,212,255,.07);box-shadow:0 0 0 1px rgba(0,212,255,.12)}
+.feat-item.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--c-cyan);font-size:12px;font-weight:800}
+.feat-name{font-size:13px;font-weight:500;padding-right:18px}
+.feat-price{font-size:12px;color:var(--c-cyan);font-weight:600}
+
+/* COMPLEXITY */
+.comp-row{display:flex;gap:10px;flex-wrap:wrap}
+.comp-btn{flex:1;min-width:90px;padding:13px 10px;border-radius:13px;background:var(--s2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;transition:all .2s;text-align:center}
+.comp-btn .extra{font-size:11px;opacity:.6;margin-top:3px;font-weight:400;font-family:'DM Sans',sans-serif}
+.comp-btn:hover{border-color:rgba(255,255,255,.15)}
+.comp-btn.act.simple{border-color:var(--c-green);background:rgba(16,185,129,.1);color:var(--c-green)}
+.comp-btn.act.moyenne{border-color:var(--c-amber);background:rgba(245,158,11,.1);color:var(--c-amber)}
+.comp-btn.act.avancee{border-color:var(--c-rose);background:rgba(244,63,94,.1);color:var(--c-rose)}
+
+/* LOADER */
+.loader{display:none;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-top:12px}
+.loader.on{display:flex}
+.spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--c-cyan);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-note{margin-top:14px;padding:13px 16px;border-radius:13px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);font-size:13px;color:#c4b5fd;line-height:1.65;display:none}
+.ai-note strong{color:#a78bfa}
+
+/* DIVIDER */
+.div{border:none;border-top:1px solid var(--border);margin:24px 0}
+
+/* ═══ RESULTS ═══ */
+.results{display:none;animation:fadeUp .45s ease}
+.results.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* PRICE BAR */
+.price-bar{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(124,58,237,.07));border:1px solid rgba(0,212,255,.22);border-radius:22px;padding:28px 34px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:22px}
+.price-main .amt{font-family:'Syne',sans-serif;font-size:clamp(44px,8vw,68px);font-weight:900;color:var(--c-cyan);line-height:1;letter-spacing:-.03em}
+.price-main .lbl{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.price-stats{display:flex;gap:24px;flex-wrap:wrap;margin-left:auto}
+.pstat{text-align:center}
+.pstat .v{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
+.pstat .l{font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+
+/* SELECTED TAGS */
+.sel-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.sel-tag{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.18);border-radius:8px;padding:4px 11px;font-size:12px;color:var(--c-cyan)}
+
+/* MONETIZE TOGGLE */
+.monetize-toggle{background:linear-gradient(135deg,rgba(245,158,11,.07),rgba(244,63,94,.05));border:1px solid rgba(245,158,11,.25);border-radius:18px;padding:20px 24px;margin-bottom:22px;cursor:pointer;transition:all .25s;user-select:none}
+.monetize-toggle:hover{border-color:rgba(245,158,11,.4)}
+.mt-row{display:flex;align-items:center;gap:16px}
+.mt-icon{width:44px;height:44px;border-radius:12px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mt-text .mt-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--c-amber)}
+.mt-text .mt-sub{font-size:13px;color:var(--muted2);margin-top:2px}
+.mt-switch{margin-left:auto;width:46px;height:26px;background:var(--border);border-radius:100px;position:relative;transition:background .25s;flex-shrink:0}
+.mt-switch::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.monetize-toggle.active .mt-switch{background:var(--c-amber)}
+.monetize-toggle.active .mt-switch::after{transform:translateX(20px)}
+
+/* MARKETPLACE ADDON */
+.marketplace-addon{background:linear-gradient(135deg,rgba(244,63,94,.04),rgba(245,158,11,.04));border:1px solid rgba(245,158,11,.2);border-radius:18px;padding:24px;margin-bottom:22px;display:none;animation:fadeUp .35s ease}
+.marketplace-addon.show{display:block}
+.ma-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--c-amber);font-family:'Syne',sans-serif;letter-spacing:.06em;margin-bottom:12px}
+.ma-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--c-amber);margin-bottom:10px}
+.ma-desc{font-size:13.5px;color:var(--muted2);line-height:1.7;margin-bottom:20px}
+.revenue-calc{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.rc-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rc-slider-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.rc-slider-row label{font-size:12px;color:var(--muted);width:170px;flex-shrink:0}
+input[type=range]{flex:1;min-width:100px;accent-color:var(--c-amber);cursor:pointer;height:4px}
+.rc-val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--c-amber);min-width:55px;text-align:right}
+.revenue-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px}
+.rev-box{background:var(--s3);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.rev-box .rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800}
+.rev-box .rl{font-size:11px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.rev-box.total .rv{color:var(--text)}
+.rev-box.client .rv{color:var(--c-green)}
+.rev-box.platform .rv{color:var(--c-amber)}
+.rev-example{margin-top:14px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;font-size:13px;color:var(--muted2)}
+.rev-example strong{color:var(--c-green)}
+
+/* PACKS */
+.packs-header{text-align:center;margin-bottom:24px}
+.packs-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:900;margin-bottom:6px}
+.packs-sub{color:var(--muted2);font-size:14px}
+.packs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+
+.pack{background:var(--s1);border:1px solid var(--border);border-radius:22px;padding:26px 22px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer;display:flex;flex-direction:column}
+.pack-top-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:22px 22px 0 0}
+.pack.essentiel .pack-top-bar{background:linear-gradient(90deg,var(--c-green),#34d399)}
+.pack.pro .pack-top-bar{background:linear-gradient(90deg,var(--c-cyan),var(--c-violet))}
+.pack.partenaire .pack-top-bar{background:linear-gradient(90deg,var(--c-amber),var(--c-rose))}
+.pack:hover{transform:translateY(-4px)}
+.pack.essentiel:hover,.pack.essentiel.chosen{border-color:rgba(16,185,129,.4);box-shadow:0 8px 32px rgba(16,185,129,.08)}
+.pack.pro:hover,.pack.pro.chosen{border-color:rgba(0,212,255,.35);box-shadow:0 8px 32px rgba(0,212,255,.1)}
+.pack.partenaire:hover,.pack.partenaire.chosen{border-color:rgba(245,158,11,.4);box-shadow:0 8px 32px rgba(245,158,11,.1)}
+
+.pack-badge{position:absolute;top:14px;right:14px;border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.pack.pro .pack-badge{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--c-cyan)}
+.pack.partenaire .pack-badge{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--c-amber)}
+
+.pack-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.pack.essentiel .pack-icon{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)}
+.pack.pro .pack-icon{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25)}
+.pack.partenaire .pack-icon{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25)}
+
+.pack-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:4px}
+.pack.essentiel .pack-name{color:var(--c-green)}
+.pack.pro .pack-name{color:var(--c-cyan)}
+.pack.partenaire .pack-name{color:var(--c-amber)}
+
+.pack-tagline{font-size:12.5px;color:var(--muted2);margin-bottom:18px;min-height:36px;line-height:1.5}
+
+.pack-price-block{margin-bottom:18px;padding:14px;background:rgba(255,255,255,.025);border-radius:12px;border:1px solid var(--border)}
+.pack-setup{font-family:'Syne',sans-serif;font-size:26px;font-weight:900;color:var(--text);line-height:1}
+.pack-setup .unit{font-size:13px;font-weight:400;color:var(--muted);margin-left:4px}
+.pack-monthly{font-size:12px;color:var(--muted2);margin-top:5px}
+.pack-market-price{font-size:11.5px;color:var(--c-amber);margin-top:3px;display:none}
+
+.pack-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;flex:1}
+.pack-features li{font-size:12.5px;display:flex;align-items:flex-start;gap:8px;line-height:1.45;color:var(--muted2)}
+.pack-features li .ck{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0px;font-size:9px;font-weight:800}
+.pack.essentiel .pack-features li .ck{background:rgba(16,185,129,.15);color:var(--c-green)}
+.pack.pro .pack-features li .ck{background:rgba(0,212,255,.12);color:var(--c-cyan)}
+.pack.partenaire .pack-features li .ck{background:rgba(245,158,11,.12);color:var(--c-amber)}
+.pack-features li.no .ck{background:rgba(255,255,255,.05);color:var(--muted)}
+
+.pack-cta{width:100%;padding:12px;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:none;margin-top:auto}
+.pack.essentiel .pack-cta{background:rgba(16,185,129,.14);color:var(--c-green);border:1px solid rgba(16,185,129,.3)}
+.pack.essentiel .pack-cta:hover{background:rgba(16,185,129,.24)}
+.pack.pro .pack-cta{background:linear-gradient(135deg,rgba(0,212,255,.14),rgba(124,58,237,.14));color:var(--c-cyan);border:1px solid rgba(0,212,255,.3)}
+.pack.pro .pack-cta:hover{background:linear-gradient(135deg,rgba(0,212,255,.24),rgba(124,58,237,.24))}
+.pack.partenaire .pack-cta{background:rgba(245,158,11,.14);color:var(--c-amber);border:1px solid rgba(245,158,11,.3)}
+.pack.partenaire .pack-cta:hover{background:rgba(245,158,11,.24)}
+.pack.chosen .pack-cta{filter:brightness(1.15);transform:none}
+
+/* INFO BOX */
+.info-box{background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.12);border-radius:16px;padding:20px 22px;margin-bottom:22px;font-size:13.5px;color:var(--muted2);line-height:1.75}
+.info-box strong{color:var(--c-cyan)}
+
+/* ADMIN */
+.admin-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:500;background:none;border:none;margin-bottom:18px;transition:color .2s;padding:0}
+.admin-toggle:hover{color:var(--text)}.admin-toggle.open svg{transform:rotate(180deg)}
+.admin-toggle svg{transition:transform .3s}
+.admin-panel{display:none;background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:26px;margin-bottom:18px;animation:fadeUp .3s ease}
+.admin-panel.open{display:block}
+.price-inputs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.pf{display:flex;flex-direction:column;gap:5px}
+.pf label{font-size:11.5px;color:var(--muted)}
+.pf input{background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s;width:100%}
+.pf input:focus{border-color:var(--c-cyan)}
+.btn-save{margin-top:16px;padding:10px 22px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);border-radius:10px;color:var(--c-cyan);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif}
+.btn-save:hover{background:rgba(0,212,255,.18)}
+.price-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px;grid-column:1/-1}
+.api-key-block{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;grid-column:1/-1}
+.api-key-block .api-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#a78bfa;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.api-key-block .api-hint{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.55}
+.api-key-block .api-hint a{color:var(--c-cyan);text-decoration:none}
+.api-key-block .api-hint a:hover{text-decoration:underline}
+.api-key-row{display:flex;gap:10px;align-items:center}
+.api-key-row input{flex:1;background:var(--s3);border:1px solid rgba(124,58,237,.3);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 13px;outline:none;transition:border-color .2s}
+.api-key-row input:focus{border-color:#7c3aed}
+.api-key-row input::placeholder{color:var(--muted);letter-spacing:.04em}
+.btn-api-save{padding:10px 16px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:10px;color:#a78bfa;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Syne',sans-serif}
+.btn-api-save:hover{background:rgba(124,58,237,.25)}
+.api-status{font-size:11.5px;margin-top:8px;display:flex;align-items:center;gap:6px}
+.api-status.ok{color:var(--c-green)}.api-status.missing{color:var(--c-rose)}
+.no-key-banner{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.25);border-radius:13px;padding:13px 16px;margin-top:12px;font-size:13px;color:#fca5a5;display:none;line-height:1.6}
+.no-key-banner strong{color:var(--c-rose)}
+
+footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+@media(max-width:720px){
+  .packs-grid{grid-template-columns:1fr}
+  .price-bar{flex-direction:column}
+  .price-stats{margin-left:0}
+  .revenue-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+  header{padding:36px 0 24px}
+  .card{padding:20px}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .revenue-grid{grid-template-columns:1fr}
+  .rc-slider-row label{width:auto;flex:none;width:100%}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="live-badge"><div class="dot-pulse"></div>IA · Estimation Instantanée</div>
+  <h1>Votre application,<br>votre <em>investissement.</em></h1>
+  <p class="sub">Décrivez votre projet. Notre IA analyse, calcule et vous propose le meilleur pack — y compris la possibilité de <strong style="color:var(--c-amber)">monétiser votre application.</strong></p>
+</header>
+
+<button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+  Modifier la grille tarifaire (admin)
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+
+<div class="admin-panel" id="adminPanel">
+  <div class="c-title"><span class="ico">⚙️</span> Grille tarifaire &amp; Configuration</div>
+
+  <!-- API KEY BLOCK -->
+  <div class="api-key-block">
+    <div class="api-title">🔑 Clé API Anthropic (pour l'analyse IA)</div>
+    <div class="api-hint">
+      Nécessaire pour faire fonctionner l'analyse IA hors de Claude.ai (téléphone, site web).<br>
+      Obtenez votre clé sur <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> · Elle est sauvegardée localement, jamais envoyée ailleurs.
+    </div>
+    <div class="api-key-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button class="btn-api-save" onclick="saveApiKey()">Sauvegarder</button>
+    </div>
+    <div class="api-status" id="apiStatus"></div>
+  </div>
+
+  <div class="price-inputs" id="priceInputs"></div>
+  <button class="btn-save" onclick="savePrices()">💾 Sauvegarder les prix</button>
+  <div style="font-size:12px;color:var(--muted);margin-top:10px">Sauvegardé dans votre navigateur.</div>
+</div>
+
+<!-- STEP 1 -->
+<div class="card">
+  <div class="card-shine"></div>
+  <div class="c-title"><div class="stepn">1</div><span class="ico">✍️</span>Décrivez votre application</div>
+  <textarea id="descInput" placeholder="Ex : Je veux une app pour gérer mon stock, mes ventes et mes clients avec rapports hebdomadaires. Mon équipe est de 5 personnes, j'ai besoin d'un accès mobile et d'un design professionnel..."></textarea>
+  <button class="btn-ai" id="aiBtn" onclick="analyzeWithAI()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Analyser avec l'IA → Générer mon estimation
+  </button>
+  <div class="no-key-banner" id="noKeyBanner">
+    <strong>⚠️ Clé API manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em> ci-dessus, saisissez votre clé API Anthropic et sauvegardez. Sans clé, sélectionnez les modules manuellement.
+  </div>
+  <div class="loader" id="loader"><div class="spin"></div><span id="loaderTxt">Analyse en cours…</span></div>
+  <div class="ai-note" id="aiNote"></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card">
+  <div class="card-shine"></div>
+  <div class="c-title"><div class="stepn">2</div><span class="ico">🧩</span>Fonctionnalités<span class="rhint">Cliquez pour sélectionner</span></div>
+  <div class="slbl">🔹 Base</div>
+  <div class="feat-grid" id="g-base"></div>
+  <div class="slbl">🔹 Business</div>
+  <div class="feat-grid" id="g-business"></div>
+  <div class="slbl">🔹 Avancées</div>
+  <div class="feat-grid" id="g-avancees"></div>
+  <div class="slbl">🔹 Mobile</div>
+  <div class="feat-grid" id="g-mobile"></div>
+  <div class="slbl">🔹 Extras</div>
+  <div class="feat-grid" id="g-extras"></div>
+  <div class="div"></div>
+  <div class="c-title" style="margin-bottom:14px"><span class="ico">⚡</span>Niveau de complexité</div>
+  <div class="comp-row">
+    <button class="comp-btn simple act" onclick="setComp('simple',this)">🟢 Simple<div class="extra" id="ex-simple">+0 DT</div></button>
+    <button class="comp-btn moyenne" onclick="setComp('moyenne',this)">🟡 Moyenne<div class="extra" id="ex-moyenne">+100 DT</div></button>
+    <button class="comp-btn avancee" onclick="setComp('avancee',this)">🔴 Avancée<div class="extra" id="ex-avancee">+300 DT</div></button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results" id="results">
+
+  <div class="price-bar">
+    <div class="price-main">
+      <div class="amt" id="rTotal">0 DT</div>
+      <div class="lbl">Prix estimatif de base · non contractuel</div>
+    </div>
+    <div class="price-stats">
+      <div class="pstat"><div class="v" id="rDelai">—</div><div class="l">⏱ Délai</div></div>
+      <div class="pstat"><div class="v" id="rMaint">—</div><div class="l">🔄 /mois</div></div>
+      <div class="pstat"><div class="v" id="rMods">0</div><div class="l">🧩 Modules</div></div>
+    </div>
+  </div>
+
+  <div class="sel-tags" id="selTags"></div>
+
+  <!-- MONETIZE TOGGLE -->
+  <div class="monetize-toggle" id="monetizeToggle" onclick="toggleMonetize()">
+    <div class="mt-row">
+      <div class="mt-icon">💰</div>
+      <div class="mt-text">
+        <div class="mt-title">Transformer mon app en source de revenu</div>
+        <div class="mt-sub">Publiez votre application sur notre plateforme et partagez les revenus</div>
+      </div>
+      <div class="mt-switch"></div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE ADDON -->
+  <div class="marketplace-addon" id="marketplaceAddon">
+    <div class="ma-tag">🔥 OPTION MARKETPLACE</div>
+    <div class="ma-title">Votre app → Un produit SaaS vendu à d'autres entreprises</div>
+    <p class="ma-desc">Nous intégrons votre application dans notre plateforme et la proposons à d'autres entreprises. Vous touchez <strong style="color:var(--c-green)">60–70%</strong> des revenus générés. Nous conservons <strong style="color:var(--c-amber)">30–40%</strong> pour la maintenance et la distribution.</p>
+    <div class="revenue-calc">
+      <div class="rc-title">📊 Simulateur de revenus mensuels</div>
+      <div class="rc-slider-row">
+        <label>Nombre de clients abonnés</label>
+        <input type="range" id="sliderClients" min="1" max="50" value="10" oninput="calcRevenue()">
+        <span class="rc-val" id="valClients">10</span>
+      </div>
+      <div class="rc-slider-row">
+        <label>Prix abonnement / client</label>
+        <input type="range" id="sliderPrice" min="20" max="150" value="30" step="5" oninput="calcRevenue()">
+        <span class="rc-val" id="valPrice">30 DT</span>
+      </div>
+      <div class="revenue-grid">
+        <div class="rev-box total"><div class="rv" id="rvTotal">300 DT</div><div class="rl">Revenu total /mois</div></div>
+        <div class="rev-box client"><div class="rv" id="rvClient">195 DT</div><div class="rl">Votre part (65%)</div></div>
+        <div class="rev-box platform"><div class="rv" id="rvPlatform">105 DT</div><div class="rl">Notre commission</div></div>
+      </div>
+      <div class="rev-example" id="revExample">
+        Si <strong>10 entreprises</strong> utilisent votre app à <strong>30 DT/mois</strong> → vous gagnez <strong>195 DT/mois</strong> passivement.
+      </div>
+    </div>
+  </div>
+
+  <!-- PACKS -->
+  <div class="packs-header">
+    <div class="packs-title">📦 Choisissez votre formule</div>
+    <div class="packs-sub">Trois niveaux selon votre objectif — setup unique + abonnement mensuel</div>
+  </div>
+
+  <div class="packs-grid">
+
+    <!-- ESSENTIEL -->
+    <div class="pack essentiel" onclick="choosePack(this,'essentiel')">
+      <div class="pack-top-bar"></div>
+      <div class="pack-icon">🟢</div>
+      <div class="pack-name">ESSENTIEL</div>
+      <div class="pack-tagline">Pour petits business · Usage privé interne</div>
+      <div class="pack-price-block">
+        <div class="pack-setup" id="setup-essentiel">— DT<span class="unit">setup</span></div>
+        <div class="pack-monthly" id="monthly-essentiel">+ 20 DT / mois</div>
+      </div>
+      <ul class="pack-features">
+        <li><span class="ck">✓</span>App personnalisée complète</li>
+        <li><span class="ck">✓</span>Fonctionnalités sélectionnées</li>
+        <li><span class="ck">✓</span>Support technique inclus</li>
+        <li><span class="ck">✓</span>Hébergement + domaine</li>
+        <li class="no"><span class="ck">✕</span>Revente non incluse</li>
+        <li class="no"><span class="ck">✕</span>Marketplace non incluse</li>
+      </ul>
+      <div style="font-size:11px;color:#10b981;text-align:center;margin-bottom:9px;opacity:.85">💳 Paiement après validation de votre démo</div><button class="pack-cta" onclick="event.stopPropagation();choosePack(this.closest('.pack'),'essentiel')">Choisir Essentiel</button>
+    </div>
+
+    <!-- PRO -->
+    <div class="pack pro" onclick="choosePack(this,'pro')">
+      <div class="pack-top-bar"></div>
+      <div class="pack-badge">⭐ RECOMMANDÉ</div>
+      <div class="pack-icon">🔵</div>
+      <div class="pack-name">PRO</div>
+      <div class="pack-tagline">Pour optimiser votre business · Option monétisation</div>
+      <div class="pack-price-block">
+        <div class="pack-setup" id="setup-pro">— DT<span class="unit">setup</span></div>
+        <div class="pack-monthly" id="monthly-pro">+ 30–50 DT / mois</div>
+        <div class="pack-market-price" id="market-price-pro">+ activation marketplace incluse</div>
+      </div>
+      <ul class="pack-features">
+        <li><span class="ck">✓</span>Tout le pack Essentiel</li>
+        <li><span class="ck">✓</span>Design premium inclus</li>
+        <li><span class="ck">✓</span>Optimisation performances</li>
+        <li><span class="ck">✓</span>Tableau de bord avancé</li>
+        <li><span class="ck">✓</span>Option monétisation activable</li>
+        <li id="pro-mfeat" style="display:none"><span class="ck">✓</span><span style="color:var(--c-amber)">Marketplace activée !</span></li>
+      </ul>
+      <div style="font-size:11px;color:#10b981;text-align:center;margin-bottom:9px;opacity:.85">💳 Paiement après validation de votre démo</div><button class="pack-cta" onclick="event.stopPropagation();choosePack(this.closest('.pack'),'pro')">Choisir Pro ⭐</button>
+    </div>
+
+    <!-- PARTENAIRE -->
+    <div class="pack partenaire" onclick="choosePack(this,'partenaire')">
+      <div class="pack-top-bar"></div>
+      <div class="pack-badge">🔥 INNOVATION</div>
+      <div class="pack-icon">🔴</div>
+      <div class="pack-name">PARTENAIRE</div>
+      <div class="pack-tagline">Transformez votre app en revenu passif mensuel</div>
+      <div class="pack-price-block">
+        <div class="pack-setup" id="setup-partenaire">— DT<span class="unit">setup</span></div>
+        <div class="pack-monthly" id="monthly-partenaire">+ 50–100 DT / mois</div>
+        <div class="pack-market-price" id="market-price-partenaire" style="display:block">+ 60–70% des revenus marketplace</div>
+      </div>
+      <ul class="pack-features">
+        <li><span class="ck">✓</span>Tout le pack Pro</li>
+        <li><span class="ck">✓</span>Publication sur notre plateforme</li>
+        <li><span class="ck">✓</span>Vous gagnez 60–70% des revenus</li>
+        <li><span class="ck">✓</span>Nous gérons la vente pour vous</li>
+        <li><span class="ck">✓</span>Évolution vers SaaS possible</li>
+        <li><span class="ck">✓</span>Accompagnement stratégique</li>
+      </ul>
+      <div style="font-size:11px;color:#10b981;text-align:center;margin-bottom:9px;opacity:.85">💳 Paiement après validation de votre démo</div><button class="pack-cta" onclick="event.stopPropagation();choosePack(this.closest('.pack'),'partenaire')">🔥 Devenir Partenaire</button>
+    </div>
+
+  </div>
+
+  <div class="info-box">
+    💡 <strong>Pourquoi le Pack Partenaire ?</strong> Si votre application peut être utile à d'autres entreprises du même secteur, nous pouvons la proposer sur notre plateforme. Vous ne vendez plus seulement un outil — vous vendez <strong>un système qui génère des revenus passifs</strong> pendant que vous travaillez.
+  </div>
+
+</div><!-- /results -->
+
+<footer>Estimation non contractuelle · Prix en Dinar Tunisien (DT)</footer>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const DEFAULT_PRICES = {
+  "Authentification":50,"Dashboard":50,
+  "Gestion stock":100,"Gestion ventes":100,"Gestion dettes":80,
+  "Gestion clients":80,"Rapports / statistiques":100,
+  "Multi utilisateurs":120,"Notifications":80,"QR code":50,
+  "Scan produits":100,"App Android":150,
+  "Design premium":100,"Multilingue":80,"Mode hors-ligne":120,
+  "_comp_moyenne":100,"_comp_avancee":300,
+  "_maint_min":20,"_maint_max":50,
+  "_marketplace_activation":150,
+  "_pack_essentiel_pct":100,
+  "_pack_pro_pct":125,
+  "_pack_partenaire_pct":160,
+};
+const GROUPS = {
+  base:["Authentification","Dashboard"],
+  business:["Gestion stock","Gestion ventes","Gestion dettes","Gestion clients","Rapports / statistiques"],
+  avancees:["Multi utilisateurs","Notifications","QR code","Scan produits"],
+  mobile:["App Android"],
+  extras:["Design premium","Multilingue","Mode hors-ligne"],
+};
+
+let prices={}, selected=new Set(), complexity="simple", monetize=false;
+let apiKey='';
+
+function loadApiKey(){
+  apiKey=localStorage.getItem('ep3_apikey')||'';
+  updateApiStatus();
+  // Show/hide no-key banner based on key presence
+  const banner=document.getElementById('noKeyBanner');
+  if(banner) banner.style.display=apiKey?'none':'block';
+}
+
+function saveApiKey(){
+  const val=document.getElementById('apiKeyInput').value.trim();
+  if(!val){ alert('Entrez une clé API valide (commence par sk-ant-)'); return; }
+  apiKey=val;
+  localStorage.setItem('ep3_apikey',apiKey);
+  updateApiStatus();
+  document.getElementById('noKeyBanner').style.display='none';
+  const btn=document.querySelector('.btn-api-save');
+  btn.textContent='✅ Sauvegardée !';
+  setTimeout(()=>btn.textContent='Sauvegarder',2000);
+}
+
+function updateApiStatus(){
+  const el=document.getElementById('apiStatus');
+  if(!el) return;
+  if(apiKey&&apiKey.startsWith('sk-')){
+    el.className='api-status ok';
+    el.innerHTML='✅ Clé configurée · ••••'+apiKey.slice(-6);
+    // pre-fill masked
+    const inp=document.getElementById('apiKeyInput');
+    if(inp&&!inp.value) inp.placeholder='••••••••••••'+apiKey.slice(-6);
+  } else {
+    el.className='api-status missing';
+    el.innerHTML='❌ Aucune clé configurée — l\'analyse IA ne fonctionnera pas';
+  }
+}
+
+function loadPrices(){
+  try{ const s=JSON.parse(localStorage.getItem('ep3_prices')||'{}'); prices={...DEFAULT_PRICES,...s}; }
+  catch{ prices={...DEFAULT_PRICES}; }
+}
+loadPrices();
+
+// ═══════════ BUILD UI ═══════════
+function buildGrids(){
+  Object.entries(GROUPS).forEach(([g,feats])=>{
+    document.getElementById('g-'+g).innerHTML=feats.map(f=>`
+      <div class="feat-item${selected.has(f)?' sel':''}" onclick="toggleFeat('${f}',this)">
+        <span class="feat-name">${f}</span>
+        <span class="feat-price">${prices[f]??0} DT</span>
+      </div>`).join('');
+  });
+}
+
+function buildAdmin(){
+  const sections={
+    "— Fonctionnalités":Object.keys(DEFAULT_PRICES).filter(k=>!k.startsWith('_')),
+    "— Complexité":["_comp_moyenne","_comp_avancee"],
+    "— Maintenance":["_maint_min","_maint_max"],
+    "— Marketplace":["_marketplace_activation"],
+    "— Multiplicateurs packs (% du prix de base)":["_pack_essentiel_pct","_pack_pro_pct","_pack_partenaire_pct"],
+  };
+  const labels={
+    "_comp_moyenne":"Complexité Moyenne (+DT)","_comp_avancee":"Complexité Avancée (+DT)",
+    "_maint_min":"Maintenance min DT/mois","_maint_max":"Maintenance max DT/mois",
+    "_marketplace_activation":"Activation Marketplace (+DT)",
+    "_pack_essentiel_pct":"Pack Essentiel (% base)","_pack_pro_pct":"Pack Pro (% base)","_pack_partenaire_pct":"Pack Partenaire (% base)",
+  };
+  let html='';
+  Object.entries(sections).forEach(([title,keys])=>{
+    html+=`<div class="price-section-title">${title}</div>`;
+    html+=keys.map(k=>`<div class="pf"><label>${labels[k]||k}</label>
+      <input type="number" id="pi-${k.replace(/\W/g,'_')}" value="${prices[k]??0}" min="0"></div>`).join('');
+  });
+  document.getElementById('priceInputs').innerHTML=html;
+}
+
+function savePrices(){
+  Object.keys(DEFAULT_PRICES).forEach(k=>{
+    const el=document.getElementById('pi-'+k.replace(/\W/g,'_'));
+    if(el) prices[k]=Number(el.value)||0;
+  });
+  localStorage.setItem('ep3_prices',JSON.stringify(prices));
+  buildGrids(); updateCompLabels(); calculate();
+  const b=document.querySelector('.btn-save');
+  b.textContent='✅ Sauvegardé !';
+  setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);
+}
+
+function updateCompLabels(){
+  document.getElementById('ex-simple').textContent='+0 DT';
+  document.getElementById('ex-moyenne').textContent='+'+(prices._comp_moyenne??100)+' DT';
+  document.getElementById('ex-avancee').textContent='+'+(prices._comp_avancee??300)+' DT';
+}
+
+// ═══════════ INTERACTIONS ═══════════
+function toggleFeat(name,el){
+  selected.has(name)?(selected.delete(name),el.classList.remove('sel')):(selected.add(name),el.classList.add('sel'));
+  calculate();
+}
+
+function setComp(val,btn){
+  complexity=val;
+  document.querySelectorAll('.comp-btn').forEach(b=>{b.classList.remove('act','simple','moyenne','avancee');});
+  btn.classList.add('act',val);
+  calculate();
+}
+
+function toggleMonetize(){
+  monetize=!monetize;
+  document.getElementById('monetizeToggle').classList.toggle('active',monetize);
+  document.getElementById('marketplaceAddon').classList.toggle('show',monetize);
+  document.getElementById('pro-mfeat').style.display=monetize?'flex':'none';
+  document.getElementById('market-price-pro').style.display=monetize?'block':'none';
+  if(monetize) calcRevenue();
+  calculate();
+}
+
+function choosePack(el,name){
+  document.querySelectorAll('.pack').forEach(p=>p.classList.remove('chosen'));
+  el.classList.add('chosen');
+  const labels={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
+  sessionStorage.setItem('bz_pack',name);
+  sessionStorage.setItem('bz_pack_label',labels[name]||name);
+  showContinueBanner(name, labels[name]||name);
+}
+
+function generateClaudePrompt(pack){
+  const packDesc={
+    essentiel:'App simple pour usage privé, sans revente.',
+    pro:'App complète avec toutes les fonctionnalités, optimisée pour le business.',
+    partenaire:'App sur mesure publiable sur la plateforme BizFlow TN pour générer des revenus passifs.'
+  };
+  const feats=[...selected].join(', ')||'fonctionnalités de base';
+  const comp=complexity==='simple'?'Simple':complexity==='moyenne'?'Moyenne':'Avancée';
+  return `Tu es un expert en développement d'applications web sur mesure pour les PME tunisiennes.
+
+== PROJET BIZFLOW TN ==
+Pack : ${pack} — ${packDesc[pack]||''}
+Complexité : ${comp}
+Option monétisation : ${monetize?'Oui':'Non'}
+
+== FONCTIONNALITÉS ==
+${feats}
+
+== DÉVELOPPEMENT ==
+Crée une application web complète :
+1. Interface moderne responsive (mobile-first)
+2. Thème dark/light, design glassmorphism
+3. Authentification Firebase Auth
+4. Dashboard avec statistiques temps réel
+5. Toutes les fonctionnalités listées
+6. Firebase Firestore comme base de données
+7. Support arabe/français
+${monetize?'8. Système de monétisation via plateforme BizFlow TN':''}
+
+== STACK ==
+HTML5 + CSS3 + JS vanilla (fichier unique autonome) + Firebase
+
+== LIVRABLE ==
+Fichier HTML unique, complet, prêt à déployer.`;
+}
+
+function showContinueBanner(pack, label){
+  let banner=document.getElementById('continueBanner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='continueBanner';
+    Object.assign(banner.style,{
+      position:'fixed',bottom:'0',left:'0',right:'0',zIndex:'999',
+      background:'rgba(8,12,24,.96)',borderTop:'1px solid rgba(108,143,255,.3)',
+      backdropFilter:'blur(18px)',WebkitBackdropFilter:'blur(18px)',
+      padding:'14px 22px',display:'flex',alignItems:'center',
+      justifyContent:'space-between',gap:'14px',flexWrap:'wrap',
+      animation:'bsUp .35s cubic-bezier(.34,1.3,.64,1)'
+    });
+    document.body.appendChild(banner);
+    if(!document.getElementById('bsUpStyle')){
+      const s=document.createElement('style');
+      s.id='bsUpStyle';
+      s.textContent='@keyframes bsUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}';
+      document.head.appendChild(s);
+    }
+  }
+  const colors={essentiel:'#34d399',pro:'#6c8fff',partenaire:'#f43f5e'};
+  const col=colors[pack]||'#6c8fff';
+  banner.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:42px;height:42px;border-radius:11px;background:${col}22;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">${label.split(' ')[0]}</div>
+      <div>
+        <div style="font-weight:800;font-size:.9rem;color:#f0efff">Pack <span style="color:${col}">${label}</span> sélectionné</div>
+        <div style="font-size:.75rem;color:rgba(220,218,255,.5);margin-top:2px">💳 Paiement uniquement après validation de votre démo</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;flex-shrink:0">
+      <button onclick="document.getElementById('continueBanner').remove();sessionStorage.removeItem('bz_pack')"
+        style="padding:9px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(220,218,255,.6);font-size:.8rem;cursor:pointer;font-family:inherit">
+        Annuler
+      </button>
+      <button onclick="goToClient('${pack}')"
+        style="padding:9px 22px;border-radius:9px;border:none;background:linear-gradient(135deg,${col},${col}bb);color:#fff;font-weight:800;font-size:.85rem;cursor:pointer;box-shadow:0 4px 18px ${col}55;font-family:inherit">
+        Commencer ma demande →
+      </button>
+    </div>`;
+}
+
+function goToClient(pack){
+  const prompt=generateClaudePrompt(pack);
+  sessionStorage.setItem('bz_pack',pack);
+  sessionStorage.setItem('bz_prompt',prompt);
+  sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
+  sessionStorage.setItem('bz_complexity',complexity);
+  sessionStorage.setItem('bz_monetize',monetize?'1':'0');
+  if(window.parent!==window){
+    window.parent.postMessage({type:'bz_pack_chosen',pack,prompt,features:[...selected],complexity,monetize},'*');
+  }else{
+    window.location.href='client.html?pack='+pack;
+  }
+}
+
+function toggleAdmin(){
+  const p=document.getElementById('adminPanel'),b=document.getElementById('adminToggle');
+  p.classList.toggle('open')&&buildAdmin();
+  b.classList.toggle('open',p.classList.contains('open'));
+  if(p.classList.contains('open')){
+    // restore key in input if saved
+    const inp=document.getElementById('apiKeyInput');
+    if(inp&&apiKey) inp.value=apiKey;
+    updateApiStatus();
+  }
+}
+
+// ═══════════ CALCULATE ═══════════
+function calculate(){
+  let base=0;
+  selected.forEach(f=>base+=prices[f]??0);
+  if(complexity==='moyenne') base+=prices._comp_moyenne??100;
+  if(complexity==='avancee') base+=prices._comp_avancee??300;
+  const n=selected.size;
+  if(n===0){ document.getElementById('results').classList.remove('on'); return; }
+
+  const weeks=Math.max(1,Math.round(n*0.8+(complexity==='simple'?0:complexity==='moyenne'?1:2)));
+  const delai=weeks<=1?'1 sem.':weeks<=4?weeks+' sem.':(Math.ceil(weeks/4))+' mois+';
+  const mMin=prices._maint_min??20, mMax=prices._maint_max??50;
+  const mktCost=monetize?(prices._marketplace_activation??150):0;
+
+  const pE=(prices._pack_essentiel_pct??100)/100;
+  const pP=(prices._pack_pro_pct??125)/100;
+  const pB=(prices._pack_partenaire_pct??160)/100;
+
+  const tE=Math.round(base*pE);
+  const tP=Math.round(base*pP)+mktCost;
+  const tB=Math.round(base*pB)+mktCost;
+
+  document.getElementById('results').classList.add('on');
+  document.getElementById('rTotal').textContent=base.toLocaleString()+' DT';
+  document.getElementById('rDelai').textContent=delai;
+  document.getElementById('rMaint').textContent=mMin+'–'+mMax+' DT';
+  document.getElementById('rMods').textContent=n;
+  document.getElementById('selTags').innerHTML=[...selected].map(f=>`<span class="sel-tag">${f}</span>`).join('');
+
+  document.getElementById('setup-essentiel').innerHTML=tE.toLocaleString()+' DT<span class="unit">setup</span>';
+  document.getElementById('monthly-essentiel').textContent='+ '+mMin+' DT / mois';
+  document.getElementById('setup-pro').innerHTML=tP.toLocaleString()+' DT<span class="unit">setup</span>';
+  document.getElementById('monthly-pro').textContent='+ '+mMin+'–'+mMax+' DT / mois';
+  document.getElementById('setup-partenaire').innerHTML=tB.toLocaleString()+' DT<span class="unit">setup</span>';
+  document.getElementById('monthly-partenaire').textContent='+ '+mMax+'–'+(mMax*2)+' DT / mois';
+
+  /* no auto-scroll */
+}
+
+// ═══════════ REVENUE SIM ═══════════
+function calcRevenue(){
+  const c=+document.getElementById('sliderClients').value;
+  const p=+document.getElementById('sliderPrice').value;
+  document.getElementById('valClients').textContent=c;
+  document.getElementById('valPrice').textContent=p+' DT';
+  const total=c*p, share=Math.round(total*.65), platform=total-share;
+  document.getElementById('rvTotal').textContent=total+' DT';
+  document.getElementById('rvClient').textContent=share+' DT';
+  document.getElementById('rvPlatform').textContent=platform+' DT';
+  document.getElementById('revExample').innerHTML=
+    `Si <strong>${c} entreprise${c>1?'s':''}</strong> utilisent votre app à <strong>${p} DT/mois</strong> → vous gagnez <strong style="color:var(--c-green)">${share} DT/mois</strong> passivement.`;
+}
+
+// ═══════════ AI ═══════════
+async function analyzeWithAI(){
+  const desc=document.getElementById('descInput').value.trim();
+  if(desc.length<8){document.getElementById('descInput').focus();return;}
+
+  // Check API key
+  if(!apiKey||!apiKey.startsWith('sk-')){
+    document.getElementById('noKeyBanner').style.display='block';
+    /* no auto-scroll */
+    return;
+  }
+
+  const btn=document.getElementById('aiBtn'),loader=document.getElementById('loader'),note=document.getElementById('aiNote');
+  btn.disabled=true; loader.classList.add('on'); note.style.display='none';
+  const allFeats=Object.values(GROUPS).flat();
+  const sys=`Tu es expert en développement d'applications sur mesure (marché tunisien).
+Analyse la description et réponds UNIQUEMENT en JSON valide sans aucun texte avant ou après.
+Format exact :
+{"selected":["nom exact"],"complexity":"simple"|"moyenne"|"avancee","monetizable":true|false,"explanation":"2-3 phrases max en français"}
+Fonctionnalités disponibles : ${JSON.stringify(allFeats)}
+monetizable=true si l'app peut être revendue à d'autres entreprises similaires.
+Règles complexity: simple=1-3 modules basiques, moyenne=3-6 modules ou avec auth, avancee=6+ modules ou multi-users/mobile.`;
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key": apiKey,
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
+      },
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1000,system:sys,messages:[{role:"user",content:desc}]})
+    });
+    if(!r.ok){
+      const err=await r.json().catch(()=>({}));
+      throw new Error(err?.error?.message||'HTTP '+r.status);
+    }
+    const data=await r.json();
+    const txt=data.content?.map(c=>c.text||'').join('')||'';
+    const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    selected.clear();
+    (parsed.selected||[]).forEach(f=>{ if(allFeats.includes(f)) selected.add(f); });
+    if(['simple','moyenne','avancee'].includes(parsed.complexity)) complexity=parsed.complexity;
+    buildGrids();
+    document.querySelectorAll('.comp-btn').forEach(b=>{b.classList.remove('act','simple','moyenne','avancee');});
+    const ab=document.querySelector('.comp-btn.'+complexity);
+    if(ab) ab.classList.add('act',complexity);
+    const moneyHint=parsed.monetizable?' <span style="color:var(--c-amber)">💡 Cette app est idéale pour la monétisation — activez l\'option ci-dessous !</span>':'';
+    note.innerHTML=`<strong>🤖 IA :</strong> ${parsed.explanation}${moneyHint}`;
+    note.style.display='block';
+    calculate();
+  } catch(e){
+    note.innerHTML=`<strong>⚠️</strong> Erreur IA : <em>${e.message||'inconnue'}</em>. Vérifiez votre clé API dans le panneau admin ou sélectionnez les modules manuellement.`;
+    note.style.display='block';
+    console.error(e);
+  } finally{ btn.disabled=false; loader.classList.remove('on'); }
+}
+
+document.getElementById('descInput').addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='Enter') analyzeWithAI(); });
+
+buildGrids(); updateCompLabels(); calcRevenue(); loadApiKey();
+
+// ── FIREBASE AUTH ──
+(function(){
+  try{
+    const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
+    firebase.initializeApp(FC);
+    const auth=firebase.auth();
+    auth.onAuthStateChanged(function(u){
+      if(!u) return;
+      const name=(u.displayName||u.email||'').split(' ')[0]||'Client';
+      const badge=document.getElementById('authBadge')||document.createElement('div');
+      badge.id='authBadge';
+      badge.style.cssText='position:fixed;top:14px;right:14px;z-index:800;display:flex;align-items:center;gap:8px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:11px;padding:7px 13px;font-size:.76rem;color:#34d399;cursor:pointer;backdrop-filter:blur(12px)';
+      badge.innerHTML='<span style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#6c8fff,#b07cff);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff">'+(name[0]||'C').toUpperCase()+'</span><span style="font-weight:700">'+name+'</span><span style="opacity:.55"> · connecté</span>';
+      badge.onclick=function(){window.location.href='client.html'};
+      if(!document.getElementById('authBadge')) document.body.appendChild(badge);
+    });
+  }catch(e){console.warn('Firebase init:',e)}
+})();
+
+// ── RESTORE PACK IF COMING FROM INDEX ──
+(function(){
+  const urlPack=new URLSearchParams(location.search).get('pack');
+  const saved=urlPack||sessionStorage.getItem('bz_pack');
+  if(!saved) return;
+  const labels={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
+  sessionStorage.setItem('bz_pack',saved);
+  window.addEventListener('DOMContentLoaded',function(){
+    const el=document.querySelector('.pack.'+saved);
+    if(el){ el.classList.add('chosen'); showContinueBanner(saved,labels[saved]||saved); }
+  });
+})();
+</script>
+</body>
+</html>
