@@ -604,6 +604,7 @@ async function doEmail(){
       const cr=await auth.createUserWithEmailAndPassword(email,pass);
       if(name)await cr.user.updateProfile({displayName:name});
     }else{
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       await auth.signInWithEmailAndPassword(email,pass);
     }
   }catch(e){
@@ -655,28 +656,30 @@ function setFormUser(u){
 /* ══ AUTH STATE ══ */
 let unsubL=null,unsubN=null;
 
+// Set persistence first
+try{auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)}catch(e){}
+
 auth.onAuthStateChanged(async u=>{
   if(!u){showView('authView');return}
 
-  /* Save user profile */
+  /* Save user profile - fire and forget, don't await */
+  db.collection('users').doc(u.uid).set({
+    name:u.displayName||u.email||u.phoneNumber||'Client',
+    email:u.email||null,phone:u.phoneNumber||null,
+    photoURL:u.photoURL||null,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true}).catch(()=>{});
+
   const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
-  try{
-    await db.collection('users').doc(u.uid).set({
-      name:u.displayName||name,email:u.email||null,phone:u.phoneNumber||null,
-      photoURL:u.photoURL||null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-    },{merge:true});
-  }catch(e){}
 
   /* Decide where to go */
   const goForm=wantsDemo||sessionStorage.getItem('bz_goto_form')==='1';
   sessionStorage.removeItem('bz_goto_form');
 
   if(goForm){
-    /* Show form */
     setFormUser(u);
     showView('formView');
   }else{
-    /* Show dashboard */
     setDashUser(u,name);
     showView('dashView');
     loadData(u.uid);
@@ -748,8 +751,14 @@ function updProg(status){const c=SC[status]||SC.new;const p=$('spill');p.textCon
 function loadData(uid){
   $('loadV').style.display='flex';$('mainC').style.display='none';$('noLeadV').style.display='none';
   if(unsubL)unsubL();
-  unsubL=db.collection('leads').where('userId','==',uid).orderBy('createdAt','desc').limit(1)
-    .onSnapshot(snap=>{
+  /* No orderBy → no composite index needed, sort client-side */
+  unsubL=db.collection('leads').where('userId','==',uid)
+    .onSnapshot(rawSnap=>{
+      /* Sort client-side: newest first — no composite index needed */
+      const sorted=[...rawSnap.docs].sort((a,b)=>
+        (b.data().createdAt?.toMillis?.()??0)-(a.data().createdAt?.toMillis?.()??0)
+      );
+      const snap={empty:sorted.length===0,docs:sorted};
       $('loadV').style.display='none';
       if(snap.empty){$('noLeadV').style.display='block';return}
       $('mainC').style.display='block';
@@ -774,12 +783,15 @@ function loadData(uid){
     },e=>{console.error(e);$('loadV').style.display='none';$('noLeadV').style.display='block'});
 
   if(unsubN)unsubN();
-  unsubN=db.collection('notifications').where('userId','==',uid).orderBy('createdAt','desc').limit(20)
+  unsubN=db.collection('notifications').where('userId','==',uid)
     .onSnapshot(snap=>{
+      const sorted=[...snap.docs].sort((a,b)=>
+        (b.data().createdAt?.toMillis?.()??0)-(a.data().createdAt?.toMillis?.()??0)
+      ).slice(0,20);
       const list=$('notifList'),badge=$('nbadge');
-      if(snap.empty){list.innerHTML='<div class="nonotif">Aucune notification</div>';return}
+      if(sorted.length===0){list.innerHTML='<div class="nonotif">Aucune notification</div>';return}
       let ur=0;list.innerHTML='';
-      snap.forEach(doc=>{const n={id:doc.id,...doc.data()};if(!n.read)ur++;
+      sorted.forEach(doc=>{const n={id:doc.id,...doc.data()};if(!n.read)ur++;
         list.innerHTML+=`<div class="ni ${n.read?'':'unread'}"><div class="nid"></div><div style="flex:1"><div class="nit">${n.title||''}</div><div class="nim">${n.message||''}</div><div class="nidat">${fmtD(n.createdAt)}</div></div></div>`;
       });
       if(ur>0){badge.textContent=ur>9?'9+':ur;badge.className='nbadge on'}else badge.className='nbadge';
