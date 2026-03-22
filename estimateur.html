@@ -875,7 +875,7 @@ Livrable : fichier HTML unique complet, fonctionnel, prêt à déployer."`;
       const err=await r.json().catch(()=>({}));
       const msg=err?.error?.message||'HTTP '+r.status;
       if(r.status===401) throw new Error('Clé API invalide. Vérifiez votre clé OpenAI dans le panneau admin.');
-      if(r.status===429) throw new Error('Limite d'utilisation atteinte ou crédits insuffisants. Vérifiez votre compte OpenAI.');
+      if(r.status===429) throw new Error('Limite d\'utilisation atteinte ou crédits insuffisants. Vérifiez votre compte OpenAI.');
       if(r.status===403) throw new Error('Accès refusé. Vérifiez votre clé API OpenAI.');
       throw new Error(msg);
     }

@@ -252,7 +252,7 @@ a{text-decoration:none;color:inherit}
 <body>
 
 <!-- LOGIN -->
-<div id="loginView">
+<div id="loginView" style="display:flex">
   <div class="lc">
     <div class="lc-logo"><div class="lc-logo-icon">⚡</div>BizFlow TN</div>
     <h2>Accès Admin</h2>
@@ -264,7 +264,7 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <!-- ADMIN -->
-<div id="adminView" style="display:flex">
+<div id="adminView" style="display:none">
   <div class="topbar">
     <div class="tbl"><div class="tbl-icon">⚡</div>Biz<em>Flow</em> TN &nbsp;<span style="font-size:.72rem;font-weight:500;color:var(--mu)">Admin</span></div>
     <div class="nav-tabs">
@@ -282,7 +282,7 @@ a{text-decoration:none;color:inherit}
   <div class="tab-content">
 
     <!-- DASHBOARD TAB -->
-    <div id="dashTab" style="display:flex">
+    <div id="dashTab" style="display:none">
       <div class="stats-row">
         <div class="stat-card blue"><div class="stat-num" id="stTotal">—</div><div class="stat-lbl">Total clients</div><div class="stat-trend up" id="stTotalTrend"></div></div>
         <div class="stat-card green"><div class="stat-num" id="stNew" style="color:var(--ac)">—</div><div class="stat-lbl">Nouvelles demandes</div></div>
@@ -349,6 +349,7 @@ a{text-decoration:none;color:inherit}
                   <option value="closed">⚫ Fermé</option>
                 </select>
                 <button class="btn-sm" onclick="copyClientInfo()">📋 Copier</button>
+              <button class="btn-sm" onclick="deleteClient()" style="color:var(--red);border-color:rgba(248,113,113,.3)" onmouseover="this.style.background='rgba(248,113,113,.1)'" onmouseout="this.style.background=''">🗑 Supprimer</button>
               </div>
             </div>
             <!-- Body: info + chat side by side -->
@@ -468,21 +469,32 @@ function toast(m,t='suc'){const el=document.getElementById('toast');el.textConte
 function fmtD(ts){if(!ts)return'—';const d=ts.toDate?ts.toDate():new Date(ts);const now=new Date(),diff=now-d;if(diff<60000)return'À l\'instant';if(diff<3600000)return Math.floor(diff/60000)+'min';if(diff<86400000)return Math.floor(diff/3600000)+'h';return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
 
 function doLogin(){if(document.getElementById('passIn').value===ADMIN_PASS){sessionStorage.setItem('bzAdmin','1');showAdmin();}else{document.getElementById('lerr').style.display='block';}}
-function showAdmin(){document.getElementById('loginView').style.display='none';document.getElementById('adminView').style.display='flex';loadLeads();loadTestis();}
+function showAdmin(){
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('adminView').style.display='flex';
+  loadLeads();
+  loadTestis();
+  showTab('dash', document.querySelector('.nav-tab'));
+}
 function logout(){sessionStorage.removeItem('bzAdmin');document.getElementById('adminView').style.display='none';document.getElementById('loginView').style.display='flex';}
 
 /* ════ TABS ════ */
 function showTab(tab,btn){
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('on'));
   if(btn)btn.classList.add('on');
-  const map={dash:'dashTab',clients:'clientsTab',stats:'statsTabContent',testi:'testiTab'};
-  Object.entries(map).forEach(([k,id])=>{
-    const el=document.getElementById(id);if(!el)return;
-    el.style.display=k===tab?'flex':'none';
-    if(k===tab&&(k==='clients'))el.style.flex='1';
-    if(k===tab&&(k==='stats'||k==='dash'))el.style.flexDirection='column';
+  const map={
+    dash:    {id:'dashTab',         display:'flex', flexDir:'column'},
+    clients: {id:'clientsTab',      display:'flex', flexDir:''},
+    stats:   {id:'statsTabContent', display:'flex', flexDir:'column'},
+    testi:   {id:'testiTab',        display:'flex', flexDir:'column'}
+  };
+  Object.entries(map).forEach(([k,cfg])=>{
+    const el=document.getElementById(cfg.id);if(!el)return;
+    el.style.display = k===tab ? cfg.display : 'none';
+    if(k===tab && cfg.flexDir) el.style.flexDirection=cfg.flexDir;
+    if(k===tab && k==='clients') el.style.flex='1';
   });
-  if(tab==='stats')renderStatBars();
+  if(tab==='stats') renderStatBars();
 }
 
 /* ════ LEADS ════ */
@@ -710,6 +722,52 @@ function copyClientInfo(){
   const lead=allLeads.find(l=>l.id===curLeadId);if(!lead)return;
   const info=[lead.name,lead.phone,lead.userEmail||'—',lead.type,lead.packLabel||'—',lead.description||''].join('\n');
   navigator.clipboard.writeText(info).then(()=>toast('Infos copiées')).catch(()=>{});
+}
+
+async function quickDelete(leadId, clientName){
+  if(!window.confirm('Supprimer "'+clientName+'" et toutes ses données ?'))return;
+  try{
+    const msgs=await db.collection('messages').where('leadId','==',leadId).get();
+    const notifs=await db.collection('notifications').where('leadId','==',leadId).get();
+    const batch=db.batch();
+    msgs.docs.forEach(d=>batch.delete(d.ref));
+    notifs.docs.forEach(d=>batch.delete(d.ref));
+    batch.delete(db.collection('leads').doc(leadId));
+    await batch.commit();
+    if(curLeadId===leadId){
+      curLeadId=null;
+      document.getElementById('cdEmpty').style.display='flex';
+      document.getElementById('cdContent').style.display='none';
+      if(unsubMsgs){unsubMsgs();unsubMsgs=null;}
+    }
+    toast('✅ Client supprimé');
+  }catch(e){toast('❌ Erreur: '+e.message,'err');}
+}
+
+async function deleteClient(){
+  const lead=allLeads.find(l=>l.id===curLeadId);
+  if(!lead)return;
+  const confirm=window.confirm('Supprimer définitivement le client "'+( lead.name||'ce client')+'" et toutes ses données (messages, notifications) ?');
+  if(!confirm)return;
+  try{
+    // Delete messages
+    const msgs=await db.collection('messages').where('leadId','==',curLeadId).get();
+    const notifs=await db.collection('notifications').where('leadId','==',curLeadId).get();
+    const batch=db.batch();
+    msgs.docs.forEach(d=>batch.delete(d.ref));
+    notifs.docs.forEach(d=>batch.delete(d.ref));
+    batch.delete(db.collection('leads').doc(curLeadId));
+    await batch.commit();
+    // Reset UI
+    curLeadId=null;
+    document.getElementById('cdEmpty').style.display='flex';
+    document.getElementById('cdContent').style.display='none';
+    if(unsubMsgs){unsubMsgs();unsubMsgs=null;}
+    toast('✅ Client supprimé');
+  }catch(e){
+    console.error(e);
+    toast('❌ Erreur: '+e.message,'err');
+  }
 }
 function switchInputTab(tab,btn){document.querySelectorAll('.itab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('msgPanel').style.display=tab==='msg'?'block':'none';document.getElementById('demoPanel').style.display=tab==='demo'?'block':'none';}
 
