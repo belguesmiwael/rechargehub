@@ -302,7 +302,7 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     Analyser avec l'IA → Générer mon estimation
   </button>
   <div class="no-key-banner" id="noKeyBanner">
-    <strong>⚠️ Clé API manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em> ci-dessus, saisissez votre clé API Anthropic et sauvegardez. Sans clé, sélectionnez les modules manuellement.
+    ⚠️ <strong>Clé API manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em>, saisissez votre clé API Anthropic (<code>sk-ant-api03-...</code>) et sauvegardez. Sans clé, sélectionnez les modules manuellement.
   </div>
   <div class="loader" id="loader"><div class="spin"></div><span id="loaderTxt">Analyse en cours…</span></div>
   <div class="ai-note" id="aiNote"></div>
@@ -790,56 +790,124 @@ async function analyzeWithAI(){
   if(desc.length<8){document.getElementById('descInput').focus();return;}
 
   // Check API key
-  if(!apiKey||!apiKey.startsWith('sk-')){
+  if(!apiKey||!apiKey.startsWith('sk-ant-')){
     document.getElementById('noKeyBanner').style.display='block';
-    /* no auto-scroll */
+    document.getElementById('noKeyBanner').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
 
   const btn=document.getElementById('aiBtn'),loader=document.getElementById('loader'),note=document.getElementById('aiNote');
   btn.disabled=true; loader.classList.add('on'); note.style.display='none';
+  document.getElementById('loaderTxt').textContent='Claude analyse votre projet…';
+
   const allFeats=Object.values(GROUPS).flat();
-  const sys=`Tu es expert en développement d'applications sur mesure (marché tunisien).
-Analyse la description et réponds UNIQUEMENT en JSON valide sans aucun texte avant ou après.
-Format exact :
-{"selected":["nom exact"],"complexity":"simple"|"moyenne"|"avancee","monetizable":true|false,"explanation":"2-3 phrases max en français"}
+
+  const systemPrompt=`Tu es expert en développement d'applications sur mesure pour les PME tunisiennes (BizFlow TN).
+Analyse la description et réponds UNIQUEMENT en JSON valide, sans texte avant ou après.
+Format :
+{
+  "selected":["nom exact de fonctionnalité"],
+  "complexity":"simple"|"moyenne"|"avancee",
+  "monetizable":true|false,
+  "businessType":"type détecté",
+  "explanation":"2-3 phrases max en français",
+  "megaPrompt":"prompt complet de génération"
+}
 Fonctionnalités disponibles : ${JSON.stringify(allFeats)}
-monetizable=true si l'app peut être revendue à d'autres entreprises similaires.
-Règles complexity: simple=1-3 modules basiques, moyenne=3-6 modules ou avec auth, avancee=6+ modules ou multi-users/mobile.`;
+Règles complexity: simple=1-3 modules, moyenne=3-6 ou auth, avancee=6+ ou multi-users.
+monetizable=true si revendable à d'autres entreprises similaires.
+Pour megaPrompt : prompt détaillé pour coder l'app en HTML+CSS+JS+Firebase, design glassmorphism dark/light, données tunisiennes (DT, noms TN, +216), fichier HTML unique.`;
+
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
       headers:{
-        "Content-Type":"application/json",
-        "x-api-key": apiKey,
-        "anthropic-version":"2023-06-01",
-        "anthropic-dangerous-direct-browser-access":"true"
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1000,system:sys,messages:[{role:"user",content:desc}]})
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:2000,
+        system:systemPrompt,
+        messages:[{role:'user',content:desc}]
+      })
     });
+
     if(!r.ok){
       const err=await r.json().catch(()=>({}));
-      throw new Error(err?.error?.message||'HTTP '+r.status);
+      const msg=err?.error?.message||'HTTP '+r.status;
+      // Specific error messages
+      if(r.status===401) throw new Error('Clé API invalide. Vérifiez votre clé dans le panneau admin.');
+      if(r.status===403) throw new Error('Accès refusé. Clé API incorrecte ou expirée.');
+      if(r.status===429) throw new Error('Limite d'utilisation atteinte. Attendez quelques secondes et réessayez.');
+      throw new Error(msg);
     }
+
     const data=await r.json();
-    const txt=data.content?.map(c=>c.text||'').join('')||'';
+    const txt=data.content?.map(b=>b.text||'').join('')||'';
     const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+
+    // Apply AI selections to UI
     selected.clear();
-    (parsed.selected||[]).forEach(f=>{ if(allFeats.includes(f)) selected.add(f); });
+    (parsed.selected||[]).forEach(f=>{if(allFeats.includes(f))selected.add(f);});
     if(['simple','moyenne','avancee'].includes(parsed.complexity)) complexity=parsed.complexity;
     buildGrids();
-    document.querySelectorAll('.comp-btn').forEach(b=>{b.classList.remove('act','simple','moyenne','avancee');});
+    document.querySelectorAll('.comp-btn').forEach(b=>b.classList.remove('act','simple','moyenne','avancee'));
     const ab=document.querySelector('.comp-btn.'+complexity);
     if(ab) ab.classList.add('act',complexity);
-    const moneyHint=parsed.monetizable?' <span style="color:var(--c-amber)">💡 Cette app est idéale pour la monétisation — activez l\'option ci-dessous !</span>':'';
-    note.innerHTML=`<strong>🤖 IA :</strong> ${parsed.explanation}${moneyHint}`;
+    if(parsed.monetizable) monetize=true;
+
+    // Save mega prompt to sessionStorage (sent to admin via lead)
+    const finalPrompt=parsed.megaPrompt||generateClaudePrompt(sessionStorage.getItem('bz_pack')||'pro');
+    sessionStorage.setItem('bz_prompt',finalPrompt);
+    sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
+    sessionStorage.setItem('bz_complexity',complexity);
+    sessionStorage.setItem('bz_monetize',monetize?'1':'0');
+
+    // Show result
+    const moneyHint=parsed.monetizable
+      ?'<span style="color:var(--c-amber);margin-left:6px">💡 Idéal pour la monétisation !</span>':'';
+    const bizHint=parsed.businessType
+      ?`<span style="color:var(--c-cyan);margin-left:6px">📦 ${parsed.businessType}</span>`:'';
+    note.innerHTML=`<strong>🤖 Claude :</strong> ${parsed.explanation}${moneyHint}${bizHint}`;
     note.style.display='block';
     calculate();
-  } catch(e){
-    note.innerHTML=`<strong>⚠️</strong> Erreur IA : <em>${e.message||'inconnue'}</em>. Vérifiez votre clé API dans le panneau admin ou sélectionnez les modules manuellement.`;
+
+    // Show prompt preview panel
+    showPromptPreview(finalPrompt, note);
+
+  }catch(e){
+    note.innerHTML=`<strong>⚠️</strong> ${e.message||'Erreur inconnue'}<br><small style="color:var(--muted)">Saisissez votre clé API dans le panneau "Modifier la grille tarifaire" ci-dessus.</small>`;
     note.style.display='block';
-    console.error(e);
-  } finally{ btn.disabled=false; loader.classList.remove('on'); }
+    console.error('Claude API:',e);
+  }finally{
+    btn.disabled=false;
+    loader.classList.remove('on');
+    document.getElementById('loaderTxt').textContent='Analyse en cours…';
+  }
+}
+
+function showPromptPreview(prompt, noteEl){
+  let preview=document.getElementById('promptPreview');
+  if(!preview){
+    preview=document.createElement('div');
+    preview.id='promptPreview';
+    preview.style.cssText='margin-top:14px;background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.15);border-radius:12px;padding:14px;animation:fadeIn .3s ease';
+    preview.innerHTML=`
+      <div style="font-size:11px;font-weight:700;color:var(--c-cyan);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:7px">
+        <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#5c8eff,#a78bfa);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem">🤖</span>
+        Mega Prompt généré — sera envoyé à l'admin
+      </div>
+      <textarea id="promptTa" style="width:100%;min-height:120px;padding:9px 11px;border-radius:8px;border:1px solid rgba(0,212,255,.2);background:rgba(0,0,0,.35);color:var(--muted2);font-family:monospace;font-size:11px;resize:vertical;outline:none;line-height:1.55" readonly></textarea>
+      <div style="margin-top:9px;display:flex;gap:8px">
+        <button onclick="navigator.clipboard.writeText(document.getElementById('promptTa').value).then(()=>{this.textContent='✓ Copié !';setTimeout(()=>this.textContent='📋 Copier',2000)})" style="padding:6px 12px;border-radius:7px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.1);color:var(--c-cyan);font-size:11px;cursor:pointer;font-family:inherit;transition:all .2s">📋 Copier</button>
+        <button onclick="window.open('https://claude.ai/new?q='+encodeURIComponent(document.getElementById('promptTa').value),'_blank')" style="padding:6px 12px;border-radius:7px;border:none;background:var(--c-cyan);color:#000;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700;transition:all .2s">🚀 Ouvrir dans Claude</button>
+      </div>`;
+    noteEl.parentNode.insertBefore(preview, noteEl.nextSibling);
+  }
+  document.getElementById('promptTa').value=prompt;
 }
 
 document.getElementById('descInput').addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='Enter') analyzeWithAI(); });
