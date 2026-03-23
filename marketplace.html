@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BizFlow TN — Applications partenaires</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#03030d;--bg2:#07071a;--sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.07);--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);--ac:#5c8eff;--ac2:#a78bfa;--ac3:#34d399;--glow:rgba(92,142,255,.22);--tx:#f0efff;--mu:rgba(220,218,255,.55);--mu2:rgba(220,218,255,.22)}
+[data-theme=light]{--bg:#f0f0ff;--bg2:#e8e8fa;--sf:rgba(255,255,255,.8);--sf2:rgba(255,255,255,.95);--bd:rgba(0,0,60,.07);--bd2:rgba(0,0,60,.13);--tx:#0a0a1a;--mu:rgba(40,40,120,.55);--mu2:rgba(40,40,120,.22);--ac:#4060ff;--ac2:#7c3aed}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Syne',sans-serif}
+a{text-decoration:none;color:inherit}
+.mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.1}
+.orb1{width:600px;height:600px;top:-200px;right:-100px;background:#5c8eff}
+.orb2{width:500px;height:500px;bottom:-100px;left:-100px;background:#a78bfa}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(3,3,13,.85);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:9px}
+.nav-logo-icon{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.nav-logo em{color:var(--ac);font-style:normal}
+.nav-links{display:flex;align-items:center;gap:14px}
+.nav-link{font-size:.82rem;font-weight:600;color:var(--mu);padding:6px 12px;border-radius:8px;transition:all .2s}
+.nav-link:hover{color:var(--tx);background:var(--sf2)}
+.btn-client{padding:7px 16px;border-radius:9px;background:var(--ac);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;transition:all .2s;box-shadow:0 4px 14px var(--glow)}
+.btn-client:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--glow)}
+.ibtn{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--tx)}
+
+/* HERO */
+.hero{padding:70px 24px 50px;text-align:center;position:relative;z-index:1;max-width:700px;margin:0 auto}
+.hero-label{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;background:rgba(92,142,255,.1);border:1px solid rgba(92,142,255,.22);font-size:.76rem;font-weight:700;color:var(--ac);margin-bottom:18px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;line-height:1.15;margin-bottom:14px}
+.hero h1 span{background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:.92rem;color:var(--mu);line-height:1.7;max-width:520px;margin:0 auto 28px}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;position:relative;z-index:1}
+.filter-btn{padding:7px 16px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--mu);transition:all .2s;font-family:'Manrope',sans-serif}
+.filter-btn:hover,.filter-btn.on{border-color:var(--ac);background:rgba(92,142,255,.1);color:var(--ac)}
+
+/* GRID */
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;max-width:1100px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
+.app-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:18px;padding:22px;transition:all .25s;cursor:pointer;position:relative;overflow:hidden}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2));opacity:0;transition:opacity .25s}
+.app-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(92,142,255,.15);border-color:rgba(92,142,255,.3)}
+.app-card:hover::before{opacity:1}
+.ac-icon-big{font-size:2.5rem;margin-bottom:13px;display:block}
+.ac-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:5px}
+.ac-desc{font-size:.8rem;color:var(--mu);line-height:1.6;margin-bottom:13px}
+.ac-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.ac-tag{background:rgba(92,142,255,.1);border:1px solid rgba(92,142,255,.18);border-radius:6px;padding:3px 8px;font-size:.66rem;color:var(--ac);font-weight:600}
+.ac-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.ac-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--ac)}
+.ac-price .ac-orig{font-size:.72rem;color:var(--mu);font-weight:400;text-decoration:line-through;margin-right:5px}
+.ac-btns{display:flex;gap:6px}
+.btn-try{padding:7px 13px;border-radius:8px;border:1px solid var(--bd2);background:var(--sf);color:var(--tx);font-size:.75rem;font-weight:600;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.btn-try:hover{border-color:var(--ac);color:var(--ac)}
+.btn-buy{padding:7px 13px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;box-shadow:0 3px 10px var(--glow)}
+.btn-buy:hover{transform:translateY(-1px);box-shadow:0 5px 16px var(--glow)}
+.partner-badge{position:absolute;top:14px;right:14px;font-size:.64rem;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(52,211,153,.12);color:var(--ac3);border:1px solid rgba(52,211,153,.25)}
+
+/* DEMO OVERLAY */
+#demoOv{display:none;position:fixed;inset:0;z-index:500;background:rgba(3,3,13,.92);backdrop-filter:blur(16px);flex-direction:column}
+#demoOv.open{display:flex;animation:fade .22s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.ov-bar{padding:12px 18px;background:rgba(7,7,26,.95);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ov-bar h3{font-size:.92rem;font-weight:800;display:flex;align-items:center;gap:9px}
+.ov-bar-actions{display:flex;gap:9px;align-items:center}
+.btn-buy-ov{padding:8px 20px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.84rem;cursor:pointer;transition:all .22s;box-shadow:0 4px 14px var(--glow)}
+.btn-buy-ov:hover{transform:translateY(-1px);box-shadow:0 7px 20px var(--glow)}
+.btn-close-ov{width:34px;height:34px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;color:var(--mu);font-size:1rem;display:flex;align-items:center;justify-content:center}
+.ov-frame-wrap{flex:1;position:relative}
+.ov-frame-wrap iframe{width:100%;height:100%;border:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(50px);z-index:9999;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:11px 18px;font-size:.82rem;color:var(--tx);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 12px 36px rgba(0,0,0,.4);white-space:nowrap}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.suc{border-left:3px solid var(--ac3)}
+
+@media(max-width:600px){.market-grid{grid-template-columns:1fr;padding:0 14px 40px}.hero{padding:50px 14px 36px}.nav-links .nav-link:not(.btn-client){display:none}}
+</style>
+</head>
+<body>
+<div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-icon">⚡</div>Biz<em>Flow</em> TN</a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Accueil</a>
+    <a href="estimateur.html" class="nav-link">Estimateur</a>
+    <button class="ibtn" id="themeBtn">☀️</button>
+    <a href="client.html" class="btn-client nav-link">Mon espace →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">🏪 Applications partenaires</div>
+  <h1>Des apps déjà créées,<br><span>prêtes à adapter</span></h1>
+  <p>Ces applications ont été développées pour nos clients partenaires. Achetez-en une et nous l'adaptons à votre business en 48h — à prix réduit.</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn on" onclick="filterApps('all',this)">Toutes</button>
+  <button class="filter-btn" onclick="filterApps('cafe',this)">☕ Café / Restaurant</button>
+  <button class="filter-btn" onclick="filterApps('commerce',this)">🏪 Commerce</button>
+  <button class="filter-btn" onclick="filterApps('services',this)">⚙️ Services</button>
+  <button class="filter-btn" onclick="filterApps('gestion',this)">📊 Gestion</button>
+</div>
+
+<div class="market-grid" id="marketGrid"></div>
+
+<!-- DEMO OVERLAY -->
+<div id="demoOv">
+  <div class="ov-bar">
+    <h3><span id="ovIcon"></span> <span id="ovTitle">Application</span> <span id="ovPrice" style="font-size:.72rem;background:rgba(92,142,255,.15);border:1px solid rgba(92,142,255,.25);color:var(--ac);padding:3px 9px;border-radius:10px;font-weight:700"></span></h3>
+    <div class="ov-bar-actions">
+      <button class="btn-buy-ov" onclick="buyApp(_curApp)">💳 Acheter cette app</button>
+      <button class="btn-close-ov" onclick="closeDemoOv()">✕</button>
+    </div>
+  </div>
+  <div class="ov-frame-wrap"><iframe id="ovFrame" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tBtn=document.getElementById('themeBtn');
+const applyT=t=>{document.documentElement.setAttribute('data-theme',t);tBtn.textContent=t==='dark'?'☀️':'🌙';localStorage.setItem('bzt',t)};
+tBtn.onclick=()=>applyT(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+applyT(localStorage.getItem('bzt')||'dark');
+
+const APPS=[
+  {icon:'☕',title:'App Café & Restaurant',desc:'Gestion complète : commandes par table, caisse, employés, stock produits, rapports journaliers.',tags:['Commandes','Caisse','Employés','Stock'],price:'299 DT',origPrice:'450 DT',src:'cafe.html',cat:'cafe',partner:'Café Beb Lmdina'},
+  {icon:'🔄',title:'App Grossiste / Recharge',desc:'Gestion stock recharges téléphoniques, crédits clients, historique commandes, rapports.',tags:['Stock','Crédits','Clients','Rapports'],price:'349 DT',origPrice:'520 DT',src:'grossiste.html',cat:'commerce',partner:'RechargeHub TN'},
+  {icon:'💰',title:'App Suivi Dettes',desc:'Suivi dettes clients et fournisseurs, relances automatiques, tableau de bord financier.',tags:['Dettes','Clients','Paiements','Rapports'],price:'249 DT',origPrice:'380 DT',src:'dettes.html',cat:'gestion',partner:'Debt Manager TN'},
+  {icon:'🍕',title:'App Pizzeria & Livraison',desc:'Commandes en ligne, suivi livraisons, gestion livreurs, caisse intégrée.',tags:['Livraison','Commandes','Suivi','Caisse'],price:'399 DT',origPrice:'580 DT',src:'cafe.html',cat:'cafe',partner:'à venir'},
+  {icon:'💊',title:'App Pharmacie',desc:'Gestion stock médicaments, ordonnances, clients, alertes péremption.',tags:['Stock','Ordonnances','Alertes','Clients'],price:'449 DT',origPrice:'650 DT',src:'grossiste.html',cat:'services',partner:'à venir'},
+  {icon:'🏫',title:'App École / Crèche',desc:'Inscriptions élèves, présences, paiements mensualités, communication parents.',tags:['Élèves','Présences','Paiements','Parents'],price:'379 DT',origPrice:'560 DT',src:'dettes.html',cat:'services',partner:'à venir'},
+];
+
+let _curApp=0,_curFilter='all';
+
+function filterApps(cat,btn){
+  _curFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderGrid();
+}
+
+function renderGrid(){
+  const grid=document.getElementById('marketGrid');
+  const filtered=APPS.filter(a=>_curFilter==='all'||a.cat===_curFilter);
+  grid.innerHTML=filtered.map((a,i)=>`
+    <div class="app-card" onclick="tryApp(${APPS.indexOf(a)})">
+      ${a.partner&&a.partner!=='à venir'?`<div class="partner-badge">✓ Partenaire</div>`:''}
+      <span class="ac-icon-big">${a.icon}</span>
+      <div class="ac-name">${a.title}</div>
+      <div class="ac-desc">${a.desc}</div>
+      <div class="ac-tags">${a.tags.map(t=>`<span class="ac-tag">${t}</span>`).join('')}</div>
+      <div class="ac-footer">
+        <div class="ac-price"><span class="ac-orig">${a.origPrice}</span>${a.price}</div>
+        <div class="ac-btns">
+          <button class="btn-try" onclick="event.stopPropagation();tryApp(${APPS.indexOf(a)})">👁 Essayer</button>
+          <button class="btn-buy" onclick="event.stopPropagation();buyApp(${APPS.indexOf(a)})">💳 Acheter</button>
+        </div>
+      </div>
+    </div>`).join('');
+  if(!filtered.length)grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);font-size:.88rem">Aucune application dans cette catégorie pour le moment.</div>';
+}
+
+function tryApp(i){
+  _curApp=i;
+  const a=APPS[i];
+  document.getElementById('ovIcon').textContent=a.icon;
+  document.getElementById('ovTitle').textContent=a.title;
+  document.getElementById('ovPrice').textContent=a.price;
+  document.getElementById('ovFrame').src=a.src;
+  document.getElementById('demoOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDemoOv(){
+  document.getElementById('demoOv').classList.remove('open');
+  document.getElementById('ovFrame').src='';
+  document.body.style.overflow='';
+}
+function buyApp(i){
+  const a=APPS[i];
+  sessionStorage.setItem('bz_buy_app',a.title);
+  sessionStorage.setItem('bz_buy_price',a.price);
+  sessionStorage.setItem('bz_buy_src',a.src);
+  closeDemoOv();
+  // Show toast then redirect
+  const t=document.getElementById('toast');
+  t.textContent='✅ Redirection vers votre espace client…';
+  t.className='toast suc on';
+  setTimeout(()=>{window.location.href='client.html';},1500);
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDemoOv();});
+renderGrid();
+</script>
+</body>
+</html>

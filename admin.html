@@ -118,6 +118,8 @@ a{text-decoration:none;color:inherit}
 .s-validated{background:rgba(52,211,153,.2);color:var(--green)}
 .s-converted{background:rgba(52,211,153,.12);color:var(--green)}
 .s-closed{background:rgba(255,255,255,.06);color:var(--mu)}
+.s-payment_requested{background:rgba(251,191,36,.15);color:var(--yellow)}
+.s-payment_confirmed{background:rgba(52,211,153,.15);color:var(--green)}
 .ci-unread{position:absolute;top:13px;right:13px;width:7px;height:7px;border-radius:50%;background:var(--red)}
 
 /* Client detail */
@@ -402,9 +404,15 @@ a{text-decoration:none;color:inherit}
                         <input type="text" id="demoVerIn" placeholder="v1" style="flex:.6;min-width:50px">
                       </div>
                       <textarea id="demoMsgIn" placeholder="Message pour le client sur cette version..." rows="2"></textarea>
+                      <div style="margin:6px 0;display:flex;align-items:center;gap:8px">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.76rem;color:var(--mu)">
+                          <input type="checkbox" id="isFinalChk" style="accent-color:var(--green)">
+                          <span style="color:var(--green);font-weight:700">🏁 Envoyer comme version finale</span>
+                        </label>
+                      </div>
                       <div class="df-footer">
-                        <span class="df-hint">Version <span id="demoVerNum">1</span></span>
-                        <button class="btn-sm primary" onclick="sendDemoMsg()">🎯 Envoyer la démo</button>
+                        <span class="df-hint">Version <span id="demoVerNum">1</span> / max 3 démos</span>
+                        <button class="btn-sm primary" onclick="sendDemoMsg()">🎯 Envoyer</button>
                       </div>
                     </div>
                   </div>
@@ -558,7 +566,7 @@ function renderBars(containerId,entries){
 
 /* ════ FILTER / RENDER LIST ════ */
 function spClass(s){return's-'+(s||'new');}
-function spLabel(s){const m={new:'🔵 Nouvelle',contacted:'🟣 Contacté',demo:'🟡 Démo',validated:'🟢 Validée',converted:'✅ Livrée',closed:'⚫ Fermé'};return m[s]||'🔵 Nouvelle';}
+function spLabel(s){const m={new:'🔵 Nouvelle',contacted:'🟣 Contacté',demo:'🟡 Démo',validated:'🟢 Validée',payment_requested:'💳 Paiement demandé',payment_confirmed:'💳 Paiement confirmé',converted:'✅ Livrée',closed:'⚫ Fermé'};return m[s]||'🔵 Nouvelle';}
 function setFilter(f,btn){curFilter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderLeads();}
 function renderLeads(){
   const q=(document.getElementById('searchIn')?.value||'').toLowerCase();
@@ -663,7 +671,15 @@ function renderAdminChat(msgs,leadId){
       const approved=m.approvedByClient;
       c.innerHTML+=`<div class="demo-bubble-a"><div class="dba-ver">🎯 Démo ${m.demoVersion||''}</div><div class="dba-msg">${m.text||'Démo envoyée'}</div><div class="dba-url"><a href="${m.demoUrl}" target="_blank" style="color:var(--ac)">${m.demoUrl}</a></div><div class="dba-meta">${approved?'<span class="approved-badge">✅ Validée par le client</span>':'<span style="color:var(--mu)">En attente de validation</span>'}<span>${fmtD(m.createdAt)}</span></div></div>`;
     }else if(m.type==='approval'){c.innerHTML+=`<div class="approval-bub">✅ ${m.text}<div style="font-size:.63rem;opacity:.6;margin-top:3px">${fmtD(m.createdAt)}</div></div>`;}
-    else{
+    else if(m.type==='image'){
+      const isAdmin=m.from==='admin';
+      c.innerHTML+=`<div class="msg-bubble ${isAdmin?'from-admin':'from-client'}"><div class="bubble-inner"><img src="${m.imageData}" style="max-width:180px;border-radius:9px;cursor:pointer;border:1px solid var(--bd)" onclick="window.open(this.src,'_blank')" alt="${m.imageName||'image'}"><div style="font-size:.68rem;margin-top:3px;opacity:.7">${m.imageName||'image'} — cliquer pour agrandir</div></div><div class="bubble-meta">${isAdmin?'Vous':'Client'} · ${fmtD(m.createdAt)}</div></div>`;
+    }else if(m.type==='voice'){
+      const isAdmin=m.from==='admin';
+      c.innerHTML+=`<div class="msg-bubble ${isAdmin?'from-admin':'from-client'}"><div class="bubble-inner"><div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--sf);border-radius:9px;border:1px solid var(--bd)"><button onclick="var a=new Audio('${m.audioData}');a.play()" style="width:26px;height:26px;border-radius:50%;border:none;background:var(--ac);color:#fff;cursor:pointer">▶</button><span style="font-size:.75rem;color:var(--mu)">🎤 Vocal ${m.duration||0}s</span></div></div><div class="bubble-meta">${isAdmin?'Vous':'Client'} · ${fmtD(m.createdAt)}</div></div>`;
+    }else if(m.type==='payment'){
+      c.innerHTML+=`<div class="approval-bub" style="background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.2);color:var(--yellow)">💳 ${m.text}<div style="font-size:.63rem;opacity:.6;margin-top:3px">${fmtD(m.createdAt)}</div></div>`;
+    }else{
       const isAdmin=m.from==='admin';
       c.innerHTML+=`<div class="msg-bubble ${isAdmin?'from-admin':'from-client'}"><div class="bubble-inner">${m.text}</div><div class="bubble-meta">${!m.readByClient&&isAdmin?'<span class="unread-dot"></span>':''}${isAdmin?'Vous':'Client'} · ${fmtD(m.createdAt)}</div></div>`;
     }
@@ -679,7 +695,9 @@ async function sendAdminMsg(){
   document.getElementById('adminMsgInput').value='';document.getElementById('adminMsgInput').style.height='auto';
   try{
     await db.collection('messages').add({leadId:curLeadId,userId:lead?.userId||null,from:'admin',type:'text',text,createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true});
-    if(lead?.status==='new')await db.collection('leads').doc(curLeadId).update({status:'contacted',updatedAt:FS.serverTimestamp()});
+    if(lead?.status==='new'){
+      await db.collection('leads').doc(curLeadId).update({status:'contacted',updatedAt:FS.serverTimestamp()});
+    }
     if(lead?.userId)await db.collection('notifications').add({userId:lead.userId,leadId:curLeadId,title:'💬 Message de BizFlow',message:text.substring(0,100)+(text.length>100?'...':''),type:'message',read:false,createdAt:FS.serverTimestamp()});
   }catch(e){console.error(e);toast('Erreur: '+e.message,'err');}
 }
