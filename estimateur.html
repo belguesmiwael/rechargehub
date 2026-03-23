@@ -8,9 +8,8 @@
 <style>
 :root {
   --bg:#07090f;--s1:#0c1018;--s2:#111622;--s3:#16202f;
-  --border:#1b2840;--border2:#243550;
-  --c-cyan:#00d4ff;--c-violet:#7c3aed;--c-green:#10b981;
-  --c-amber:#f59e0b;--c-rose:#f43f5e;
+  --border:#1b2840;--c-cyan:#00d4ff;--c-violet:#7c3aed;
+  --c-green:#10b981;--c-amber:#f59e0b;--c-rose:#f43f5e;
   --text:#dde6f5;--muted:#4d6585;--muted2:#8aa0be;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -28,20 +27,18 @@ header{padding:52px 0 36px;text-align:center}
 @keyframes dpulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,212,255,.5)}50%{opacity:.6;box-shadow:0 0 0 5px rgba(0,212,255,0)}}
 h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5.5vw,50px);font-weight:900;line-height:1.06;letter-spacing:-.025em;margin-bottom:18px}
 h1 em{font-style:normal;background:linear-gradient(90deg,var(--c-cyan),#5bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sub{color:var(--muted2);font-size:15.5px;max-width:560px;margin:0 auto;line-height:1.7}
+.sub{color:var(--muted2);font-size:15.5px;max-width:580px;margin:0 auto;line-height:1.7}
 .card{background:var(--s1);border:1px solid var(--border);border-radius:22px;padding:30px;margin-bottom:18px;position:relative;overflow:hidden;transition:border-color .3s}
 .card-shine{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent);opacity:0;transition:opacity .35s}
 .card:hover{border-color:rgba(0,212,255,.18)}.card:hover .card-shine{opacity:1}
 .c-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.c-title .ico{font-size:19px}
 .stepn{min-width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);color:var(--c-cyan);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif}
-.c-title .rhint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
-textarea{width:100%;min-height:106px;resize:vertical;background:var(--s2);border:1px solid var(--border);border-radius:13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:14px 16px;outline:none;transition:border-color .25s,box-shadow .25s}
+.rhint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
+textarea{width:100%;min-height:110px;resize:vertical;background:var(--s2);border:1px solid var(--border);border-radius:13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:14px 16px;outline:none;transition:border-color .25s,box-shadow .25s}
 textarea:focus{border-color:var(--c-cyan);box-shadow:0 0 0 3px rgba(0,212,255,.07)}
 textarea::placeholder{color:var(--muted)}
-.btn-ai{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;width:100%;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(124,58,237,.12));border:1px solid rgba(0,212,255,.3);border-radius:13px;padding:14px 24px;color:var(--c-cyan);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s;letter-spacing:.025em}
-.btn-ai:hover:not(:disabled){background:linear-gradient(135deg,rgba(0,212,255,.17),rgba(124,58,237,.2));transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,255,.1)}
-.btn-ai:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-gen{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;width:100%;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(124,58,237,.14));border:1px solid rgba(0,212,255,.35);border-radius:13px;padding:14px 24px;color:var(--c-cyan);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s;letter-spacing:.025em}
+.btn-gen:hover{background:linear-gradient(135deg,rgba(0,212,255,.2),rgba(124,58,237,.22));transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,255,.12)}
 .slbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:22px 0 11px;display:flex;align-items:center;gap:8px}
 .slbl::after{content:'';flex:1;height:1px;background:var(--border)}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px}
@@ -58,19 +55,28 @@ textarea::placeholder{color:var(--muted)}
 .comp-btn.act.simple{border-color:var(--c-green);background:rgba(16,185,129,.1);color:var(--c-green)}
 .comp-btn.act.moyenne{border-color:var(--c-amber);background:rgba(245,158,11,.1);color:var(--c-amber)}
 .comp-btn.act.avancee{border-color:var(--c-rose);background:rgba(244,63,94,.1);color:var(--c-rose)}
-.loader{display:none;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-top:12px}
-.loader.on{display:flex}
-.spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--c-cyan);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ai-note{margin-top:14px;padding:13px 16px;border-radius:13px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.2);font-size:13px;color:#c4b5fd;line-height:1.65;display:none}
-.ai-note strong{color:#a78bfa}
 .div{border:none;border-top:1px solid var(--border);margin:24px 0}
-.results{display:none;animation:fadeUp .45s ease}
-.results.on{display:block}
+
+/* PROMPT PANEL */
+.prompt-panel{background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.2);border-radius:18px;padding:22px;margin-top:16px;animation:fadeUp .35s ease}
+.prompt-panel-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--c-cyan);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.prompt-panel-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+.prompt-ta{width:100%;min-height:220px;padding:14px 16px;border-radius:12px;border:1px solid rgba(0,212,255,.15);background:rgba(0,0,0,.45);color:#a8c0d8;font-family:'Courier New',monospace;font-size:12px;resize:vertical;outline:none;line-height:1.7;transition:border-color .2s}
+.prompt-ta:focus{border-color:rgba(0,212,255,.3)}
+.prompt-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-copy{padding:9px 18px;border-radius:9px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:var(--c-cyan);font-size:12.5px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;transition:all .2s}
+.btn-copy:hover{background:rgba(0,212,255,.18)}
+.btn-open{padding:9px 18px;border-radius:9px;border:none;background:linear-gradient(135deg,#00d4ff,#7c3aed);color:#fff;font-size:12.5px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;box-shadow:0 4px 14px rgba(0,212,255,.2);transition:all .2s}
+.btn-open:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,.3)}
+.btn-gpt{padding:9px 18px;border-radius:9px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:var(--c-green);font-size:12.5px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;transition:all .2s}
+.btn-gpt:hover{background:rgba(16,185,129,.18)}
+
+/* RESULTS */
+.results{display:none;animation:fadeUp .45s ease}.results.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .price-bar{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(124,58,237,.07));border:1px solid rgba(0,212,255,.22);border-radius:22px;padding:28px 34px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:22px}
 .price-main .amt{font-family:'Syne',sans-serif;font-size:clamp(44px,8vw,68px);font-weight:900;color:var(--c-cyan);line-height:1;letter-spacing:-.03em}
-.price-main .lbl{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.price-main .lbl{font-size:12px;color:var(--muted);margin-top:4px}
 .price-stats{display:flex;gap:24px;flex-wrap:wrap;margin-left:auto}
 .pstat{text-align:center}
 .pstat .v{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
@@ -93,7 +99,7 @@ textarea::placeholder{color:var(--muted)}
 .ma-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--c-amber);margin-bottom:10px}
 .ma-desc{font-size:13.5px;color:var(--muted2);line-height:1.7;margin-bottom:20px}
 .revenue-calc{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
-.rc-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rc-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px}
 .rc-slider-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap}
 .rc-slider-row label{font-size:12px;color:var(--muted);width:170px;flex-shrink:0}
 input[type=range]{flex:1;min-width:100px;accent-color:var(--c-amber);cursor:pointer;height:4px}
@@ -149,6 +155,7 @@ input[type=range]{flex:1;min-width:100px;accent-color:var(--c-amber);cursor:poin
 .pack.partenaire .pack-cta:hover{background:rgba(245,158,11,.24)}
 .info-box{background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.12);border-radius:16px;padding:20px 22px;margin-bottom:22px;font-size:13.5px;color:var(--muted2);line-height:1.75}
 .info-box strong{color:var(--c-cyan)}
+/* ADMIN */
 .admin-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:500;background:none;border:none;margin-bottom:18px;transition:color .2s;padding:0}
 .admin-toggle:hover{color:var(--text)}.admin-toggle.open svg{transform:rotate(180deg)}
 .admin-toggle svg{transition:transform .3s}
@@ -162,21 +169,6 @@ input[type=range]{flex:1;min-width:100px;accent-color:var(--c-amber);cursor:poin
 .btn-save{margin-top:16px;padding:10px 22px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);border-radius:10px;color:var(--c-cyan);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif}
 .btn-save:hover{background:rgba(0,212,255,.18)}
 .price-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px;grid-column:1/-1}
-/* API KEY = style vert OpenAI */
-.api-key-block{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;grid-column:1/-1}
-.api-key-block .api-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--c-green);margin-bottom:6px;display:flex;align-items:center;gap:7px}
-.api-key-block .api-hint{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.55}
-.api-key-block .api-hint a{color:var(--c-cyan);text-decoration:none}
-.api-key-row{display:flex;gap:10px;align-items:center}
-.api-key-row input{flex:1;background:var(--s3);border:1px solid rgba(16,185,129,.25);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 13px;outline:none;transition:border-color .2s}
-.api-key-row input:focus{border-color:var(--c-green)}
-.api-key-row input::placeholder{color:var(--muted)}
-.btn-api-save{padding:10px 16px;background:rgba(16,185,129,.13);border:1px solid rgba(16,185,129,.3);border-radius:10px;color:var(--c-green);font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'Syne',sans-serif}
-.btn-api-save:hover{background:rgba(16,185,129,.24)}
-.api-status{font-size:11.5px;margin-top:8px;display:flex;align-items:center;gap:6px}
-.api-status.ok{color:var(--c-green)}.api-status.missing{color:var(--c-rose)}
-.no-key-banner{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.25);border-radius:13px;padding:13px 16px;margin-top:12px;font-size:13px;color:#fca5a5;display:none;line-height:1.6}
-.no-key-banner strong{color:var(--c-rose)}
 footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 @media(max-width:720px){.packs-grid{grid-template-columns:1fr}.price-bar{flex-direction:column}.price-stats{margin-left:0}.revenue-grid{grid-template-columns:1fr 1fr}}
@@ -189,65 +181,72 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
 <div class="wrap">
 
 <header>
-  <div class="live-badge"><div class="dot-pulse"></div>IA · Estimation Instantanée</div>
+  <div class="live-badge"><div class="dot-pulse"></div>Estimation Instantanée · 0 clé API requise</div>
   <h1>Votre application,<br>votre <em>investissement.</em></h1>
-  <p class="sub">Décrivez votre projet. Notre IA analyse, calcule et vous propose le meilleur pack — y compris la possibilité de <strong style="color:var(--c-amber)">monétiser votre application.</strong></p>
+  <p class="sub">Décrivez votre projet, sélectionnez vos fonctionnalités. Le prompt pour créer votre application est généré <strong style="color:var(--c-cyan)">instantanément</strong> — sans aucune clé API.</p>
 </header>
 
+<!-- ADMIN -->
 <button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
   Modifier la grille tarifaire (admin)
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
 </button>
-
 <div class="admin-panel" id="adminPanel">
-  <div class="c-title"><span class="ico">⚙️</span> Grille tarifaire &amp; Configuration</div>
-  <!-- ✅ API KEY = OpenAI -->
-  <div class="api-key-block">
-    <div class="api-title">🔑 Clé API OpenAI (pour l'analyse IA)</div>
-    <div class="api-hint">
-      Nécessaire pour l'analyse IA automatique (GPT-4o mini). Obtenez votre clé sur
-      <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
-      Elle commence par <code>sk-</code> · Sauvegardée uniquement dans votre navigateur.
-    </div>
-    <div class="api-key-row">
-      <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
-      <button class="btn-api-save" onclick="saveApiKey()">Sauvegarder</button>
-    </div>
-    <div class="api-status" id="apiStatus"></div>
-  </div>
+  <div class="c-title" style="margin-bottom:20px"><span style="font-size:19px">⚙️</span> Grille tarifaire</div>
   <div class="price-inputs" id="priceInputs"></div>
   <button class="btn-save" onclick="savePrices()">💾 Sauvegarder les prix</button>
-  <div style="font-size:12px;color:var(--muted);margin-top:10px">Sauvegardé dans votre navigateur.</div>
+  <div style="font-size:12px;color:var(--muted);margin-top:10px">Sauvegardé localement dans le navigateur.</div>
 </div>
 
-<!-- STEP 1 -->
+<!-- STEP 1 : DESCRIPTION -->
 <div class="card">
   <div class="card-shine"></div>
-  <div class="c-title"><div class="stepn">1</div><span class="ico">✍️</span>Décrivez votre application</div>
-  <textarea id="descInput" placeholder="Ex : J'ai un café avec 4 employés, je veux gérer les commandes, la caisse et les présences des employés. Mon café est au centre-ville de Tunis...&#10;&#10;💡 Plus vous décrivez précisément votre business, meilleur sera le prompt généré !"></textarea>
-  <button class="btn-ai" id="aiBtn" onclick="analyzeWithAI()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Analyser avec l'IA → Générer estimation + Prompt prêt à l'emploi
-  </button>
-  <div class="no-key-banner" id="noKeyBanner">
-    ⚠️ <strong>Clé API OpenAI manquante</strong> — Ouvrez le panneau <em>"Modifier la grille tarifaire (admin)"</em>, saisissez votre clé OpenAI (<code>sk-...</code>) et sauvegardez. Sans clé, sélectionnez les modules manuellement ci-dessous.
+  <div class="c-title">
+    <div class="stepn">1</div>
+    <span style="font-size:19px">✍️</span>
+    Décrivez votre application
   </div>
-  <div class="loader" id="loader"><div class="spin"></div><span id="loaderTxt">Analyse en cours…</span></div>
-  <div class="ai-note" id="aiNote"></div>
+  <textarea id="descInput"
+    placeholder="Ex : J'ai un café avec 4 employés au centre-ville de Tunis. Je veux gérer les commandes par table, la caisse et les présences de mes employés.&#10;&#10;💡 Plus vous êtes précis (secteur, taille, besoins), plus le prompt généré sera détaillé et prêt à l'emploi."></textarea>
+
+  <button class="btn-gen" onclick="genererPrompt()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Générer l'estimation + Prompt prêt à l'emploi
+  </button>
+
+  <!-- PROMPT PANEL — affiché après clic -->
+  <div class="prompt-panel" id="promptPanel" style="display:none">
+    <div class="prompt-panel-title">
+      <span style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">⚡</span>
+      Prompt généré — décrit l'application de votre client
+    </div>
+    <div class="prompt-panel-sub">Basé sur votre description + fonctionnalités sélectionnées · Prêt à coller dans Claude ou ChatGPT</div>
+    <textarea class="prompt-ta" id="promptTa" readonly></textarea>
+    <div class="prompt-actions">
+      <button class="btn-copy" id="btnCopy" onclick="copyPrompt(this)">📋 Copier le prompt</button>
+      <button class="btn-open" onclick="ouvrirDans('claude')">🚀 Ouvrir dans Claude</button>
+      <button class="btn-gpt" onclick="ouvrirDans('chatgpt')">💬 Ouvrir dans ChatGPT</button>
+    </div>
+  </div>
 </div>
 
-<!-- STEP 2 -->
+<!-- STEP 2 : FONCTIONNALITÉS -->
 <div class="card">
   <div class="card-shine"></div>
-  <div class="c-title"><div class="stepn">2</div><span class="ico">🧩</span>Fonctionnalités<span class="rhint">L'IA coche auto · ou cliquez manuellement</span></div>
+  <div class="c-title">
+    <div class="stepn">2</div>
+    <span style="font-size:19px">🧩</span>
+    Fonctionnalités
+    <span class="rhint">Cliquez pour sélectionner · le prompt se met à jour</span>
+  </div>
   <div class="slbl">🔹 Base</div><div class="feat-grid" id="g-base"></div>
   <div class="slbl">🔹 Business</div><div class="feat-grid" id="g-business"></div>
   <div class="slbl">🔹 Avancées</div><div class="feat-grid" id="g-avancees"></div>
   <div class="slbl">🔹 Mobile</div><div class="feat-grid" id="g-mobile"></div>
   <div class="slbl">🔹 Extras</div><div class="feat-grid" id="g-extras"></div>
   <div class="div"></div>
-  <div class="c-title" style="margin-bottom:14px"><span class="ico">⚡</span>Niveau de complexité</div>
+  <div class="c-title" style="margin-bottom:14px"><span style="font-size:19px">⚡</span>Niveau de complexité</div>
   <div class="comp-row">
     <button class="comp-btn simple act" onclick="setComp('simple',this)">🟢 Simple<div class="extra" id="ex-simple">+0 DT</div></button>
     <button class="comp-btn moyenne" onclick="setComp('moyenne',this)">🟡 Moyenne<div class="extra" id="ex-moyenne">+100 DT</div></button>
@@ -269,6 +268,7 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     </div>
   </div>
   <div class="sel-tags" id="selTags"></div>
+
   <div class="monetize-toggle" id="monetizeToggle" onclick="toggleMonetize()">
     <div class="mt-row">
       <div class="mt-icon">💰</div>
@@ -279,10 +279,11 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
       <div class="mt-switch"></div>
     </div>
   </div>
+
   <div class="marketplace-addon" id="marketplaceAddon">
     <div class="ma-tag">🔥 OPTION MARKETPLACE</div>
     <div class="ma-title">Votre app → Un produit SaaS vendu à d'autres entreprises</div>
-    <p class="ma-desc">Nous intégrons votre application dans notre plateforme et la proposons à d'autres entreprises. Vous touchez <strong style="color:var(--c-green)">60–70%</strong> des revenus générés.</p>
+    <p class="ma-desc">Nous intégrons votre application dans notre plateforme. Vous touchez <strong style="color:var(--c-green)">60–70%</strong> des revenus générés. Nous conservons <strong style="color:var(--c-amber)">30–40%</strong> pour la maintenance et la distribution.</p>
     <div class="revenue-calc">
       <div class="rc-title">📊 Simulateur de revenus mensuels</div>
       <div class="rc-slider-row">
@@ -296,13 +297,14 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
         <span class="rc-val" id="valPrice">30 DT</span>
       </div>
       <div class="revenue-grid">
-        <div class="rev-box total"><div class="rv" id="rvTotal">300 DT</div><div class="rl">Revenu total /mois</div></div>
-        <div class="rev-box client"><div class="rv" id="rvClient">195 DT</div><div class="rl">Votre part (65%)</div></div>
-        <div class="rev-box platform"><div class="rv" id="rvPlatform">105 DT</div><div class="rl">Notre commission</div></div>
+        <div class="rev-box total"><div class="rv" id="rvTotal">300 DT</div><div class="rl">Total /mois</div></div>
+        <div class="rev-box client"><div class="rv" id="rvClient">195 DT</div><div class="rl">Votre part</div></div>
+        <div class="rev-box platform"><div class="rv" id="rvPlatform">105 DT</div><div class="rl">Commission</div></div>
       </div>
       <div class="rev-example" id="revExample">Si <strong>10 entreprises</strong> utilisent votre app à <strong>30 DT/mois</strong> → vous gagnez <strong>195 DT/mois</strong> passivement.</div>
     </div>
   </div>
+
   <div class="packs-header">
     <div class="packs-title">📦 Choisissez votre formule</div>
     <div class="packs-sub">Trois niveaux selon votre objectif — setup unique + abonnement mensuel</div>
@@ -366,17 +368,17 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     </div>
   </div>
   <div class="info-box">
-    💡 <strong>Pourquoi le Pack Partenaire ?</strong> Si votre application peut être utile à d'autres entreprises du même secteur, nous pouvons la proposer sur notre plateforme. Vous ne vendez plus seulement un outil — vous vendez <strong>un système qui génère des revenus passifs</strong> pendant que vous travaillez.
+    💡 <strong>Pourquoi le Pack Partenaire ?</strong> Si votre application peut être utile à d'autres entreprises du même secteur, nous pouvons la proposer sur notre plateforme. Vous ne vendez plus seulement un outil — vous vendez <strong>un système qui génère des revenus passifs</strong>.
   </div>
-</div>
+</div><!-- /results -->
 
 <footer>Estimation non contractuelle · Prix en Dinar Tunisien (DT)</footer>
 </div>
 
 <script>
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // DATA
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 const DEFAULT_PRICES = {
   "Authentification":50,"Dashboard":50,
   "Gestion stock":100,"Gestion ventes":100,"Gestion dettes":80,
@@ -397,63 +399,36 @@ const GROUPS = {
   extras:["Design premium","Multilingue","Mode hors-ligne"],
 };
 
-let prices={}, selected=new Set(), complexity="simple", monetize=false, apiKey='';
+// Détails spécifiques par fonctionnalité pour enrichir le prompt
+const FEAT_DETAILS = {
+  "Authentification": "connexion sécurisée par email/mot de passe, gestion des sessions, déconnexion automatique",
+  "Dashboard": "tableau de bord principal avec indicateurs clés, statistiques en temps réel, graphiques d'activité",
+  "Gestion stock": "inventaire des produits/articles avec quantités, prix unitaire en DT, alertes de rupture de stock, historique des mouvements entrée/sortie",
+  "Gestion ventes": "enregistrement des ventes, calcul du total en DT, historique des transactions, chiffre d'affaires journalier et mensuel",
+  "Gestion dettes": "suivi des dettes clients et fournisseurs, montants en DT, dates d'échéance, statuts (payé/en attente), relances",
+  "Gestion clients": "fichier clients avec nom, téléphone (+216), adresse, historique des achats, notes",
+  "Rapports / statistiques": "rapports périodiques (jour/semaine/mois), graphiques d'évolution, top produits/clients, export ou impression",
+  "Multi utilisateurs": "plusieurs comptes avec rôles distincts (administrateur, employé, gérant), permissions par rôle, journal des actions",
+  "Notifications": "alertes en temps réel (stock faible, nouvelles commandes, rappels, événements importants)",
+  "QR code": "génération de QR codes pour produits, tickets ou accès, lecture de QR codes via caméra",
+  "Scan produits": "scan de codes-barres produits via caméra du smartphone pour identification et saisie rapide",
+  "App Android": "version mobile Android (PWA installable) pour accès depuis smartphone et tablette",
+  "Design premium": "interface moderne avec animations fluides, thème dark/light, composants UI professionnels",
+  "Multilingue": "interface disponible en français et en arabe, changement de langue en un clic",
+  "Mode hors-ligne": "fonctionnement sans connexion internet avec synchronisation automatique à la reconnexion",
+};
 
-// ══════════════════════════════════════
-// API KEY — OpenAI
-// ══════════════════════════════════════
-function loadApiKey(){
-  apiKey=localStorage.getItem('ep3_apikey')||'';
-  updateApiStatus();
-  const b=document.getElementById('noKeyBanner');
-  if(b) b.style.display=apiKey?'none':'block';
-}
-function saveApiKey(){
-  const val=document.getElementById('apiKeyInput').value.trim();
-  if(!val){alert('Entrez une clé API OpenAI valide (commence par sk-)');return;}
-  apiKey=val;
-  localStorage.setItem('ep3_apikey',apiKey);
-  updateApiStatus();
-  document.getElementById('noKeyBanner').style.display='none';
-  const btn=document.querySelector('.btn-api-save');
-  btn.textContent='✅ Sauvegardée !';
-  setTimeout(()=>btn.textContent='Sauvegarder',2000);
-}
-function updateApiStatus(){
-  const el=document.getElementById('apiStatus');
-  if(!el) return;
-  if(apiKey&&apiKey.startsWith('sk-')){
-    el.className='api-status ok';
-    el.innerHTML='✅ Clé OpenAI configurée · ••••'+apiKey.slice(-6);
-    const inp=document.getElementById('apiKeyInput');
-    if(inp&&!inp.value) inp.placeholder='••••••••••••'+apiKey.slice(-6);
-  } else {
-    el.className='api-status missing';
-    el.innerHTML='❌ Aucune clé OpenAI configurée — l\'analyse IA ne fonctionnera pas';
-  }
-}
+let prices={}, selected=new Set(), complexity="simple", monetize=false;
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // PRICES
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 function loadPrices(){
-  try{const s=JSON.parse(localStorage.getItem('ep3_prices')||'{}');prices={...DEFAULT_PRICES,...s};}
+  try{const s=JSON.parse(localStorage.getItem('ep5_prices')||'{}');prices={...DEFAULT_PRICES,...s};}
   catch{prices={...DEFAULT_PRICES};}
 }
 loadPrices();
 
-// ══════════════════════════════════════
-// BUILD UI
-// ══════════════════════════════════════
-function buildGrids(){
-  Object.entries(GROUPS).forEach(([g,feats])=>{
-    document.getElementById('g-'+g).innerHTML=feats.map(f=>`
-      <div class="feat-item${selected.has(f)?' sel':''}" onclick="toggleFeat('${f}',this)">
-        <span class="feat-name">${f}</span>
-        <span class="feat-price">${prices[f]??0} DT</span>
-      </div>`).join('');
-  });
-}
 function buildAdmin(){
   const sections={
     "— Fonctionnalités":Object.keys(DEFAULT_PRICES).filter(k=>!k.startsWith('_')),
@@ -481,11 +456,29 @@ function savePrices(){
     const el=document.getElementById('pi-'+k.replace(/\W/g,'_'));
     if(el) prices[k]=Number(el.value)||0;
   });
-  localStorage.setItem('ep3_prices',JSON.stringify(prices));
+  localStorage.setItem('ep5_prices',JSON.stringify(prices));
   buildGrids();updateCompLabels();calculate();
   const b=document.querySelector('.btn-save');
   b.textContent='✅ Sauvegardé !';
   setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);
+}
+function toggleAdmin(){
+  const p=document.getElementById('adminPanel'),b=document.getElementById('adminToggle');
+  p.classList.toggle('open')&&buildAdmin();
+  b.classList.toggle('open',p.classList.contains('open'));
+}
+
+// ══════════════════════════════════════════════
+// BUILD UI
+// ══════════════════════════════════════════════
+function buildGrids(){
+  Object.entries(GROUPS).forEach(([g,feats])=>{
+    document.getElementById('g-'+g).innerHTML=feats.map(f=>`
+      <div class="feat-item${selected.has(f)?' sel':''}" onclick="toggleFeat('${f}',this)">
+        <span class="feat-name">${f}</span>
+        <span class="feat-price">${prices[f]??0} DT</span>
+      </div>`).join('');
+  });
 }
 function updateCompLabels(){
   document.getElementById('ex-simple').textContent='+0 DT';
@@ -493,17 +486,24 @@ function updateCompLabels(){
   document.getElementById('ex-avancee').textContent='+'+(prices._comp_avancee??300)+' DT';
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // INTERACTIONS
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 function toggleFeat(name,el){
   selected.has(name)?(selected.delete(name),el.classList.remove('sel')):(selected.add(name),el.classList.add('sel'));
   calculate();
+  // Si le prompt est déjà affiché, le mettre à jour automatiquement
+  const ta=document.getElementById('promptTa');
+  const desc=document.getElementById('descInput').value.trim();
+  if(ta && ta.value && desc) ta.value=buildPrompt(desc);
 }
 function setComp(val,btn){
   complexity=val;
   document.querySelectorAll('.comp-btn').forEach(b=>b.classList.remove('act','simple','moyenne','avancee'));
   btn.classList.add('act',val);calculate();
+  const ta=document.getElementById('promptTa');
+  const desc=document.getElementById('descInput').value.trim();
+  if(ta && ta.value && desc) ta.value=buildPrompt(desc);
 }
 function toggleMonetize(){
   monetize=!monetize;
@@ -513,29 +513,21 @@ function toggleMonetize(){
   document.getElementById('market-price-pro').style.display=monetize?'block':'none';
   if(monetize) calcRevenue();
   calculate();
+  const ta=document.getElementById('promptTa');
+  const desc=document.getElementById('descInput').value.trim();
+  if(ta && ta.value && desc) ta.value=buildPrompt(desc);
 }
 function choosePack(el,name){
   document.querySelectorAll('.pack').forEach(p=>p.classList.remove('chosen'));
   el.classList.add('chosen');
   const labels={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
   sessionStorage.setItem('bz_pack',name);
-  sessionStorage.setItem('bz_pack_label',labels[name]||name);
   showContinueBanner(name,labels[name]||name);
 }
-function toggleAdmin(){
-  const p=document.getElementById('adminPanel'),b=document.getElementById('adminToggle');
-  p.classList.toggle('open')&&buildAdmin();
-  b.classList.toggle('open',p.classList.contains('open'));
-  if(p.classList.contains('open')){
-    const inp=document.getElementById('apiKeyInput');
-    if(inp&&apiKey) inp.value=apiKey;
-    updateApiStatus();
-  }
-}
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // CALCULATE
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 function calculate(){
   let base=0;
   selected.forEach(f=>base+=prices[f]??0);
@@ -564,9 +556,9 @@ function calculate(){
   document.getElementById('monthly-partenaire').textContent='+ '+mMax+'–'+(mMax*2)+' DT / mois';
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // REVENUE SIM
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 function calcRevenue(){
   const c=+document.getElementById('sliderClients').value;
   const p=+document.getElementById('sliderPrice').value;
@@ -580,261 +572,130 @@ function calcRevenue(){
     `Si <strong>${c} entreprise${c>1?'s':''}</strong> utilisent votre app à <strong>${p} DT/mois</strong> → vous gagnez <strong style="color:var(--c-green)">${share} DT/mois</strong> passivement.`;
 }
 
-// ══════════════════════════════════════
-// PROMPT LOCAL (fallback si pas d'IA)
-// Basé sur description client + fonctionnalités cochées
-// ══════════════════════════════════════
-function generateLocalPrompt(desc){
-  const feats=[...selected];
-  const comp=complexity==='simple'?'Simple':complexity==='moyenne'?'Moyenne':'Avancée';
-  const featList=feats.length>0?feats.map(f=>`- ${f}`).join('\n'):'- Fonctionnalités à définir';
-  return `Crée une application web complète basée sur ce besoin client :
+// ══════════════════════════════════════════════
+// BUILD PROMPT — 100% local, basé sur la description
+// ══════════════════════════════════════════════
+function buildPrompt(desc){
+  const feats = [...selected];
+  const comp = complexity==='simple'?'Simple (logique basique, peu de modules)'
+              :complexity==='moyenne'?'Moyenne (authentification, plusieurs modules liés)'
+              :'Avancée (multi-utilisateurs, logique métier complexe, nombreux modules)';
 
-"${desc}"
-
-Fonctionnalités requises :
-${featList}
-
-Niveau de complexité : ${comp}
-Monétisation : ${monetize?'Oui — prévoir un système d\'abonnement pour revendre à d\'autres entreprises':'Non'}
-
-Données et interface :
-- Prix en Dinar Tunisien (DT)
-- Interface en français (support arabe si mentionné dans la description)
-- Données de démonstration avec noms tunisiens et numéros +216
-
-Stack technique :
-- Fichier HTML unique autonome (HTML + CSS + JS tout inclus, aucune dépendance externe)
-- Firebase Firestore pour la base de données en temps réel
-- Firebase Auth pour l'authentification
-- Design moderne responsive mobile-first, mode dark/light
-
-Livrable : fichier HTML unique complet, fonctionnel, prêt à déployer.`;
-}
-
-// ══════════════════════════════════════
-// SHOW PROMPT PREVIEW
-// ══════════════════════════════════════
-function showPromptPreview(prompt, noteEl){
-  let preview=document.getElementById('promptPreview');
-  if(!preview){
-    preview=document.createElement('div');
-    preview.id='promptPreview';
-    preview.style.cssText='margin-top:16px;background:rgba(0,212,255,.03);border:1px solid rgba(0,212,255,.18);border-radius:14px;padding:16px;animation:fadeUp .3s ease';
-    preview.innerHTML=`
-      <div style="font-size:11px;font-weight:700;color:var(--c-cyan);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">⚡</span>
-        Prompt généré — décrit l'application du client
-        <span style="margin-left:auto;font-size:10px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif">Prêt à coller dans Claude ou ChatGPT</span>
-      </div>
-      <textarea id="promptTa" style="width:100%;min-height:190px;padding:12px 14px;border-radius:9px;border:1px solid rgba(0,212,255,.12);background:rgba(0,0,0,.4);color:var(--muted2);font-family:monospace;font-size:11.5px;resize:vertical;outline:none;line-height:1.6" readonly></textarea>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <button id="btnCopy" onclick="copyPrompt(this)" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:var(--c-cyan);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700">📋 Copier le prompt</button>
-        <button onclick="window.open('https://claude.ai/new?q='+encodeURIComponent(document.getElementById('promptTa').value),'_blank')" style="padding:7px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,#00d4ff,#7c3aed);color:#fff;font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700">🚀 Ouvrir dans Claude</button>
-        <button onclick="window.open('https://chat.openai.com/?q='+encodeURIComponent(document.getElementById('promptTa').value),'_blank')" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:var(--c-green);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700">💬 Ouvrir dans ChatGPT</button>
-      </div>`;
-    noteEl.parentNode.insertBefore(preview, noteEl.nextSibling);
+  // Construire la section fonctionnalités avec détails
+  let featSection = '';
+  if(feats.length > 0){
+    featSection = feats.map(f=>{
+      const detail = FEAT_DETAILS[f] || '';
+      return `• ${f}${detail ? ' — '+detail : ''}`;
+    }).join('\n');
+  } else {
+    featSection = '• À définir selon la description ci-dessus';
   }
-  document.getElementById('promptTa').value=prompt;
+
+  // Détecter la langue souhaitée
+  const wantsArabic = /arab|arabe|عرب/i.test(desc);
+  const langNote = wantsArabic ? 'français et arabe (RTL support requis)' : 'français';
+
+  // Section monétisation
+  const monetizeSection = monetize
+    ? `\nMonétisation :
+• Prévoir un système d'abonnement mensuel pour pouvoir vendre l'application à d'autres entreprises du même secteur
+• Dashboard admin pour gérer les abonnés et les paiements
+• Isolation des données par client (multi-tenant)\n`
+    : '';
+
+  return `Crée une application web complète basée sur le besoin suivant :
+
+━━━ DESCRIPTION DU CLIENT ━━━
+${desc}
+
+━━━ FONCTIONNALITÉS REQUISES ━━━
+${featSection}
+
+━━━ COMPLEXITÉ ━━━
+${comp}
+${monetizeSection}
+━━━ DONNÉES ET LOCALISATION ━━━
+• Tous les montants et prix en Dinar Tunisien (DT)
+• Interface en ${langNote}
+• Données de démonstration réalistes : prénoms tunisiens (Ahmed, Sami, Fatma, Mariem...), villes tunisiennes (Tunis, Sfax, Sousse...), numéros de téléphone format +216
+
+━━━ STACK TECHNIQUE ━━━
+• Fichier HTML unique et autonome — tout inclus : HTML + CSS + JS (aucune dépendance externe, aucun import npm)
+• Firebase Firestore pour la base de données en temps réel
+• Firebase Auth pour l'authentification sécurisée
+• Design moderne et professionnel : responsive mobile-first, mode dark/light activable, UI soignée
+• Compatible navigateur mobile (iPhone, Android)
+
+━━━ ÉCRANS À IMPLÉMENTER ━━━
+Crée tous les écrans nécessaires pour les fonctionnalités listées ci-dessus, adaptés au contexte décrit par le client. Chaque écran doit avoir une navigation claire et des formulaires fonctionnels avec validation.
+
+━━━ LIVRABLE ━━━
+Un seul fichier HTML complet, sans erreurs, prêt à ouvrir dans un navigateur et à déployer.`;
 }
 
+// ══════════════════════════════════════════════
+// GÉNÉRER LE PROMPT (bouton principal)
+// ══════════════════════════════════════════════
+function genererPrompt(){
+  const desc = document.getElementById('descInput').value.trim();
+  if(desc.length < 10){
+    document.getElementById('descInput').focus();
+    document.getElementById('descInput').style.borderColor='var(--c-rose)';
+    setTimeout(()=>document.getElementById('descInput').style.borderColor='',2000);
+    return;
+  }
+
+  // Mettre à jour le prompt
+  const prompt = buildPrompt(desc);
+
+  // Sauvegarder en session
+  sessionStorage.setItem('bz_prompt', prompt);
+  sessionStorage.setItem('bz_features', JSON.stringify([...selected]));
+  sessionStorage.setItem('bz_complexity', complexity);
+  sessionStorage.setItem('bz_monetize', monetize?'1':'0');
+
+  // Afficher le panel
+  const panel = document.getElementById('promptPanel');
+  const ta = document.getElementById('promptTa');
+  ta.value = prompt;
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  // Calculer si fonctionnalités cochées
+  if(selected.size > 0) calculate();
+}
+
+// ══════════════════════════════════════════════
+// ACTIONS PROMPT
+// ══════════════════════════════════════════════
 function copyPrompt(btn){
   const ta=document.getElementById('promptTa');
   if(!ta) return;
   navigator.clipboard.writeText(ta.value).then(()=>{
     btn.textContent='✓ Copié !';
-    setTimeout(()=>btn.textContent='📋 Copier le prompt',2000);
+    btn.style.background='rgba(16,185,129,.2)';
+    btn.style.borderColor='rgba(16,185,129,.4)';
+    btn.style.color='var(--c-green)';
+    setTimeout(()=>{
+      btn.textContent='📋 Copier le prompt';
+      btn.style.background='';btn.style.borderColor='';btn.style.color='';
+    },2200);
   });
 }
-
-// ══════════════════════════════════════
-// ANALYZE WITH AI — OpenAI gpt-4o-mini
-// ══════════════════════════════════════
-async function analyzeWithAI(){
-  const desc=document.getElementById('descInput').value.trim();
-  if(desc.length<8){document.getElementById('descInput').focus();return;}
-
-  if(!apiKey||!apiKey.startsWith('sk-')){
-    document.getElementById('noKeyBanner').style.display='block';
-    document.getElementById('noKeyBanner').scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
-
-  const btn=document.getElementById('aiBtn');
-  const loader=document.getElementById('loader');
-  const note=document.getElementById('aiNote');
-  btn.disabled=true; loader.classList.add('on'); note.style.display='none';
-  document.getElementById('loaderTxt').textContent='GPT analyse votre projet…';
-
-  const allFeats=Object.values(GROUPS).flat();
-  const alreadySelected=[...selected]; // fonctionnalités déjà cochées manuellement
-
-  // ── SYSTEM PROMPT ────────────────────────────────────────────────
-  // Objectif : comprendre LE BUSINESS DU CLIENT depuis sa description,
-  // puis générer un mega prompt qui décrit SON application spécifique.
-  // Le prompt généré NE PARLE PAS de BizFlow — il décrit l'app du client.
-  const systemPrompt=`Tu es expert en développement d'applications web sur mesure pour les PME tunisiennes.
-
-Le client décrit son business et ce qu'il veut digitaliser.
-Tu dois analyser sa description et produire :
-1. Les fonctionnalités pertinentes (depuis la liste disponible)
-2. Le niveau de complexité adapté
-3. Un MEGA PROMPT ultra-précis qui décrit l'APPLICATION DU CLIENT
-
-Le mega prompt doit être basé sur LA DESCRIPTION DU CLIENT — pas un template générique.
-Il servira directement à générer l'application dans Claude ou ChatGPT.
-
-Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après.
-
-Format JSON :
-{
-  "selected": ["fonctionnalités exactes depuis la liste disponible"],
-  "complexity": "simple" | "moyenne" | "avancee",
-  "monetizable": true | false,
-  "businessType": "type de business détecté (ex: Café, Pharmacie, Épicerie, École de conduite...)",
-  "explanation": "2-3 phrases décrivant précisément ce que l'app va faire pour ce client",
-  "megaPrompt": "LE MEGA PROMPT COMPLET ICI"
+function ouvrirDans(target){
+  const prompt=document.getElementById('promptTa')?.value||'';
+  if(!prompt)return;
+  const urls={
+    claude:'https://claude.ai/new?q='+encodeURIComponent(prompt),
+    chatgpt:'https://chat.openai.com/?q='+encodeURIComponent(prompt)
+  };
+  window.open(urls[target],'_blank');
 }
 
-Fonctionnalités disponibles : ${JSON.stringify(allFeats)}
-Fonctionnalités déjà cochées par le client : ${JSON.stringify(alreadySelected)}
-→ Inclure les deux dans "selected" si pertinentes.
-
-Règles complexity :
-- simple : 1-3 fonctionnalités, logique basique
-- moyenne : 3-6 fonctionnalités ou avec authentification
-- avancee : 6+ fonctionnalités, multi-utilisateurs, logique métier complexe
-
-monetizable=true si cette app peut être revendue à d'autres entreprises du même secteur.
-
-═══ STRUCTURE DU MEGA PROMPT ═══
-
-Le megaPrompt doit suivre exactement cette structure :
-
-"Crée une application web complète pour [décrire le business exact du client en détail].
-
-Contexte :
-[Décrire le contexte du client : type de business, taille, nombre d'employés si mentionné, localisation si mentionnée, problème actuel qu'il veut résoudre]
-
-Fonctionnalités requises :
-[Pour chaque fonctionnalité détectée, détailler spécifiquement pour CE client :
-- Ex pour un café : Gestion des commandes → tables numérotées, statut (en attente/en préparation/servi), produits du menu avec prix en DT, impression ticket
-- Ex pour une pharmacie : Gestion stock → médicaments avec DCI, quantité, date d'expiration, alertes rupture
-- etc.]
-
-Données et exemples :
-- Tous les prix en Dinar Tunisien (DT)
-- Interface en français [ajouter : et arabe, si mentionné dans la description]
-- Données de démonstration réalistes : noms tunisiens, numéros +216, villes tunisiennes
-
-Stack technique :
-- Fichier HTML unique autonome (HTML + CSS + JS tout inclus, aucune dépendance externe)
-- Firebase Firestore pour base de données en temps réel
-- Firebase Auth pour authentification
-- Design moderne responsive mobile-first, mode dark/light
-
-Écrans à créer :
-[Lister chaque page/écran de l'application, adapté au business du client :]
-1. [Écran 1 avec son contenu spécifique]
-2. [Écran 2 avec son contenu spécifique]
-...
-
-Livrable : fichier HTML unique complet, fonctionnel, prêt à déployer."`;
-
-  try{
-    // ── APPEL API OPENAI ──────────────────────────────────────────────
-    const r=await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+apiKey
-      },
-      body:JSON.stringify({
-        model:'gpt-4o-mini',
-        max_tokens:2500,
-        temperature:0.7,
-        messages:[
-          {role:'system', content:systemPrompt},
-          {role:'user',   content:'Description du client : '+desc}
-        ],
-        response_format:{type:'json_object'}
-      })
-    });
-
-    if(!r.ok){
-      const err=await r.json().catch(()=>({}));
-      const msg=err?.error?.message||'HTTP '+r.status;
-      if(r.status===401) throw new Error('Clé API OpenAI invalide. Vérifiez votre clé dans le panneau admin.');
-      if(r.status===429) throw new Error('Limite d\'utilisation atteinte. Vérifiez votre compte OpenAI (crédits).');
-      if(r.status===403) throw new Error('Accès refusé. Vérifiez votre clé API OpenAI.');
-      throw new Error(msg);
-    }
-
-    const data=await r.json();
-    const txt=data.choices?.[0]?.message?.content||'{}';
-    let parsed;
-    try{ parsed=JSON.parse(txt.replace(/```json|```/g,'').trim()); }
-    catch(pe){ throw new Error('Réponse IA invalide. Réessayez.'); }
-
-    // ── APPLIQUER SÉLECTIONS IA ───────────────────────────────────────
-    selected.clear();
-    // Fonctionnalités détectées par l'IA
-    (parsed.selected||[]).forEach(f=>{if(allFeats.includes(f))selected.add(f);});
-    // + fonctionnalités déjà cochées manuellement par le client (on les garde)
-    alreadySelected.forEach(f=>{if(allFeats.includes(f))selected.add(f);});
-
-    if(['simple','moyenne','avancee'].includes(parsed.complexity)) complexity=parsed.complexity;
-    buildGrids();
-    document.querySelectorAll('.comp-btn').forEach(b=>b.classList.remove('act','simple','moyenne','avancee'));
-    const ab=document.querySelector('.comp-btn.'+complexity);
-    if(ab) ab.classList.add('act',complexity);
-
-    if(parsed.monetizable){
-      monetize=true;
-      document.getElementById('monetizeToggle').classList.add('active');
-      document.getElementById('marketplaceAddon').classList.add('show');
-      document.getElementById('pro-mfeat').style.display='flex';
-      document.getElementById('market-price-pro').style.display='block';
-      calcRevenue();
-    }
-
-    // ── PROMPT FINAL ──────────────────────────────────────────────────
-    // Priorité 1 : megaPrompt de l'IA (basé sur la description du client)
-    // Fallback   : prompt local si l'IA n'en génère pas un correct
-    const finalPrompt=(parsed.megaPrompt&&parsed.megaPrompt.length>150)
-      ? parsed.megaPrompt
-      : generateLocalPrompt(desc);
-
-    sessionStorage.setItem('bz_prompt',    finalPrompt);
-    sessionStorage.setItem('bz_features',  JSON.stringify([...selected]));
-    sessionStorage.setItem('bz_complexity',complexity);
-    sessionStorage.setItem('bz_monetize',  monetize?'1':'0');
-
-    // ── AFFICHER RÉSULTAT ─────────────────────────────────────────────
-    const moneyHint=parsed.monetizable
-      ?'<span style="color:var(--c-amber);margin-left:8px">💡 Idéal pour la monétisation !</span>':'';
-    const bizHint=parsed.businessType
-      ?`<span style="color:var(--c-cyan);margin-left:8px">📦 ${parsed.businessType}</span>`:'';
-    note.innerHTML=`<strong>🤖 IA :</strong> ${parsed.explanation||'Analyse terminée.'}${moneyHint}${bizHint}`;
-    note.style.display='block';
-    calculate();
-    showPromptPreview(finalPrompt, note);
-
-  }catch(e){
-    note.innerHTML=`<strong>⚠️</strong> ${e.message||'Erreur inconnue'}<br>
-      <small style="color:var(--muted)">Vérifiez votre clé API OpenAI dans le panneau "Modifier la grille tarifaire (admin)".</small>`;
-    note.style.display='block';
-    console.error('OpenAI API error:',e);
-  }finally{
-    btn.disabled=false;
-    loader.classList.remove('on');
-    document.getElementById('loaderTxt').textContent='Analyse en cours…';
-  }
-}
-
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // CONTINUE BANNER
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 function showContinueBanner(pack,label){
   let banner=document.getElementById('continueBanner');
   if(!banner){
@@ -849,11 +710,9 @@ function showContinueBanner(pack,label){
       animation:'bsUp .35s cubic-bezier(.34,1.3,.64,1)'
     });
     document.body.appendChild(banner);
-    if(!document.getElementById('bsUpStyle')){
-      const s=document.createElement('style');s.id='bsUpStyle';
-      s.textContent='@keyframes bsUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}';
-      document.head.appendChild(s);
-    }
+    const s=document.createElement('style');
+    s.textContent='@keyframes bsUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}';
+    document.head.appendChild(s);
   }
   const colors={essentiel:'#34d399',pro:'#6c8fff',partenaire:'#f43f5e'};
   const col=colors[pack]||'#6c8fff';
@@ -875,7 +734,7 @@ function showContinueBanner(pack,label){
 }
 
 function goToClient(pack){
-  const prompt=sessionStorage.getItem('bz_prompt')||generateLocalPrompt(document.getElementById('descInput').value.trim()||'Application sur mesure');
+  const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(document.getElementById('descInput').value.trim());
   sessionStorage.setItem('bz_pack',pack);
   sessionStorage.setItem('bz_prompt',prompt);
   sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
@@ -888,42 +747,40 @@ function goToClient(pack){
   }
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════
 document.getElementById('descInput').addEventListener('keydown',e=>{
-  if(e.ctrlKey&&e.key==='Enter') analyzeWithAI();
+  if(e.ctrlKey&&e.key==='Enter') genererPrompt();
 });
 
-buildGrids(); updateCompLabels(); calcRevenue(); loadApiKey();
+buildGrids(); updateCompLabels(); calcRevenue();
 
-// ── FIREBASE AUTH ──
+// Firebase Auth
 (function(){
   try{
     const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
     firebase.initializeApp(FC);
-    const auth=firebase.auth();
-    auth.onAuthStateChanged(function(u){
-      if(!u) return;
+    firebase.auth().onAuthStateChanged(u=>{
+      if(!u||document.getElementById('authBadge'))return;
       const name=(u.displayName||u.email||'').split(' ')[0]||'Client';
-      const badge=document.getElementById('authBadge')||document.createElement('div');
+      const badge=document.createElement('div');
       badge.id='authBadge';
       badge.style.cssText='position:fixed;top:14px;right:14px;z-index:800;display:flex;align-items:center;gap:8px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:11px;padding:7px 13px;font-size:.76rem;color:#34d399;cursor:pointer;backdrop-filter:blur(12px)';
       badge.innerHTML='<span style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#6c8fff,#b07cff);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff">'+(name[0]||'C').toUpperCase()+'</span><span style="font-weight:700">'+name+'</span><span style="opacity:.55"> · connecté</span>';
-      badge.onclick=function(){window.location.href='client.html'};
-      if(!document.getElementById('authBadge')) document.body.appendChild(badge);
+      badge.onclick=()=>window.location.href='client.html';
+      document.body.appendChild(badge);
     });
-  }catch(e){console.warn('Firebase init:',e)}
+  }catch(e){console.warn('Firebase:',e)}
 })();
 
-// ── RESTORE PACK ──
+// Restore pack
 (function(){
-  const urlPack=new URLSearchParams(location.search).get('pack');
-  const saved=urlPack||sessionStorage.getItem('bz_pack');
-  if(!saved) return;
-  const labels={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
+  const saved=new URLSearchParams(location.search).get('pack')||sessionStorage.getItem('bz_pack');
+  if(!saved)return;
   sessionStorage.setItem('bz_pack',saved);
-  window.addEventListener('DOMContentLoaded',function(){
+  const labels={essentiel:'🟢 Essentiel',pro:'🔵 Pro ⭐',partenaire:'🔴 Partenaire'};
+  window.addEventListener('DOMContentLoaded',()=>{
     const el=document.querySelector('.pack.'+saved);
     if(el){el.classList.add('chosen');showContinueBanner(saved,labels[saved]||saved);}
   });
