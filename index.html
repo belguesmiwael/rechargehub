@@ -328,7 +328,37 @@ footer{padding:44px 6vw;border-top:1px solid var(--gb);position:relative;z-index
 .est-frame{flex:1;border:none;width:100%;display:block;background:transparent}
 .est-handle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);margin:10px auto 0;flex-shrink:0}
 @media(max-width:600px){.est-sheet{height:96vh;max-width:100%;border-radius:20px 20px 0 0}}
+
+/* ══ INLINE AUTH FORM ══ */
+.auth-inline{background:var(--glass2);border:1px solid var(--gb2);border-radius:18px;padding:28px 24px;max-width:420px;margin:0 auto;backdrop-filter:blur(20px)}
+.auth-tabs{display:flex;background:rgba(255,255,255,.06);border-radius:10px;padding:3px;gap:3px;margin-bottom:18px}
+.auth-tab{flex:1;padding:7px 4px;border:none;border-radius:7px;font-family:'Syne',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s;background:none;color:var(--muted)}
+.auth-tab.on{background:var(--ac);color:#fff;box-shadow:0 3px 10px rgba(92,142,255,.3)}
+.auth-panel{display:none}.auth-panel.on{display:block}
+.auth-fg{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
+.auth-fg label{font-size:.64rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.auth-fg input{padding:10px 13px;border-radius:9px;border:1px solid var(--gb2);background:rgba(255,255,255,.06);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.87rem;outline:none;transition:border-color .2s;width:100%}
+.auth-fg input:focus{border-color:var(--ac)}
+.auth-fg .ph-row{display:flex;gap:7px}
+.auth-fg .ph-pfx{padding:10px 12px;border-radius:9px;border:1px solid var(--gb2);background:rgba(255,255,255,.06);font-size:.84rem;font-weight:700;white-space:nowrap;color:var(--tx)}
+.auth-btn{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .25s;box-shadow:0 5px 18px rgba(92,142,255,.3);margin-top:2px}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(92,142,255,.4)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-msg{padding:8px 12px;border-radius:8px;font-size:.77rem;margin-bottom:9px;display:none}
+.auth-msg.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#f87171;display:block}
+.auth-msg.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:#34d399;display:block}
+.auth-otp{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.auth-ob{width:40px;height:48px;border-radius:9px;border:1.5px solid var(--gb2);background:rgba(255,255,255,.06);color:var(--tx);font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;text-align:center;outline:none;transition:all .2s}
+.auth-ob:focus{border-color:var(--ac)}
+.auth-ob.ok{border-color:var(--ac);background:rgba(92,142,255,.08)}
+.etabs-sm{display:flex;background:rgba(255,255,255,.05);border-radius:8px;padding:3px;gap:3px;margin-bottom:11px}
+.etab-sm{flex:1;padding:5px 4px;border:none;border-radius:5px;font-family:'Manrope',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--muted)}
+.etab-sm.on{background:var(--ac);color:#fff}
+.auth-sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
+#recaptcha-cta{min-height:0}
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 </head>
 <body>
 <div class="scene"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
@@ -887,22 +917,81 @@ footer{padding:44px 6vw;border-top:1px solid var(--gb);position:relative;z-index
   <div class="cnt">
     <div class="cta-box">
       <div class="slbl r" style="justify-content:center" data-k="fol">Commencer maintenant</div>
-      <h2 class="stitle r2" data-k="fot">Votre démo<br><span style="background:linear-gradient(135deg,var(--ac),var(--ac2),var(--ac3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">gratuite</span><br>en 48 heures</h2>
-      <p class="ssub r3" style="margin:0 auto 8px" data-k="fos">Connectez-vous en 1 clic — puis décrivez votre business en 2 minutes.</p>
-      <div class="auth-methods r4">
-        <button class="btn-goog" onclick="goEstimateur()">
-          <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          <span data-k="gc1">Continuer avec Google</span>
-        </button>
-        <div class="methods-row">
-          <button class="btn-o" onclick="goEstimateur()">📱 <span data-k="gc2">Téléphone</span></button>
-          <button class="btn-o" onclick="goEstimateur()">✉️ <span data-k="gc3">Email</span></button>
+      <h2 class="stitle r2" data-k="fot">Accédez à votre<br><span style="background:linear-gradient(135deg,var(--ac),var(--ac2),var(--ac3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">espace client</span></h2>
+      <p class="ssub r3" style="margin:0 auto 20px" data-k="fos">Connectez-vous en 1 clic — puis créez ou suivez votre application sur mesure.</p>
+
+      <div class="auth-inline r4" id="ctaAuthBox">
+        <div class="auth-msg" id="ctaMsg"></div>
+        <div class="auth-tabs">
+          <button class="auth-tab on" onclick="ctaTab('google',this)">🔵 Google</button>
+          <button class="auth-tab" onclick="ctaTab('phone',this)">📱 Téléphone</button>
+          <button class="auth-tab" onclick="ctaTab('email',this)">✉️ Email</button>
+        </div>
+
+        <!-- GOOGLE -->
+        <div class="auth-panel on" id="ctaGoogle">
+          <button class="btn-goog" id="ctaGBtn" onclick="ctaGoogle()" style="width:100%">
+            <svg viewBox="0 0 24 24" width="19" height="19"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continuer avec Google
+          </button>
+          <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px">Connexion en 1 clic — recommandé</p>
+        </div>
+
+        <!-- PHONE -->
+        <div class="auth-panel" id="ctaPhone">
+          <div id="ctaPh1">
+            <div class="auth-fg">
+              <label>Numéro tunisien</label>
+              <div class="auth-ph-row">
+                <div class="auth-ph-pfx">🇹🇳 +216</div>
+                <input type="tel" id="ctaPhNum" placeholder="XX XXX XXX" maxlength="8">
+              </div>
+            </div>
+            <div id="rcap-cta"></div>
+            <button class="auth-btn" id="ctaSendBtn" onclick="ctaSendOTP()">Envoyer le code SMS →</button>
+          </div>
+          <div id="ctaPh2" style="display:none">
+            <p style="font-size:.76rem;color:var(--muted);text-align:center;margin-bottom:8px">Code envoyé au <strong id="ctaPhSent" style="color:var(--tx)"></strong></p>
+            <div class="auth-otp-row">
+              <input class="auth-ob" type="tel" maxlength="1" id="co1">
+              <input class="auth-ob" type="tel" maxlength="1" id="co2">
+              <input class="auth-ob" type="tel" maxlength="1" id="co3">
+              <input class="auth-ob" type="tel" maxlength="1" id="co4">
+              <input class="auth-ob" type="tel" maxlength="1" id="co5">
+              <input class="auth-ob" type="tel" maxlength="1" id="co6">
+            </div>
+            <button class="auth-btn" id="ctaVerBtn" onclick="ctaVerOTP()">Vérifier →</button>
+            <p style="text-align:center;margin-top:8px;font-size:.73rem;color:var(--muted)">Pas reçu ? <button id="ctaRsBtn" onclick="ctaResetPh()" style="background:none;border:none;color:var(--ac);font-size:.73rem;cursor:pointer" disabled>Renvoyer</button></p>
+            <span style="display:block;text-align:center;font-size:.7rem;color:var(--muted);cursor:pointer;margin-top:7px" onclick="ctaResetPh()">← Changer de numéro</span>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="auth-panel" id="ctaEmail">
+          <div class="etabs-s">
+            <button class="etab-s on" id="ctaETabLogin" onclick="ctaEMode('login',this)">Connexion</button>
+            <button class="etab-s" onclick="ctaEMode('register',this)">Créer un compte</button>
+          </div>
+          <div class="auth-fg" id="ctaNameF" style="display:none">
+            <label>Nom complet</label>
+            <input type="text" id="ctaEName" placeholder="Votre nom">
+          </div>
+          <div class="auth-fg">
+            <label>Email</label>
+            <input type="email" id="ctaEEmail" placeholder="votre@email.com">
+          </div>
+          <div class="auth-fg">
+            <label>Mot de passe</label>
+            <input type="password" id="ctaEPass" placeholder="••••••••">
+          </div>
+          <button class="auth-btn" id="ctaEBtn" onclick="ctaDoEmail()">Connexion →</button>
         </div>
       </div>
-      <div class="trust-row r5">
-        <span data-k="tr1">Démo gratuite — 0 DT avant validation</span>
-        <span data-k="tr2">Réponse en 24 heures</span>
-        <span data-k="tr3">Sans engagement</span>
+
+      <div class="trust-row r5" style="margin-top:18px">
+        <span>Démo gratuite — 0 DT avant validation</span>
+        <span>Réponse en 24 heures</span>
+        <span>Sans engagement</span>
       </div>
     </div>
   </div>
@@ -1006,6 +1095,168 @@ function closeModal(e){
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modalBg')})});
 
+
+/* ══ CTA AUTH — Firebase init ══ */
+(function(){
+  const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
+  try{firebase.initializeApp(FC);}catch(e){}
+  const auth=firebase.auth();
+  const d=id=>document.getElementById(id);
+  function ctaMsg(m,t){const el=d('ctaMsg');el.textContent=m;el.className='auth-msg '+(t||'err');}
+  function ctaClear(){d('ctaMsg').className='auth-msg';}
+
+  /* Tab switch */
+  window.ctaTab=function(name,btn){
+    ctaClear();
+    ['ctaGoogle','ctaPhone','ctaEmail'].forEach(id=>{const el=d(id);if(el)el.classList.remove('on');});
+    document.querySelectorAll('.auth-tabs .auth-tab').forEach(b=>b.classList.remove('on'));
+    const panel=d('cta'+name.charAt(0).toUpperCase()+name.slice(1));
+    if(panel)panel.classList.add('on');
+    btn.classList.add('on');
+  };
+
+  /* Google */
+  window.ctaGoogle=async function(){
+    ctaClear();
+    const btn=d('ctaGBtn');btn.disabled=true;btn.textContent='⏳ Connexion...';
+    try{
+      const p=new firebase.auth.GoogleAuthProvider();
+      p.addScope('profile');p.addScope('email');
+      await auth.signInWithPopup(p);
+      ctaMsg('✅ Connecté ! Redirection...','ok');
+      setTimeout(()=>{window.location.href='client.html';},900);
+    }catch(e){
+      btn.disabled=false;
+      btn.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continuer avec Google';
+      if(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')return;
+      if(e.code==='auth/unauthorized-domain')ctaMsg('⚠️ Domaine non autorisé : ajoutez "'+location.hostname+'" dans Firebase Console → Authentication → Authorized domains');
+      else if(e.code==='auth/popup-blocked')ctaMsg('⚠️ Popup bloqué — autorisez les popups pour ce site');
+      else ctaMsg('❌ '+e.code+': '+e.message);
+    }
+  };
+
+  /* Phone OTP */
+  let _cr=null,_rcv=null,_rt=null,_rs=0;
+  d('ctaPhNum').oninput=function(){this.value=this.value.replace(/\D/g,'');};
+  d('ctaEPass').onkeydown=function(e){if(e.key==='Enter')ctaDoEmail();};
+
+  function initRcap(){
+    if(_rcv)return;
+    try{_rcv=new firebase.auth.RecaptchaVerifier('rcap-cta',{size:'invisible',callback:()=>{},'expired-callback':()=>{if(_rcv){try{_rcv.clear()}catch(e){}}_rcv=null;}});}
+    catch(e){}
+  }
+  window.ctaSendOTP=async function(){
+    ctaClear();
+    const num=d('ctaPhNum').value.trim();
+    if(num.length<8){ctaMsg('Numéro invalide — 8 chiffres requis');return;}
+    const btn=d('ctaSendBtn');btn.disabled=true;btn.textContent='⏳ Envoi SMS...';
+    try{
+      if(_rcv){try{_rcv.clear()}catch(e){}}_rcv=null;
+      initRcap();
+      _cr=await auth.signInWithPhoneNumber('+216'+num,_rcv);
+      d('ctaPhSent').textContent='+216 '+num;
+      d('ctaPh1').style.display='none';d('ctaPh2').style.display='block';
+      d('co1').focus();
+      ctaMsg('✓ SMS envoyé !','ok');
+      // OTP auto-advance
+      ['co1','co2','co3','co4','co5','co6'].forEach((id,i,arr)=>{
+        const el=d(id);
+        el.oninput=function(){
+          this.value=this.value.replace(/\D/,'');
+          if(this.value){this.classList.add('ok');if(arr[i+1])d(arr[i+1]).focus();ctaAutoVer();}
+          else this.classList.remove('ok');
+        };
+        el.onkeydown=function(e){if(e.key==='Backspace'&&!this.value&&i>0)d(arr[i-1]).focus();};
+      });
+      // Resend timer
+      let s=60;_rs=0;const rb=d('ctaRsBtn');rb.disabled=true;
+      clearInterval(_rt);_rt=setInterval(()=>{s--;rb.textContent=s>0?'Renvoyer ('+s+'s)':'Renvoyer';if(s<=0){clearInterval(_rt);rb.disabled=false;}},1000);
+    }catch(e){
+      btn.disabled=false;btn.textContent='Envoyer le code SMS →';
+      let m=e.message;
+      if(e.code==='auth/invalid-phone-number')m='Numéro invalide.';
+      if(e.code==='auth/too-many-requests')m='Trop de tentatives. Réessayez plus tard.';
+      ctaMsg('❌ '+m);
+      if(_rcv){try{_rcv.clear()}catch(e2){}}_rcv=null;
+    }
+  };
+  function ctaAutoVer(){
+    const code=['co1','co2','co3','co4','co5','co6'].map(id=>d(id).value).join('');
+    if(code.length===6)ctaVerOTP();
+  }
+  window.ctaVerOTP=async function(){
+    ctaClear();
+    const code=['co1','co2','co3','co4','co5','co6'].map(id=>d(id).value).join('');
+    if(code.length<6){ctaMsg('Entrez les 6 chiffres');return;}
+    if(!_cr){ctaMsg('Session expirée. Renvoyez le SMS.');return;}
+    const btn=d('ctaVerBtn');btn.disabled=true;btn.textContent='⏳ Vérification...';
+    try{
+      await _cr.confirm(code);
+      ctaMsg('✅ Connecté ! Redirection...','ok');
+      setTimeout(()=>{window.location.href='client.html';},900);
+    }catch(e){
+      btn.disabled=false;btn.textContent='Vérifier →';
+      let m=e.message;
+      if(e.code==='auth/invalid-verification-code')m='Code incorrect.';
+      if(e.code==='auth/code-expired')m='Code expiré. Renvoyez le SMS.';
+      ctaMsg('❌ '+m);
+    }
+  };
+  window.ctaResetPh=function(){
+    if(_rcv){try{_rcv.clear()}catch(e){}}_rcv=null;_cr=null;
+    clearInterval(_rt);
+    d('ctaPh2').style.display='none';d('ctaPh1').style.display='block';
+    ['co1','co2','co3','co4','co5','co6'].forEach(id=>{d(id).value='';d(id).classList.remove('ok');});
+    ctaClear();
+  };
+
+  /* Email */
+  let _em='login';
+  window.ctaEMode=function(m,btn){
+    _em=m;
+    document.querySelectorAll('.etabs-s .etab-s').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    d('ctaNameF').style.display=m==='register'?'flex':'none';
+    d('ctaEBtn').textContent=m==='login'?'Connexion →':'Créer mon compte →';
+    ctaClear();
+  };
+  window.ctaDoEmail=async function(){
+    ctaClear();
+    const email=d('ctaEEmail').value.trim(),pass=d('ctaEPass').value;
+    if(!email||!pass){ctaMsg('Email et mot de passe requis');return;}
+    const btn=d('ctaEBtn');btn.disabled=true;btn.textContent='⏳ '+(_em==='login'?'Connexion...':'Création...');
+    try{
+      if(_em==='register'){
+        const name=d('ctaEName').value.trim();
+        const cr=await auth.createUserWithEmailAndPassword(email,pass);
+        if(name)await cr.user.updateProfile({displayName:name});
+      }else{
+        await auth.signInWithEmailAndPassword(email,pass);
+      }
+      ctaMsg('✅ Connecté ! Redirection...','ok');
+      setTimeout(()=>{window.location.href='client.html';},900);
+    }catch(e){
+      btn.disabled=false;btn.textContent=_em==='login'?'Connexion →':'Créer mon compte →';
+      let m=e.message;
+      if(e.code==='auth/email-already-in-use')m='Email déjà utilisé — connectez-vous.';
+      if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'||e.code==='auth/invalid-login-credentials')m='Email ou mot de passe incorrect.';
+      if(e.code==='auth/user-not-found')m='Aucun compte. Créez-en un.';
+      if(e.code==='auth/weak-password')m='Mot de passe trop court (min. 6 caractères).';
+      if(e.code==='auth/invalid-email')m='Email invalide.';
+      if(e.code==='auth/too-many-requests')m='Trop de tentatives.';
+      if(e.code==='auth/operation-not-allowed'||e.code==='auth/configuration-not-found')m='⚠️ Email/MDP non activé dans Firebase Console.';
+      ctaMsg('❌ '+m);
+    }
+  };
+
+  /* Check if already logged in */
+  auth.onAuthStateChanged(u=>{
+    if(u&&window.location.hash!=='#stay'){
+      const box=d('ctaAuthBox');
+      if(box)box.innerHTML='<div style="text-align:center;padding:16px 0"><div style="font-size:1.8rem;margin-bottom:8px">👋</div><div style="font-weight:700;font-size:.9rem;margin-bottom:5px">Bonjour '+(u.displayName||u.email||'').split(' ')[0]+'</div><div style="font-size:.76rem;color:var(--muted);margin-bottom:14px">Vous êtes connecté</div><a href="client.html" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:Syne,sans-serif;font-weight:800;font-size:.86rem;text-decoration:none">Mon espace →</a></div>';
+    }
+  });
+})();
 </script>
 
 <!-- ══ ESTIMATEUR MODAL ══ -->
