@@ -452,51 +452,6 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
   </div>
 </div>
 
-<!-- ══ FORM ══ -->
-<div id="formView">
-  <div class="form-card">
-    <h2>🚀 Votre démo gratuite</h2>
-    <p class="sub">Décrivez votre business en 2 minutes</p>
-    <div class="user-row" id="formUserRow">
-      <div class="user-av-fb" id="formAvFb"></div>
-      <img id="formAvImg" src="" alt="" style="display:none;width:26px;height:26px;border-radius:50%">
-      <span id="formUserName"></span>
-      <span style="margin-left:auto;font-size:.72rem;color:var(--mu);cursor:pointer" onclick="doSignOut()">Changer</span>
-    </div>
-    <div class="msg" id="formMsg"></div>
-    <div class="fgrid">
-      <div class="fg"><label>Nom complet *</label><input type="text" id="f_name" placeholder="Votre nom"></div>
-      <div class="fg"><label>Téléphone *</label><input type="tel" id="f_phone" placeholder="+216 XX XXX XXX"></div>
-      <div class="fg ff"><label>Type de business *</label>
-        <select id="f_type" style="padding:12px 15px;border-radius:10px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:.93rem;outline:none;width:100%;transition:border-color .22s">
-          <option value="" disabled selected>Choisissez votre secteur</option>
-          <option>Café / Restaurant</option><option>Commerce / Magasin</option>
-          <option>Livraison</option><option>Crèche / École</option>
-          <option>Grossiste / Import-Export</option><option>Services</option>
-          <option>E-commerce</option><option>Autre</option>
-        </select>
-      </div>
-      <div class="fg ff"><label>Ce que vous voulez automatiser</label>
-        <div class="cbs">
-          <div class="cb" onclick="toggleCb(this,'stock')">📦 Stock</div>
-          <div class="cb" onclick="toggleCb(this,'ventes')">💰 Ventes</div>
-          <div class="cb" onclick="toggleCb(this,'dettes')">📋 Dettes</div>
-          <div class="cb" onclick="toggleCb(this,'employes')">👥 Employés</div>
-          <div class="cb" onclick="toggleCb(this,'livraison')">🛵 Livraisons</div>
-          <div class="cb" onclick="toggleCb(this,'autre')">⚙️ Autre</div>
-        </div>
-      </div>
-      <div class="fg ff"><label>Décrivez votre problème principal</label>
-        <textarea id="f_desc" placeholder="Ex: J'ai un café avec 3 employés..." style="padding:12px 15px;border-radius:10px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:.93rem;outline:none;resize:vertical;min-height:80px;width:100%;transition:border-color .22s"></textarea>
-      </div>
-      <div class="ff">
-        <button class="sub-btn" id="subBtn" onclick="submitLead()"><span id="subTxt">🎯 Envoyer ma demande de démo gratuite</span></button>
-        <p style="text-align:center;font-size:.73rem;color:var(--mu);margin-top:10px">✓ Gratuit · ✓ Sans engagement · Réponse en 24h</p>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ DASHBOARD ══ -->
 
 <!-- ══ DASHBOARD ══ -->
@@ -523,10 +478,14 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
       <!-- NO LEAD STATE -->
       <div id="noLeadState" style="display:none" class="dl-scroll">
         <div class="no-lead-card">
-          <div class="nl-icon">🚀</div>
-          <h3>Créez votre première app</h3>
-          <p>Utilisez notre estimateur pour décrire votre projet. En 2 minutes, Claude génère votre devis et votre prompt de développement.</p>
-          <a href="estimateur.html" class="btn-go-est">🎯 Démarrer l'estimateur</a>
+          <div class="nl-icon">✨</div>
+          <h3>Bienvenue sur BizFlow TN</h3>
+          <p>Choisissez comment démarrer :</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <a href="estimateur.html" class="btn-go-est">🎯 Créer une app sur mesure</a>
+            <a href="marketplace.html" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border-radius:11px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-family:'Syne',sans-serif;font-weight:800;font-size:.86rem;text-decoration:none;transition:all .22s" onmouseover="this.style.background='var(--sf3)'" onmouseout="this.style.background='var(--sf2)'">🏪 Voir le marketplace</a>
+          </div>
+          <p style="font-size:.7rem;color:var(--mu2);margin-top:14px;text-align:center">Démo gratuite · Paiement après validation</p>
         </div>
         <div class="profile-card">
           <img class="profile-av" id="nlProfAv" src="" style="display:none">
@@ -703,13 +662,12 @@ applyT(localStorage.getItem('bzt')||'dark');
 /* Helpers */
 const $=id=>document.getElementById(id);
 function showView(v){
-  ['authView','formView','dashView'].forEach(id=>{
-    const el=$(id); el.style.display='none';
+  ['authView','dashView'].forEach(id=>{
+    const el=$(id);if(el){el.style.display='none';}
   });
   const el=$(v);
   el.style.display='flex';
   if(v==='dashView') el.style.flexDirection='column';
-  if(v==='formView') el.style.flexDirection='column';
 }
 function showMsg(m,t='err'){const el=$('msgBox');el.textContent=m;el.className='msg '+t}
 function clearMsg(){$('msgBox').className='msg'}
@@ -733,7 +691,6 @@ async function doGoogle(){
   clearMsg();saveOrig('gBtn');setBtn('gBtn',true,'Connexion Google...');
   const p=new firebase.auth.GoogleAuthProvider();
   p.addScope('profile');p.addScope('email');
-  if(wantsDemo)sessionStorage.setItem('bz_demo','1');
   try{
     // Try popup first (instant, no page reload)
     await auth.signInWithPopup(p);
@@ -831,14 +788,6 @@ auth.getRedirectResult().then(r=>{
   if(r&&r.user){const hadDemo=sessionStorage.getItem('bz_demo')==='1';sessionStorage.removeItem('bz_demo');if(hadDemo)sessionStorage.setItem('bz_goto_form','1');}
 }).catch(e=>{if(e.code&&!['auth/null-user','auth/no-auth-event'].includes(e.code)){if(e.code==='auth/unauthorized-domain'){showView('authView');showMsg('⚠️ Domaine non autorisé — Firebase Console → Authentication → Authorized domains')}}});
 
-/* FORM setup */
-function setFormUser(u){
-  const name=(u.displayName||u.email||u.phoneNumber||'Vous').split(' ')[0];
-  $('formUserName').textContent=u.displayName||u.email||u.phoneNumber||'Connecté';
-  if(u.photoURL){$('formAvImg').src=u.photoURL;$('formAvImg').style.display='block';$('formAvFb').style.display='none';}
-  else{$('formAvFb').textContent=(name[0]||'?').toUpperCase();$('formAvFb').style.display='flex';$('formAvImg').style.display='none';}
-  $('f_name').value=u.displayName||'';
-}
 
 /* DASH setup */
 function setDashUser(u,name){
@@ -851,49 +800,7 @@ function setDashUser(u,name){
 /* AUTH STATE */
 let unsubL=null, unsubM=null, currentLeadId=null, currentUserId=null;
 
-auth.onAuthStateChanged(async u=>{
-  if(!u){showView('authView');return}
-  const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
-  currentUserId=u.uid;
-  try{await db.collection('users').doc(u.uid).set({name:u.displayName||name,email:u.email||null,phone:u.phoneNumber||null,photoURL:u.photoURL||null,updatedAt:FS.serverTimestamp()},{merge:true})}catch(e){}
 
-  sessionStorage.removeItem('bz_goto_form');
-  try{
-    const ex=await db.collection('leads').where('userId','==',u.uid).limit(1).get();
-    let hasLeads=!ex.empty;
-    if(!hasLeads&&u.email){
-      const byEmail=await db.collection('leads').where('userEmail','==',u.email).limit(1).get();
-      if(!byEmail.empty){
-        hasLeads=true;
-        // link
-        const batch=db.batch();
-        byEmail.docs.forEach(d=>{if(!d.data().userId)batch.update(d.ref,{userId:u.uid})});
-        await batch.commit().catch(()=>{});
-      }
-    }
-    if(hasLeads&&!wantsDemo){setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);}
-    else{setFormUser(u);showView('formView');}
-  }catch(e){console.warn(e);if(wantsDemo){setFormUser(u);showView('formView');}else{setDashUser(u,name);showView('dashView');loadDash(u.uid,u.email);}}
-});
-
-/* ══ FORM SUBMIT ══ */
-const selCats=new Set();
-function toggleCb(el,v){el.classList.toggle('on');selCats.has(v)?selCats.delete(v):selCats.add(v)}
-async function submitLead(){
-  const u=auth.currentUser;if(!u)return;
-  const name=$('f_name').value.trim(),phone=$('f_phone').value.trim(),type=$('f_type').value;
-  if(!name||!phone||!type){showFMsg('Remplissez les champs obligatoires (*)');return}
-  saveOrig('subBtn');setBtn('subBtn',true,'Envoi...');
-  try{
-    const ref=await db.collection('leads').add({name,phone,type,categories:[...selCats].join(', '),description:$('f_desc').value.trim(),userId:u.uid,userEmail:u.email||null,userPhone:u.phoneNumber||null,status:'new',lang:'fr',createdAt:FS.serverTimestamp()});
-    // Welcome message from system
-    await db.collection('messages').add({leadId:ref.id,userId:u.uid,from:'system',type:'system',text:'Demande reçue ! L\'équipe BizFlow va vous contacter dans les 24 heures.',createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-    const name2=(u.displayName||u.email||'Client').split(' ')[0];
-    setDashUser(u,name2);showView('dashView');loadDash(u.uid,u.email);
-    toast('✅ Demande envoyée ! Nous vous contacterons sous 24h.');
-    history.replaceState({},'',location.pathname);
-  }catch(e){console.error(e);showFMsg('❌ Erreur: '+e.message);setBtn('subBtn',false);}
-}
 
 /* ══ DASHBOARD LOAD ══ */
 const SC={new:{l:'🔵 Nouvelle demande',c:'pn',s:1,p:10},contacted:{l:'🟣 En discussion',c:'pc',s:2,p:35},demo:{l:'🟡 Démo(s) envoyée(s)',c:'pd',s:3,p:60},validated:{l:'🟢 App validée !',c:'pv',s:4,p:85},converted:{l:'✅ Application livrée !',c:'pv',s:5,p:100},closed:{l:'⚫ Fermé',c:'px',s:1,p:0}};
@@ -945,7 +852,7 @@ function updProg(status){
 
 /* ══ REDIRECT RESULT ══ */
 auth.getRedirectResult().then(r=>{
-  if(r&&r.user){const h=sessionStorage.getItem('bz_demo');sessionStorage.removeItem('bz_demo');if(h)sessionStorage.setItem('bz_goto_form','1');}
+  // popup auth — no redirect handling needed
 }).catch(e=>{
   if(e.code&&!['auth/null-user','auth/no-auth-event'].includes(e.code)){
     if(e.code==='auth/unauthorized-domain'){showView('authView');showMsg('⚠️ Domaine non autorisé : '+location.hostname);}
