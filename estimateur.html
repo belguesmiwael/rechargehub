@@ -453,22 +453,19 @@ function savePrices(){
     if(el) prices[k]=Number(el.value)||0;
   });
   localStorage.setItem('ep5_prices',JSON.stringify(prices));
-  
+  const b=document.querySelector('.btn-save');
+  if(b){b.textContent='✅ Sauvegardé !';setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);}
+}
+
 /* ══ DOMAIN SELECTOR ══ */
 let selectedDomain = '';
 function selectDomain(val){
   selectedDomain = val;
-  // Update placeholder hint
   const ta = document.getElementById('descInput');
-  if(!ta.value.trim() && val){
+  if(ta && !ta.value.trim() && val){
     ta.placeholder = "Ex : J'ai un(e) "+val.toLowerCase()+" à Tunis. Je veux gérer...";
   }
   sessionStorage.setItem('bz_domain', val);
-}
-buildGrids();updateCompLabels();calculate();
-  const b=document.querySelector('.btn-save');
-  b.textContent='✅ Sauvegardé !';
-  setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);
 }
 function toggleAdmin(){
   const p=document.getElementById('adminPanel'),b=document.getElementById('adminToggle');
