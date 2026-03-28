@@ -5,6 +5,7 @@
 <title>BizFlow TN — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#03030d;--bg2:#07071a;--bg3:#0d0d22;--sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.07);--sf3:rgba(255,255,255,.11);--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);--ac:#5c8eff;--ac2:#a78bfa;--glow:rgba(92,142,255,.2);--tx:#f0efff;--mu:rgba(220,218,255,.55);--mu2:rgba(220,218,255,.22);--red:#f87171;--green:#34d399;--yellow:#fbbf24;--orange:#fb923c}
@@ -487,8 +488,9 @@ tr:hover td{background:var(--sf)}
                       <textarea id="demoMsgIn" placeholder="Message pour le client..." rows="2"></textarea>
                       <div style="display:flex;align-items:center;gap:8px;margin:2px 0">
                         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.74rem;color:var(--mu)">
-                          <input type="checkbox" id="isFinalChk" style="accent-color:var(--green)">
-                          <span style="color:var(--green);font-weight:700">🏁 Version finale</span>
+                          <input type="checkbox" id="isFinalChk" style="accent-color:var(--green);width:16px;height:16px;cursor:pointer">
+                          <span style="color:var(--green);font-weight:800;font-size:.8rem">🏁 Version finale</span>
+                          <span style="font-size:.63rem;color:var(--mu);margin-left:2px">(après paiement)</span>
                         </label>
                       </div>
                       <div class="df-footer">
@@ -644,18 +646,23 @@ tr:hover td{background:var(--sf)}
           <div class="fg"><label>Rôle</label><input id="tr" placeholder="Café — Tunis"></div>
           <div class="fg ff"><label>Témoignage</label><textarea id="tq" placeholder="L'expérience du client..."></textarea></div>
         </div>
-        <button class="add-btn" onclick="addTesti()">Ajouter →</button>
+        <button class="add-btn" onclick="addTesti()">➕ Ajouter</button>
       </div>
-      <div class="testi-list" id="testiList"></div>
+
+      <!-- Testi list -->
+      <div class="card" style="margin-top:12px">
+        <div class="card-hd"><h3>⭐ Témoignages publiés</h3></div>
+        <div id="testiList" class="card-bd"></div>
+      </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- end tab-content -->
+</div><!-- end admin-view -->
 
-<div class="toast" id="toast"></div>
+</div><!-- end #adminView -->
+</body>
 
 <script>
-/* ══ FIREBASE ══ */
 const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",storageBucket:"bizflow-5b1e2.firebasestorage.app",messagingSenderId:"788764741062",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
 firebase.initializeApp(FC);
 const db=firebase.firestore();
@@ -906,6 +913,7 @@ async function sendDemoMsg(){
 
   const existing=await db.collection('messages').where('leadId','==',curLeadId).where('type','==','demo').get();
   const vNum=existing.size+1;
+  var leadStatus2=lead&&lead.status||'';
 
   if(isFinal){
     try{
@@ -937,8 +945,22 @@ async function sendDemoMsg(){
     return;
   }
 
-  if(existing.size>=3){
+  // Block regular demo if payment pending/confirmed — must send final
+  var leadStatus=lead&&lead.status||'';
+  if(['payment_requested','payment_confirmed'].includes(leadStatus)&&!isFinal){
+    toast('💳 Paiement reçu — cochez "🏁 Version finale" pour la livraison.','err');
+    if(document.getElementById('isFinalChk'))document.getElementById('isFinalChk').checked=true;
+    return;
+  }
+  // Block regular demo if client has already paid
+  if(['payment_requested','payment_confirmed'].includes(leadStatus2)&&!isFinal){
+    toast('💳 Paiement reçu — cochez "🏁 Version finale" pour livrer.','err');
+    var chk2=document.getElementById('isFinalChk');if(chk2)chk2.checked=true;
+    return;
+  }
+  if(existing.size>=3&&!isFinal){
     toast('⚠️ Max 3 démos. Cochez "🏁 Version finale" pour la livraison.','err');
+    var chk3=document.getElementById('isFinalChk');if(chk3)chk3.checked=true;
     return;
   }
 
@@ -1055,7 +1077,13 @@ async function selectLead(id){
   if(el_rem){var rem=3-dSnap.size;el_rem.textContent=rem>0?'('+rem+' restante'+(rem>1?'s':'')+')':'(max atteint — cochez finale)';el_rem.style.color=rem<=0?'var(--red)':rem===1?'var(--yellow)':'var(--mu)';}
   // If already 3 demos → pre-check final checkbox
   var fchk=document.getElementById('isFinalChk');
-  if(fchk)fchk.checked=dSnap.size>=3;
+  // Auto-check "Version finale" if payment done or 3+ demos sent
+  var autoFinal=dSnap.size>=3||['payment_requested','payment_confirmed'].includes(lead.status||'');
+  if(fchk)fchk.checked=autoFinal;
+  // Update the label color to alert admin
+  var finalLabel=fchk&&fchk.parentElement;
+  if(finalLabel&&autoFinal)finalLabel.style.color='var(--green)';
+  else if(finalLabel)finalLabel.style.color='';
   // Payment alert
   const payAlert=document.getElementById('payAlertBanner');
   if(payAlert){
@@ -1447,7 +1475,9 @@ async function confirmPaymentAdmin(leadId){
     toast('✅ Paiement confirmé — prêt à envoyer la version finale');
   }catch(e){toast('Erreur: '+e.message,'err');}
 }
+
 </script>
+
 
 <script>
 /* ══ BIZFLOW SOUND ENGINE v2 ══
@@ -1692,6 +1722,12 @@ async function confirmPaymentAdmin(leadId){
     btn.addEventListener('mouseenter',function(){btn.style.transform='scale(1.15)';btn.style.boxShadow='0 6px 22px rgba(92,142,255,.35)';});
     btn.addEventListener('mouseleave',function(){btn.style.transform='scale(1)';btn.style.boxShadow='0 4px 18px rgba(0,0,0,.45)';});
     document.body.appendChild(btn);
+    // Unlock AudioContext on first user gesture
+    document.body.addEventListener('click',function(){ac();},{once:true,passive:true});
+  });
+})();
+
+ppendChild(btn);
     // Unlock AudioContext on first user gesture
     document.body.addEventListener('click',function(){ac();},{once:true,passive:true});
   });
