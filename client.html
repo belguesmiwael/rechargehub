@@ -15,10 +15,10 @@
   --sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.07);--sf3:rgba(255,255,255,.12);
   --bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);--bd3:rgba(255,255,255,.22);
   --ac:#5c8eff;--ac2:#a78bfa;--ac3:#34d399;
-  --glow:rgba(92,142,255,.22);--glow2:rgba(167,139,250,.18);
+  --glow:rgba(92,142,255,.22);
   --tx:#f0efff;--mu:rgba(200,198,240,.55);--mu2:rgba(200,198,240,.22);
   --red:#f87171;--green:#34d399;--yellow:#fbbf24;--orange:#fb923c;
-  --topbar-h:57px;
+  --topbar-h:55px;
 }
 [data-theme=light]{
   --bg:#f4f4ff;--bg2:#ebebff;--bg3:#fff;
@@ -26,358 +26,316 @@
   --bd:rgba(0,0,60,.07);--bd2:rgba(0,0,60,.13);--bd3:rgba(0,0,60,.2);
   --tx:#080820;--mu:rgba(30,30,100,.55);--mu2:rgba(30,30,100,.22);
   --ac:#3d6bff;--ac2:#6d28d9;--glow:rgba(61,107,255,.18);
+  --red:#dc2626;--green:#059669;--yellow:#d97706;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:2px}
 ::-webkit-scrollbar-track{background:transparent}
-
-/* ══ BG ══ */
+/* mesh */
 .mesh{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.1}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.08}
 .orb1{width:500px;height:500px;top:-150px;right:-80px;background:#5c8eff;animation:oa 20s ease-in-out infinite alternate}
 .orb2{width:400px;height:400px;bottom:-80px;left:-60px;background:#a78bfa;animation:oa 26s ease-in-out infinite alternate-reverse}
 @keyframes oa{from{transform:translate(0,0)}to{transform:translate(25px,-20px)}}
-
-/* ══ PROTOCOL ══ */
-#protoWarn{display:none;position:fixed;inset:0;z-index:9999;background:rgba(3,3,13,.97);align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-.pw-card{background:var(--sf2);border:1px solid rgba(248,113,113,.3);border-radius:18px;padding:32px;max-width:460px;width:100%;text-align:center}
-.pw-card h2{font-size:1.05rem;font-weight:800;color:var(--red);margin:10px 0 8px}
-.pw-card p{font-size:.8rem;color:var(--mu);margin-bottom:12px}
-.pw-cmd{background:rgba(0,0,0,.5);border-radius:7px;padding:8px 12px;font-family:monospace;font-size:.78rem;color:var(--green);margin:4px 0;text-align:left}
-
-/* ══ VIEWS ══ */
+/* proto */
+#protoWarn{display:none;position:fixed;inset:0;z-index:9999;background:rgba(3,3,13,.97);align-items:center;justify-content:center;padding:20px}
+.pw-card{background:var(--sf2);border:1px solid rgba(248,113,113,.3);border-radius:18px;padding:28px;max-width:420px;width:100%;text-align:center}
+.pw-card h2{color:var(--red);margin:10px 0 8px;font-size:1rem}
+.pw-card p{font-size:.78rem;color:var(--mu)}
+.pw-cmd{background:rgba(0,0,0,.5);border-radius:6px;padding:6px 11px;font-family:monospace;font-size:.74rem;color:var(--green);margin:4px 0;text-align:left}
+/* views */
 #authView,#dashView{position:relative;z-index:1}
 #authView{display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;flex-direction:column;padding:20px}
 #dashView{display:none;height:100vh;flex-direction:column}
-
-/* ══ AUTH (keep existing styles) ══ */
-.auth-wrap{width:100%;max-width:420px}
-.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;text-align:center;margin-bottom:20px}
+/* ══ AUTH ══ */
+.auth-wrap{width:100%;max-width:410px}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;text-align:center;margin-bottom:18px}
 .auth-logo span{color:var(--ac)}
-.auth-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:22px;padding:28px;backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.auth-card h2{font-size:1.05rem;font-weight:800;text-align:center;margin-bottom:4px}
-.auth-card .sub{font-size:.8rem;color:var(--mu);text-align:center;margin-bottom:18px;line-height:1.6}
-.tabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;gap:3px;margin-bottom:17px}
-.tab{flex:1;padding:7px 4px;border:none;border-radius:7px;font-family:'Manrope',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
+.auth-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:22px;padding:26px;backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.auth-card h2{font-size:1rem;font-weight:800;text-align:center;margin-bottom:4px}
+.auth-card .sub{font-size:.78rem;color:var(--mu);text-align:center;margin-bottom:16px;line-height:1.6}
+.tabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;gap:3px;margin-bottom:15px}
+.tab{flex:1;padding:7px 4px;border:none;border-radius:7px;font-family:'Manrope',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
 .tab.on{background:var(--ac);color:#fff;box-shadow:0 2px 8px var(--glow)}
 .panel{display:none}.panel.on{display:block}
-.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
-.fg label{font-size:.65rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px}
-.fg input{padding:10px 13px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.88rem;outline:none;transition:all .2s;width:100%}
+.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.fg label{font-size:.63rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.fg input{padding:10px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.87rem;outline:none;transition:all .2s;width:100%}
 .fg input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
 .ph-row{display:flex;gap:7px}
-.ph-pfx{padding:10px 11px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);font-size:.84rem;font-weight:700;white-space:nowrap;color:var(--tx)}
-.btn-main{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem;cursor:pointer;transition:all .25s;box-shadow:0 5px 18px var(--glow);margin-top:2px}
+.ph-pfx{padding:10px 11px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);font-size:.83rem;font-weight:700;white-space:nowrap;color:var(--tx)}
+.btn-main{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .25s;box-shadow:0 5px 18px var(--glow);margin-top:2px}
 .btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 26px var(--glow)}
 .btn-main:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--tx);font-family:'Manrope',sans-serif;transition:all .2s;margin-bottom:12px}
-.btn-google:hover{border-color:rgba(66,133,244,.4)}
-.btn-google:disabled{opacity:.5;cursor:not-allowed}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--tx);font-family:'Manrope',sans-serif;transition:all .2s;margin-bottom:11px}
+.btn-google:hover{border-color:rgba(66,133,244,.4)}.btn-google:disabled{opacity:.5;cursor:not-allowed}
 .btn-google svg{width:18px;height:18px;flex-shrink:0}
-.otp-row{display:flex;gap:6px;justify-content:center;margin:12px 0}
-.ob{width:42px;height:50px;border-radius:10px;border:1.5px solid var(--bd2);background:var(--sf);color:var(--tx);font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;text-align:center;outline:none;transition:all .2s}
-.ob:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
-.ob.ok{border-color:var(--ac);background:rgba(92,142,255,.08)}
-.msg{padding:9px 12px;border-radius:8px;font-size:.78rem;margin-bottom:9px;line-height:1.5;display:none}
+.otp-row{display:flex;gap:6px;justify-content:center;margin:11px 0}
+.ob{width:40px;height:48px;border-radius:9px;border:1.5px solid var(--bd2);background:var(--sf);color:var(--tx);font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;text-align:center;outline:none;transition:all .2s}
+.ob:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}.ob.ok{border-color:var(--ac);background:rgba(92,142,255,.08)}
+.msg{padding:9px 11px;border-radius:7px;font-size:.77rem;margin-bottom:9px;line-height:1.5;display:none}
 .msg.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.22);color:var(--red);display:block}
 .msg.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.22);color:var(--green);display:block}
 .sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.back-ln{display:block;text-align:center;font-size:.73rem;color:var(--mu);cursor:pointer;margin-top:8px}
-.resend-b{background:none;border:none;color:var(--ac);font-size:.74rem;cursor:pointer;font-family:'Manrope',sans-serif}
+.back-ln{display:block;text-align:center;font-size:.72rem;color:var(--mu);cursor:pointer;margin-top:7px}
+.resend-b{background:none;border:none;color:var(--ac);font-size:.73rem;cursor:pointer;font-family:'Manrope',sans-serif}
 .resend-b:disabled{opacity:.4;cursor:not-allowed}
-.etabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:3px;gap:3px;margin-bottom:13px}
-.etab{flex:1;padding:6px 4px;border:none;border-radius:6px;font-family:'Manrope',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
+.etabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:3px;gap:3px;margin-bottom:11px}
+.etab{flex:1;padding:6px 4px;border:none;border-radius:6px;font-family:'Manrope',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
 .etab.on{background:var(--ac);color:#fff}
 #recaptcha-container{min-height:0}
-
 /* ══ TOPBAR ══ */
-.topbar{height:var(--topbar-h);background:rgba(3,3,13,.88);border-bottom:1px solid var(--bd);padding:0 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.topbar{height:var(--topbar-h);background:rgba(3,3,13,.9);border-bottom:1px solid var(--bd);padding:0 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
 [data-theme=light] .topbar{background:rgba(244,244,255,.92)}
-.tbl{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px}
+.tbl{font-family:'Syne',sans-serif;font-weight:800;font-size:.97rem;display:flex;align-items:center;gap:8px}
 .tbl-icon{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0}
 .tbl em{color:var(--ac);font-style:normal}
 .tbr{display:flex;align-items:center;gap:7px}
-.ibtn{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--tx);transition:all .2s;flex-shrink:0}
+.ibtn{width:30px;height:30px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--tx);transition:all .2s}
 .ibtn:hover{border-color:var(--ac);color:var(--ac)}
-.uchip{display:flex;align-items:center;gap:5px;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:4px 9px 4px 4px}
-.uav{width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0}
-.uavfb{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.78rem;color:#fff;flex-shrink:0}
-.unm{font-size:.78rem;font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sout{font-size:.74rem;color:var(--mu);background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;white-space:nowrap}
+.uchip{display:flex;align-items:center;gap:5px;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:4px 8px 4px 4px}
+.uav{width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.uavfb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;color:#fff;flex-shrink:0}
+.unm{font-size:.77rem;font-weight:600;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sout{font-size:.72rem;color:var(--mu);background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;white-space:nowrap}
 .sout:hover{color:var(--red);border-color:rgba(248,113,113,.4)}
-
-/* ══ DASHBOARD BODY ══ */
-.dash-body{
-  display:grid;
-  grid-template-columns:320px 1fr 300px;
-  height:calc(100vh - var(--topbar-h));
-  overflow:hidden;
-}
-
-/* ══ LEFT PANEL ══ */
-.dash-left{
-  border-right:1px solid var(--bd);
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:0;
-  background:var(--bg2);
-  min-height:0;
-}
-.dl-scroll{padding:14px;display:flex;flex-direction:column;gap:12px}
-
+/* ══ DASH LAYOUT ══ */
+.dash-body{display:grid;grid-template-columns:280px 1fr 300px;height:calc(100vh - var(--topbar-h));overflow:hidden}
+/* LEFT */
+.dash-left{border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--bg2);overflow:hidden;min-height:0}
+.dl-scroll{padding:14px;display:flex;flex-direction:column;gap:11px;overflow-y:auto}
+/* No lead */
+.no-lead-card{background:linear-gradient(135deg,rgba(92,142,255,.09),rgba(167,139,250,.05));border:1px solid rgba(92,142,255,.18);border-radius:14px;padding:22px 16px;text-align:center}
+.no-lead-card .nl-icon{font-size:2.5rem;margin-bottom:10px}
+.no-lead-card h3{font-size:.9rem;font-weight:800;margin-bottom:5px}
+.no-lead-card p{font-size:.76rem;color:var(--mu);margin-bottom:16px;line-height:1.6}
+.btn-go-est{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.84rem;text-decoration:none;box-shadow:0 4px 14px var(--glow);transition:all .22s}
+.btn-go-est:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--glow)}
+.btn-go-mkt{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:10px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-family:'Syne',sans-serif;font-weight:800;font-size:.84rem;text-decoration:none;transition:all .2s}
+.btn-go-mkt:hover{border-color:var(--ac2);background:var(--sf3)}
+/* Profile strip */
+.profile-strip{display:flex;align-items:center;gap:9px;padding:12px 13px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.profile-av-sm{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--ac)}
+.profile-av-fb-sm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0;border:2px solid var(--ac)}
+.profile-strip-info{flex:1;min-width:0}
+.profile-name-sm{font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-email-sm{font-size:.66rem;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-new-proj{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;text-decoration:none;flex-shrink:0;box-shadow:0 2px 8px var(--glow);transition:all .2s}
+.btn-new-proj:hover{transform:scale(1.1)}
+/* Projects list */
+.projects-header{display:flex;align-items:center;justify-content:space-between;padding:8px 13px 5px;flex-shrink:0}
+.projects-header span{font-size:.68rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.proj-count{background:var(--ac);color:#fff;font-size:.58rem;padding:1px 6px;border-radius:7px;font-weight:700}
+.projects-list{overflow-y:auto;flex:1}
+.proj-item{padding:11px 13px;border-bottom:1px solid var(--bd);cursor:pointer;transition:all .18s;position:relative}
+.proj-item:hover{background:var(--sf)}
+.proj-item.active{background:rgba(92,142,255,.09);border-left:2px solid var(--ac)}
+.proj-item.active .pi-name{color:var(--ac)}
+.pi-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px}
+.pi-name{font-size:.82rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pi-date{font-size:.62rem;color:var(--mu2);flex-shrink:0}
+.pi-pack{font-size:.65rem;font-weight:700;margin-bottom:3px}
+.pi-status{display:inline-flex;align-items:center;padding:2px 7px;border-radius:8px;font-size:.62rem;font-weight:700}
+.pi-unread{position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.s-new{background:rgba(92,142,255,.12);color:var(--ac)}
+.s-contacted{background:rgba(167,139,250,.12);color:var(--ac2)}
+.s-demo{background:rgba(251,191,36,.15);color:var(--yellow)}
+.s-validated{background:rgba(52,211,153,.15);color:var(--green)}
+.s-payment_requested,.s-payment_confirmed{background:rgba(251,191,36,.15);color:var(--yellow)}
+.s-converted,.s-closed{background:rgba(52,211,153,.1);color:var(--green)}
+/* Profile card (no-lead) */
+.profile-card{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:13px;display:flex;align-items:center;gap:10px}
+.profile-av{width:38px;height:38px;border-radius:50%;border:2px solid var(--ac);flex-shrink:0;object-fit:cover}
+.profile-av-fb{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;flex-shrink:0;border:2px solid var(--ac)}
+.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem}
+.profile-email{font-size:.67rem;color:var(--mu)}
 /* ══ CENTER ══ */
-.dash-center{
-  overflow-y:auto;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:13px;
-  min-height:0;
-  background:var(--bg);
-}
-
-/* ══ RIGHT (CHAT) ══ */
-.dash-right{
-  border-left:1px solid var(--bd);
-  display:flex;
-  flex-direction:column;
-  background:var(--bg2);
-  overflow:hidden;
-  min-height:0;
-}
-
-/* ══ CARDS ══ */
-.card{background:var(--sf2);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
-.card-hd{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
-.card-hd h3{font-size:.82rem;font-weight:800}
-.card-bd{padding:13px 14px}
-
-/* ══ NO LEAD STATE ══ */
-.no-lead-card{background:linear-gradient(135deg,rgba(92,142,255,.08),rgba(167,139,250,.05));border:1px solid rgba(92,142,255,.18);border-radius:16px;padding:28px 20px;text-align:center}
-.no-lead-card .nl-icon{font-size:2.8rem;margin-bottom:12px}
-.no-lead-card h3{font-size:.95rem;font-weight:800;margin-bottom:6px}
-.no-lead-card p{font-size:.78rem;color:var(--mu);margin-bottom:18px;line-height:1.6}
-.btn-go-est{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:11px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;text-decoration:none;box-shadow:0 5px 18px var(--glow);transition:all .25s}
-.btn-go-est:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow)}
-
-/* ══ PROFILE ══ */
-.profile-card{background:linear-gradient(135deg,rgba(92,142,255,.1),rgba(167,139,250,.07));border:1px solid rgba(92,142,255,.18);border-radius:13px;padding:15px;display:flex;align-items:center;gap:11px}
-.profile-av{width:44px;height:44px;border-radius:50%;border:2px solid var(--ac);flex-shrink:0;object-fit:cover}
-.profile-av-fb{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;flex-shrink:0;border:2px solid var(--ac)}
-.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;margin-bottom:1px}
-.profile-email{font-size:.68rem;color:var(--mu)}
-.profile-pack{margin-top:4px;display:inline-flex;align-items:center;gap:4px;background:rgba(92,142,255,.1);border:1px solid rgba(92,142,255,.2);border-radius:6px;padding:2px 8px;font-size:.67rem;font-weight:700;color:var(--ac)}
-
-/* ══ PROGRESS ══ */
-.prog-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:13px;padding:14px;position:relative;overflow:hidden}
-.prog-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
-.prog-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px;gap:8px}
-.prog-title{font-size:.84rem;font-weight:800;line-height:1.3}
-.prog-sub{font-size:.66rem;color:var(--mu);margin-top:2px}
-.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:.67rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+.dash-center{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0;background:var(--bg)}
+/* Status card */
+.status-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.sc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.sc-title{font-size:.88rem;font-weight:800;line-height:1.3}
+.sc-sub{font-size:.67rem;color:var(--mu);margin-top:2px}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:.66rem;font-weight:700;white-space:nowrap;flex-shrink:0}
 .pn{background:rgba(92,142,255,.12);color:var(--ac);border:1px solid rgba(92,142,255,.2)}
 .pc{background:rgba(167,139,250,.12);color:var(--ac2);border:1px solid rgba(167,139,250,.2)}
 .pd{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.2)}
 .pv{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
-.px{background:rgba(255,255,255,.06);color:var(--mu);border:1px solid var(--bd)}
+.px{background:rgba(255,255,255,.05);color:var(--mu);border:1px solid var(--bd)}
 .ppay{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.28)}
-.prog-steps{display:flex;position:relative;margin-top:2px}
+.prog-steps{display:flex;position:relative}
 .prog-line{position:absolute;top:13px;left:13px;right:13px;height:2px;background:var(--bd)}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:1px;transition:width .9s cubic-bezier(.34,1.56,.64,1)}
 .ps{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1}
 .psd{width:26px;height:26px;border-radius:50%;border:2px solid var(--bd);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;transition:all .4s}
-.psl{font-size:.58rem;color:var(--mu);text-align:center;line-height:1.3}
+.psl{font-size:.57rem;color:var(--mu);text-align:center;line-height:1.3}
 .ps.done .psd{background:var(--ac);border-color:var(--ac);color:#fff}
 .ps.act .psd{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:#fff;box-shadow:0 0 12px var(--glow);animation:ppulse 2s infinite}
 .ps.done .psl,.ps.act .psl{color:var(--tx)}
-@keyframes ppulse{0%,100%{box-shadow:0 0 12px var(--glow)}50%{box-shadow:0 0 22px var(--glow)}}
-
-/* ══ APP DETAILS ══ */
+@keyframes ppulse{0%,100%{box-shadow:0 0 10px var(--glow)}50%{box-shadow:0 0 20px var(--glow)}}
+/* Payment banner */
+.pay-banner{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.3);border-radius:13px;padding:14px 16px;display:none}
+.pay-banner.on{display:block;animation:fadeIn .3s ease}
+.pb-title{font-size:.82rem;font-weight:800;color:var(--yellow);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.pb-desc{font-size:.75rem;color:var(--mu);line-height:1.6;margin-bottom:10px}
+.btn-pay{padding:9px 17px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .22s;box-shadow:0 4px 12px rgba(251,191,36,.3)}
+.btn-pay:hover{transform:translateY(-1px)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* Detail card */
+.detail-card{background:var(--sf2);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
+.dc-hd{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;font-size:.81rem;font-weight:700}
+.dc-hd:hover{background:var(--sf)}
+.dc-arrow{font-size:.72rem;color:var(--mu);transition:transform .25s}
+.dc-arrow.open{transform:rotate(180deg)}
+.dc-bd{padding:12px 14px}
 .detail-row{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd)}
 .detail-row:last-child{border-bottom:none}
-.dk{font-size:.65rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;min-width:76px;padding-top:1px;flex-shrink:0}
-.dv{font-size:.78rem;color:var(--tx);flex:1}
+.dk{font-size:.64rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;min-width:76px;flex-shrink:0;padding-top:1px}
+.dv{font-size:.77rem;color:var(--tx);flex:1}
 .feat-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
-.feat-tag{background:rgba(92,142,255,.1);border:1px solid rgba(92,142,255,.15);border-radius:5px;padding:2px 7px;font-size:.65rem;color:var(--ac);font-weight:600}
-
-/* ══ PAYMENT BANNER ══ */
-.pay-banner{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.28);border-radius:12px;padding:14px 16px;display:none;animation:fadeIn .3s ease}
-.pay-banner.on{display:block}
-.pb-title{font-size:.82rem;font-weight:800;color:var(--yellow);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.pb-desc{font-size:.75rem;color:var(--mu);line-height:1.6;margin-bottom:11px}
-.btn-pay{padding:9px 18px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .22s;box-shadow:0 4px 12px rgba(251,191,36,.3)}
-.btn-pay:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(251,191,36,.4)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* ══ DEMOS ══ */
+.feat-tag{background:rgba(92,142,255,.1);border:1px solid rgba(92,142,255,.15);border-radius:5px;padding:2px 6px;font-size:.63rem;color:var(--ac);font-weight:600}
+/* Demos */
 .demos-wrap{background:var(--sf2);border:1px solid var(--bd);border-radius:13px;overflow:hidden}
 .demos-hd{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
-.demos-hd h3{font-size:.82rem;font-weight:800;display:flex;align-items:center;gap:7px}
-.demo-cnt{background:var(--ac);color:#fff;font-size:.62rem;padding:2px 6px;border-radius:8px;font-weight:700}
-.demo-item{padding:13px 14px;border-bottom:1px solid var(--bd);animation:fadeIn .3s ease}
+.demos-hd h3{font-size:.81rem;font-weight:800;display:flex;align-items:center;gap:7px}
+.demo-cnt{background:var(--ac);color:#fff;font-size:.6rem;padding:2px 6px;border-radius:8px;font-weight:700}
+.demo-item{padding:12px 14px;border-bottom:1px solid var(--bd);animation:fadeIn .25s ease}
 .demo-item:last-child{border-bottom:none}
 .demo-item.latest{background:rgba(92,142,255,.04)}
 .demo-item.approved{background:rgba(52,211,153,.04)}
-.di-ver{font-size:.64rem;font-weight:800;color:var(--ac);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.di-msg{font-size:.78rem;color:var(--tx);margin-bottom:4px;line-height:1.5}
-.di-date{font-size:.63rem;color:var(--mu2);margin-bottom:9px}
+.di-ver{font-size:.63rem;font-weight:800;color:var(--ac);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.di-msg{font-size:.77rem;color:var(--tx);margin-bottom:3px;line-height:1.5}
+.di-date{font-size:.62rem;color:var(--mu2);margin-bottom:8px}
 .di-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-test{display:inline-flex;align-items:center;gap:5px;background:var(--ac);color:#fff;padding:7px 13px;border-radius:8px;font-weight:700;font-size:.76rem;border:none;cursor:pointer;transition:all .2s;font-family:'Manrope',sans-serif}
+.btn-test{display:inline-flex;align-items:center;gap:5px;background:var(--ac);color:#fff;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;border:none;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
 .btn-test:hover{transform:translateY(-1px);box-shadow:0 4px 14px var(--glow)}
-.btn-approve{display:inline-flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);padding:7px 13px;border-radius:8px;font-weight:700;font-size:.76rem;cursor:pointer;transition:all .2s;font-family:'Manrope',sans-serif}
+.btn-approve{display:inline-flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
 .btn-approve:hover{background:rgba(52,211,153,.2)}
-.btn-improve{display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.22);padding:7px 13px;border-radius:8px;font-weight:700;font-size:.76rem;cursor:pointer;transition:all .2s;font-family:'Manrope',sans-serif}
-.btn-improve:hover{background:rgba(251,191,36,.2)}
-.final-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:2px 7px;font-size:.66rem;font-weight:700;color:var(--green)}
-.locked-badge{font-size:.73rem;color:var(--mu);padding:5px 10px;border-radius:7px;border:1px solid var(--bd);display:inline-flex;align-items:center;gap:4px}
-.modif-warn{font-size:.68rem;color:var(--yellow);padding:3px 7px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18);border-radius:5px;display:inline-block}
-
+.btn-improve{display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.22);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.final-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:2px 7px;font-size:.65rem;font-weight:700;color:var(--green)}
+.locked-badge{font-size:.72rem;color:var(--mu);padding:4px 9px;border-radius:7px;border:1px solid var(--bd);display:inline-flex;align-items:center;gap:4px}
+.modif-counter{font-size:.67rem;color:var(--mu)}
+.modif-counter.warn{color:var(--yellow)}
+.modif-counter.blocked{color:var(--red)}
+.modif-warn{font-size:.63rem;color:var(--yellow);padding:2px 6px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.18);border-radius:5px}
+/* Await */
+.await-card{text-align:center;padding:28px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:13px}
+.await-icon{font-size:2.4rem;margin-bottom:10px}
+.await-title{font-size:.88rem;font-weight:800;margin-bottom:5px}
+.await-sub{font-size:.76rem;color:var(--mu);line-height:1.7}
 /* ══ CHAT ══ */
+.dash-right{border-left:1px solid var(--bd);display:flex;flex-direction:column;background:var(--bg2);overflow:hidden;min-height:0}
 .chat-hd{padding:12px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.chat-hd h3{font-size:.82rem;font-weight:800}
-.chat-hd-sub{font-size:.68rem;color:var(--mu);margin-top:1px}
-.chat-unread{background:var(--red);color:#fff;font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:7px;display:none}
+.chat-hd h3{font-size:.81rem;font-weight:800}
+.chat-hd-sub{font-size:.67rem;color:var(--mu);margin-top:1px}
+.chat-unread{background:var(--red);color:#fff;font-size:.59rem;font-weight:800;padding:2px 6px;border-radius:7px;display:none}
 .chat-unread.on{display:inline-block}
-.chat-msgs{
-  flex:1;
-  overflow-y:auto;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  min-height:0;
-  scroll-behavior:smooth;
-  overscroll-behavior:contain;
-}
-.chat-empty{text-align:center;padding:28px 12px;color:var(--mu);font-size:.78rem;line-height:1.6}
-/* bubbles */
+.chat-msgs{flex:1;overflow-y:auto;padding:11px;display:flex;flex-direction:column;gap:7px;min-height:0;scroll-behavior:smooth;overscroll-behavior:contain}
+.chat-empty{text-align:center;padding:28px 12px;color:var(--mu);font-size:.77rem;line-height:1.7}
 .bubble{max-width:86%;display:flex;flex-direction:column;gap:2px;animation:bpop .2s ease}
-@keyframes bpop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes bpop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .bubble.mine{align-self:flex-end}
 .bubble.theirs{align-self:flex-start}
-.bubble-body{padding:8px 11px;border-radius:12px;font-size:.8rem;line-height:1.55;word-break:break-word}
+.bubble-body{padding:8px 11px;border-radius:12px;font-size:.79rem;line-height:1.55;word-break:break-word}
 .mine .bubble-body{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-bottom-right-radius:3px}
 .theirs .bubble-body{background:var(--sf2);border:1px solid var(--bd2);border-bottom-left-radius:3px}
-.bubble-meta{font-size:.61rem;color:var(--mu2);padding:0 3px}
+.bubble-meta{font-size:.6rem;color:var(--mu2);padding:0 3px}
 .mine .bubble-meta{text-align:right}
-.sys-msg{align-self:center;font-size:.68rem;color:var(--mu);padding:3px 10px;background:var(--sf);border-radius:14px;border:1px solid var(--bd);text-align:center;max-width:90%}
-/* demo bubble in chat */
+.sys-msg{align-self:center;font-size:.67rem;color:var(--mu);padding:3px 10px;background:var(--sf);border-radius:14px;border:1px solid var(--bd);text-align:center;max-width:92%}
 .demo-bubble{background:linear-gradient(135deg,rgba(92,142,255,.08),rgba(167,139,250,.05));border:1px solid rgba(92,142,255,.2);border-radius:12px;padding:11px 13px;max-width:94%;align-self:flex-start;animation:bpop .2s ease}
 .demo-bubble.approved{border-color:rgba(52,211,153,.28);background:rgba(52,211,153,.04)}
 .demo-bubble.final{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.06);border-top:2px solid var(--green)}
-.db-ver{font-size:.63rem;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
-.db-msg{font-size:.79rem;color:var(--tx);margin-bottom:4px;line-height:1.5}
-.db-date{font-size:.62rem;color:var(--mu2);margin-bottom:8px}
+.db-ver{font-size:.62rem;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.db-msg{font-size:.78rem;color:var(--tx);margin-bottom:3px;line-height:1.5}
+.db-date{font-size:.61rem;color:var(--mu2);margin-bottom:7px}
 .db-actions{display:flex;gap:6px;flex-wrap:wrap}
-.pay-bubble{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:9px 12px;max-width:94%;align-self:flex-start;font-size:.78rem;color:var(--yellow);animation:bpop .2s ease}
-.approval-bubble{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);border-radius:12px;padding:9px 12px;max-width:94%;align-self:flex-start;font-size:.78rem;color:var(--green);animation:bpop .2s ease}
-/* media */
-.msg-img{max-width:180px;border-radius:9px;margin-top:3px;cursor:pointer;border:1px solid var(--bd);display:block}
+.pay-bubble{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:8px 12px;max-width:94%;align-self:flex-start;font-size:.77rem;color:var(--yellow);animation:bpop .2s ease}
+.approval-bubble{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);border-radius:12px;padding:8px 12px;max-width:94%;align-self:flex-start;font-size:.77rem;color:var(--green);animation:bpop .2s ease}
+.msg-img{max-width:175px;border-radius:8px;margin-top:3px;cursor:pointer;border:1px solid var(--bd);display:block}
 .voice-row{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--sf);border-radius:9px;border:1px solid var(--bd)}
-.vplay{width:25px;height:25px;border-radius:50%;border:none;background:var(--ac);color:#fff;cursor:pointer;font-size:.68rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.vdur{font-size:.66rem;color:var(--mu);white-space:nowrap}
-/* input */
-.chat-input-wrap{padding:10px 12px;border-top:1px solid var(--bd);flex-shrink:0}
+.vplay{width:24px;height:24px;border-radius:50%;border:none;background:var(--ac);color:#fff;cursor:pointer;font-size:.68rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.vdur{font-size:.66rem;color:var(--mu)}
+.chat-input-wrap{padding:10px 11px;border-top:1px solid var(--bd);flex-shrink:0}
 .chat-extras{display:flex;gap:5px;margin-bottom:6px;align-items:center}
-.extra-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--mu);transition:all .2s;flex-shrink:0}
+.extra-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--mu);transition:all .2s}
 .extra-btn:hover{border-color:var(--ac);color:var(--ac)}
 .extra-btn.rec{background:rgba(248,113,113,.12);border-color:var(--red);color:var(--red);animation:precord 1s infinite}
 @keyframes precord{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.3)}50%{box-shadow:0 0 0 4px rgba(248,113,113,0)}}
-.rec-timer{font-size:.68rem;color:var(--red);display:none;align-items:center;gap:3px}
+.rec-timer{font-size:.67rem;color:var(--red);display:none;align-items:center;gap:3px}
 .chat-row{display:flex;gap:6px;align-items:flex-end}
-.chat-ta{flex:1;padding:8px 11px;border-radius:10px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.81rem;outline:none;resize:none;line-height:1.5;max-height:80px;min-height:34px;transition:border-color .2s}
+.chat-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.8rem;outline:none;resize:none;line-height:1.5;max-height:80px;min-height:34px;transition:border-color .2s}
 .chat-ta:focus{border-color:var(--ac)}
-.send-btn{width:34px;height:34px;border-radius:9px;border:none;background:var(--ac);color:#fff;cursor:pointer;font-size:.95rem;flex-shrink:0;transition:all .2s;box-shadow:0 3px 10px var(--glow);display:flex;align-items:center;justify-content:center}
-.send-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px var(--glow)}
-
-/* ══ DEMO OVERLAY ══ */
+.send-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--ac);color:#fff;cursor:pointer;font-size:.9rem;flex-shrink:0;transition:all .2s;box-shadow:0 3px 10px var(--glow);display:flex;align-items:center;justify-content:center}
+.send-btn:hover{transform:translateY(-1px)}
+/* ══ OVERLAYS ══ */
 #demoOv{position:fixed;inset:0;z-index:1000;display:none;background:rgba(3,3,13,.93);backdrop-filter:blur(18px);flex-direction:column}
-#demoOv.open{display:flex;animation:ovfade .22s ease}
+#demoOv.open{display:flex;animation:ovfade .2s ease}
 @keyframes ovfade{from{opacity:0}to{opacity:1}}
 .ov-hd{padding:11px 16px;background:rgba(7,7,26,.96);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px}
-.ov-hd-left{display:flex;align-items:center;gap:9px}
-.ov-hd h3{font-size:.88rem;font-weight:800}
-.ov-ver-badge{font-size:.66rem;background:rgba(92,142,255,.15);border:1px solid rgba(92,142,255,.25);color:var(--ac);padding:3px 8px;border-radius:9px;font-weight:700}
-.ov-actions{display:flex;gap:7px;align-items:center}
-.btn-ov-approve{padding:7px 15px;border-radius:9px;border:none;background:var(--green);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;transition:all .22s;box-shadow:0 3px 12px rgba(52,211,153,.3)}
-.btn-ov-approve:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(52,211,153,.4)}
-.btn-ov-improve{padding:7px 15px;border-radius:9px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.1);color:var(--yellow);font-family:'Syne',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;transition:all .22s}
-.btn-ov-improve:hover{background:rgba(251,191,36,.2)}
-.btn-ov-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;color:var(--mu);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.btn-ov-close:hover{background:var(--sf2);color:var(--tx)}
+.ov-hd h3{font-size:.87rem;font-weight:800}
+.ov-ver-badge{font-size:.65rem;background:rgba(92,142,255,.15);border:1px solid rgba(92,142,255,.25);color:var(--ac);padding:3px 8px;border-radius:8px;font-weight:700}
+.btn-ov-approve{padding:7px 14px;border-radius:9px;border:none;background:var(--green);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.79rem;cursor:pointer;transition:all .2s}
+.btn-ov-improve{padding:7px 14px;border-radius:9px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.1);color:var(--yellow);font-family:'Syne',sans-serif;font-weight:800;font-size:.79rem;cursor:pointer}
+.btn-ov-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;color:var(--mu);font-size:.88rem;display:flex;align-items:center;justify-content:center}
 .ov-frame{flex:1;border:none;width:100%;display:block}
 .ov-improve-bar{display:none;padding:10px 16px;background:rgba(7,7,26,.96);border-top:1px solid var(--bd);flex-shrink:0;gap:8px;align-items:flex-end}
 .ov-improve-bar.open{display:flex;animation:fadeIn .2s ease}
-.ov-ta{flex:1;padding:8px 11px;border-radius:9px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.8rem;outline:none;resize:none;min-height:36px;max-height:72px;line-height:1.5;transition:border-color .2s}
+.ov-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.79rem;outline:none;resize:none;min-height:34px;max-height:70px;transition:border-color .2s}
 .ov-ta:focus{border-color:var(--yellow)}
-.btn-ov-send{padding:8px 15px;border-radius:9px;border:none;background:var(--yellow);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;white-space:nowrap}
-/* modif counter */
-.modif-counter{font-size:.68rem;color:var(--mu);margin-left:auto;padding-right:4px}
-.modif-counter.warn{color:var(--yellow)}
-.modif-counter.blocked{color:var(--red)}
-
-/* ══ PAYMENT OVERLAY ══ */
+.btn-ov-send{padding:8px 14px;border-radius:9px;border:none;background:var(--yellow);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.77rem;cursor:pointer}
+/* Payment overlay */
 #payOv{position:fixed;inset:0;z-index:2000;display:none;background:rgba(3,3,13,.95);backdrop-filter:blur(22px);align-items:center;justify-content:center;padding:16px}
-#payOv.open{display:flex;animation:ovfade .22s ease}
-.pay-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:20px;padding:28px;max-width:420px;width:100%;position:relative;box-shadow:0 28px 60px rgba(0,0,0,.5)}
-.pay-card h2{font-size:1.05rem;font-weight:800;text-align:center;margin-bottom:4px}
-.pay-sub{font-size:.77rem;color:var(--mu);text-align:center;margin-bottom:18px;line-height:1.6}
-.pay-amount{text-align:center;padding:13px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.18);border-radius:10px;margin-bottom:16px}
-.pay-amount .pa-price{font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:800;color:var(--green)}
-.pa-lbl{font-size:.68rem;color:var(--mu);margin-top:2px}
-.pay-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.pay-method{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;border:1px solid var(--bd2);background:var(--sf);cursor:pointer;transition:all .2s}
-.pay-method:hover{border-color:var(--ac)}
-.pay-method.sel{border-color:var(--green);background:rgba(52,211,153,.07)}
-.pm-icon{font-size:1.3rem;width:30px;text-align:center;flex-shrink:0}
-.pm-name{font-weight:700;font-size:.83rem}
-.pm-desc{font-size:.68rem;color:var(--mu);margin-top:1px}
-.btn-pay-confirm{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--green),#059669);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .22s;box-shadow:0 5px 18px rgba(52,211,153,.3)}
-.btn-pay-confirm:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(52,211,153,.4)}
-.pay-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:.85rem}
-
-/* ══ LOADING ══ */
-.lv{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:40px;color:var(--mu);font-size:.8rem}
-.splg{width:30px;height:30px;border:2.5px solid var(--bd2);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
-
-/* ══ TOAST ══ */
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(50px);z-index:9999;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:10px 16px;font-size:.8rem;color:var(--tx);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 32px rgba(0,0,0,.4);white-space:nowrap;max-width:90vw}
+#payOv.open{display:flex;animation:ovfade .2s ease}
+.pay-card{background:var(--bg3,var(--bg2));border:1px solid var(--bd2);border-radius:20px;padding:26px;max-width:400px;width:100%;position:relative;box-shadow:0 24px 50px rgba(0,0,0,.5)}
+.pay-card h2{font-size:1rem;font-weight:800;text-align:center;margin-bottom:4px}
+.pay-sub{font-size:.76rem;color:var(--mu);text-align:center;margin-bottom:16px;line-height:1.6}
+.pay-amount{text-align:center;padding:11px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.18);border-radius:9px;margin-bottom:14px}
+.pa-price{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:var(--green)}
+.pa-lbl{font-size:.67rem;color:var(--mu);margin-top:2px}
+.pay-methods{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pay-method{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:10px;border:1px solid var(--bd2);background:var(--sf);cursor:pointer;transition:all .2s}
+.pay-method:hover{border-color:var(--ac)}.pay-method.sel{border-color:var(--green);background:rgba(52,211,153,.07)}
+.pm-icon{font-size:1.2rem;width:28px;text-align:center;flex-shrink:0}
+.pm-name{font-weight:700;font-size:.82rem}
+.pm-desc{font-size:.67rem;color:var(--mu);margin-top:1px}
+.btn-pay-confirm{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--green),#059669);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;cursor:pointer;transition:all .22s;box-shadow:0 5px 16px rgba(52,211,153,.3)}
+.btn-pay-confirm:hover{transform:translateY(-1px)}
+.pay-close{position:absolute;top:11px;right:11px;width:27px;height:27px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:.84rem}
+/* loading */
+.lv{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;padding:32px;color:var(--mu);font-size:.78rem}
+.splg{width:28px;height:28px;border:2.5px solid var(--bd2);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+/* toast */
+.toast{position:fixed;bottom:15px;left:50%;transform:translateX(-50%) translateY(50px);z-index:9999;background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;padding:10px 15px;font-size:.79rem;color:var(--tx);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 10px 30px rgba(0,0,0,.4);white-space:nowrap;max-width:90vw}
 .toast.on{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.suc{border-left:3px solid var(--green)}
 .toast.err{border-left:3px solid var(--red)}
-
-/* ══ RESPONSIVE MOBILE ══ */
+/* ══ RESPONSIVE ══ */
 @media(max-width:900px){
-  .dash-body{grid-template-columns:1fr;height:auto;overflow:visible}
   html,body{height:auto;overflow:auto}
   #dashView{height:auto}
-  .dash-left{max-height:none;border-right:none;border-bottom:1px solid var(--bd)}
-  .dash-center{border-bottom:1px solid var(--bd)}
-  .dash-right{height:420px;border-left:none}
+  .dash-body{grid-template-columns:1fr;height:auto;overflow:visible}
+  .dash-left{max-height:340px;border-right:none;border-bottom:1px solid var(--bd)}
+  .dash-center{height:auto;min-height:300px}
+  .dash-right{height:420px;border-left:none;border-top:1px solid var(--bd)}
+  #centerEmpty{min-height:120px}
 }
 @media(max-width:600px){
-  .topbar{padding:0 12px}
-  .tbr .unm{display:none}
-  .otp-row .ob{width:38px;height:46px}
-  .ov-hd{padding:9px 12px}
-  .ov-actions{gap:5px}
-  .btn-ov-approve,.btn-ov-improve{font-size:.73rem;padding:6px 10px}
+  .topbar{padding:0 11px}
+  .unm{display:none}
+  .ov-hd{padding:9px 11px}
+  .btn-ov-approve,.btn-ov-improve{font-size:.72rem;padding:6px 10px}
 }
-@media(min-width:901px){
-  .dash-left,.dash-right{height:calc(100vh - var(--topbar-h))}
-  .dash-center{height:calc(100vh - var(--topbar-h))}
-}
+
 </style>
 </head>
 <body>
 <div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div></div>
-
 <!-- PROTOCOL WARNING -->
 <div id="protoWarn">
   <div class="pw-card">
@@ -451,9 +409,6 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
     <p style="text-align:center;margin-top:16px;font-size:.79rem;color:var(--mu)"><a href="/" style="color:var(--ac)">← Retour au site</a></p>
   </div>
 </div>
-
-<!-- ══ DASHBOARD ══ -->
-
 <!-- ══ DASHBOARD ══ -->
 <div id="dashView">
   <div class="topbar">
@@ -471,23 +426,22 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
 
   <div class="dash-body" id="dashBody">
 
-    <!-- LEFT -->
+    <!-- ── LEFT : projects list + profile ── -->
     <div class="dash-left" id="dashLeft">
       <div id="dashLoader" class="lv"><div class="splg"></div></div>
 
-      <!-- NO LEAD STATE -->
+      <!-- NO LEAD -->
       <div id="noLeadState" style="display:none" class="dl-scroll">
         <div class="no-lead-card">
           <div class="nl-icon">✨</div>
           <h3>Bienvenue sur BizFlow TN</h3>
-          <p>Choisissez comment démarrer :</p>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-            <a href="estimateur.html" class="btn-go-est">🎯 Créer une app sur mesure</a>
-            <a href="marketplace.html" style="display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border-radius:11px;background:var(--sf2);border:1px solid var(--bd2);color:var(--tx);font-family:'Syne',sans-serif;font-weight:800;font-size:.86rem;text-decoration:none;transition:all .22s" onmouseover="this.style.background='var(--sf3)'" onmouseout="this.style.background='var(--sf2)'">🏪 Voir le marketplace</a>
+          <p>Créez votre première application sur mesure ou explorez notre marketplace.</p>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px">
+            <a href="estimateur.html" class="btn-go-est">🎯 Créer mon application</a>
+            <a href="marketplace.html" class="btn-go-mkt">🏪 Voir le marketplace</a>
           </div>
-          <p style="font-size:.7rem;color:var(--mu2);margin-top:14px;text-align:center">Démo gratuite · Paiement après validation</p>
         </div>
-        <div class="profile-card">
+        <div class="profile-card" style="margin-top:12px">
           <img class="profile-av" id="nlProfAv" src="" style="display:none">
           <div class="profile-av-fb" id="nlProfAvFb" style="display:none"></div>
           <div>
@@ -497,95 +451,117 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
         </div>
       </div>
 
-      <!-- HAS LEAD STATE -->
-      <div id="hasLeadState" style="display:none" class="dl-scroll">
-        <div class="profile-card">
-          <img class="profile-av" id="profAv" src="" style="display:none">
-          <div class="profile-av-fb" id="profAvFb" style="display:none"></div>
-          <div>
-            <div class="profile-name" id="profName"></div>
-            <div class="profile-email" id="profEmail"></div>
-            <div id="profPack" class="profile-pack" style="display:none"></div>
+      <!-- HAS LEADS -->
+      <div id="hasLeadState" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0">
+        <!-- Profile strip -->
+        <div class="profile-strip">
+          <img class="profile-av-sm" id="profAv" src="" style="display:none">
+          <div class="profile-av-fb-sm" id="profAvFb" style="display:none"></div>
+          <div class="profile-strip-info">
+            <div class="profile-name-sm" id="profName"></div>
+            <div class="profile-email-sm" id="profEmail"></div>
           </div>
+          <a href="estimateur.html" class="btn-new-proj" title="Nouvelle demande">＋</a>
         </div>
 
-        <div class="prog-card">
-          <div class="prog-top">
-            <div><div class="prog-title" id="progTitle">Application</div><div class="prog-sub" id="progSub"></div></div>
+        <!-- Projects list -->
+        <div class="projects-header">
+          <span>Mes projets</span>
+          <span class="proj-count" id="projCount"></span>
+        </div>
+        <div class="projects-list" id="projectsList"></div>
+      </div>
+    </div>
+
+    <!-- ── CENTER : project detail ── -->
+    <div class="dash-center" id="dashCenter">
+      <!-- Empty state -->
+      <div id="centerEmpty" style="display:flex;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--mu)">
+        <div style="font-size:3rem">👈</div>
+        <div style="font-weight:700;font-size:.9rem">Sélectionnez un projet</div>
+        <div style="font-size:.76rem;text-align:center;max-width:200px;line-height:1.6">Cliquez sur l'un de vos projets pour voir son avancement</div>
+      </div>
+
+      <!-- Project detail (shown when lead selected) -->
+      <div id="centerContent" style="display:none;flex-direction:column;gap:13px">
+
+        <!-- Status card -->
+        <div class="status-card" id="statusCard">
+          <div class="sc-top">
+            <div class="sc-info">
+              <div class="sc-title" id="scTitle">Application</div>
+              <div class="sc-sub" id="scSub"></div>
+            </div>
             <div class="pill pn" id="spill">🔵 Nouvelle</div>
           </div>
-          <div class="prog-steps">
+          <div class="prog-steps" style="margin-top:13px">
             <div class="prog-line"><div class="prog-fill" id="pf" style="width:0%"></div></div>
             <div class="ps" id="ps1"><div class="psd">1</div><div class="psl">Reçue</div></div>
-            <div class="ps" id="ps2"><div class="psd">2</div><div class="psl">Analyse</div></div>
+            <div class="ps" id="ps2"><div class="psd">2</div><div class="psl">Discussion</div></div>
             <div class="ps" id="ps3"><div class="psd">3</div><div class="psl">Démo</div></div>
-            <div class="ps" id="ps4"><div class="psd">4</div><div class="psl">Validée</div></div>
+            <div class="ps" id="ps4"><div class="psd">4</div><div class="psl">Paiement</div></div>
             <div class="ps" id="ps5"><div class="psd">5</div><div class="psl">Livrée ✓</div></div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-hd"><h3>📋 Détails de votre app</h3></div>
-          <div class="card-bd" id="appDetails" style="font-size:.78rem;color:var(--mu)">—</div>
+        <!-- Payment banner -->
+        <div class="pay-banner" id="payBanner">
+          <div class="pb-title">💳 Paiement requis</div>
+          <div class="pb-desc" id="pbDesc">Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.</div>
+          <button class="btn-pay" onclick="openPayOv()">💳 Régler maintenant</button>
         </div>
 
-        <div style="text-align:center;padding:4px 0">
-          <a href="estimateur.html" style="font-size:.75rem;color:var(--ac)">+ Nouvelle demande</a>
+        <!-- App details (collapsible) -->
+        <div class="detail-card" id="detailCard">
+          <div class="dc-hd" onclick="toggleDetail()">
+            <span>📋 Détails de votre projet</span>
+            <span class="dc-arrow" id="dcArrow">▼</span>
+          </div>
+          <div class="dc-bd" id="appDetails" style="display:none"></div>
         </div>
-      </div>
-    </div>
 
-    <!-- CENTER -->
-    <div class="dash-center" id="dashCenter">
-      <!-- Payment banner -->
-      <div class="pay-banner" id="payBanner">
-        <div class="pb-title">💳 Paiement requis</div>
-        <div class="pb-desc">Votre démo a été validée ! Réglez votre commande pour recevoir la version finale de votre application.</div>
-        <button class="btn-pay" onclick="openPayOv()">💳 Régler maintenant</button>
-      </div>
-
-      <!-- Demos section -->
-      <div class="demos-wrap" id="demosWrap" style="display:none">
-        <div class="demos-hd">
-          <h3>🎯 Versions de démo <span class="demo-cnt" id="demoCnt">0</span></h3>
-          <span id="modifLeft" class="modif-counter"></span>
+        <!-- Demos section -->
+        <div class="demos-wrap" id="demosWrap" style="display:none">
+          <div class="demos-hd">
+            <h3>🎯 Versions de démo <span class="demo-cnt" id="demoCnt">0</span></h3>
+            <span id="modifLeft" class="modif-counter"></span>
+          </div>
+          <div id="demosList"></div>
         </div>
-        <div id="demosList"></div>
-      </div>
 
-      <!-- Waiting for demo -->
-      <div id="awaitDemo" style="display:none">
-        <div class="card">
-          <div class="card-bd" style="text-align:center;padding:26px">
-            <div style="font-size:2.2rem;margin-bottom:9px">🔧</div>
-            <div style="font-size:.85rem;font-weight:700;margin-bottom:5px">Démo en préparation</div>
-            <div style="font-size:.76rem;color:var(--mu);line-height:1.6">Notre équipe prépare votre application.<br>Vous recevrez une notification dès qu'elle est prête.</div>
+        <!-- Waiting -->
+        <div id="awaitDemo" style="display:none">
+          <div class="await-card">
+            <div class="await-icon">🔧</div>
+            <div class="await-title">Démo en préparation</div>
+            <div class="await-sub">Notre équipe développe votre application.<br>Vous serez notifié dès qu'elle est prête à tester.</div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- RIGHT CHAT -->
+    <!-- ── RIGHT : chat ── -->
     <div class="dash-right">
       <div class="chat-hd">
         <div>
           <h3>💬 Messages</h3>
-          <div class="chat-hd-sub">Conversation avec BizFlow TN</div>
+          <div class="chat-hd-sub" id="chatHdSub">BizFlow TN</div>
         </div>
         <span class="chat-unread" id="chatUnread"></span>
       </div>
       <div class="chat-msgs" id="chatMsgs">
-        <div class="chat-empty">Aucun message.<br>Posez vos questions à l'équipe BizFlow !</div>
+        <div class="chat-empty">👈 Sélectionnez un projet pour voir la messagerie.</div>
       </div>
-      <div class="chat-input-wrap">
+      <div class="chat-input-wrap" id="chatInputWrap" style="display:none">
         <input type="file" id="imgUpload" accept="image/*" style="display:none" onchange="sendImage(this)">
         <div class="chat-extras">
-          <button class="extra-btn" title="Envoyer une image" onclick="$('imgUpload').click()">🖼</button>
-          <button class="extra-btn" id="voiceBtn" title="Message vocal" onclick="toggleVoice()">🎤</button>
+          <button class="extra-btn" title="Image" onclick="$('imgUpload').click()">🖼</button>
+          <button class="extra-btn" id="voiceBtn" title="Vocal" onclick="toggleVoice()">🎤</button>
           <span class="rec-timer" id="recTimer">⏺ <span id="recTime">0:00</span></span>
         </div>
         <div class="chat-row">
-          <textarea class="chat-ta" id="chatInput" placeholder="Écrivez un message..." rows="1"
+          <textarea class="chat-ta" id="chatInput" placeholder="Votre message..." rows="1"
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
             oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
           <button class="send-btn" onclick="sendMsg()">↑</button>
@@ -599,12 +575,12 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
 <!-- DEMO OVERLAY -->
 <div id="demoOv">
   <div class="ov-hd">
-    <div class="ov-hd-left">
-      <h3>🎯 Test de votre démo</h3>
+    <div style="display:flex;align-items:center;gap:9px">
+      <h3>🎯 Test démo</h3>
       <span class="ov-ver-badge" id="ovVer">v1</span>
     </div>
-    <div class="ov-actions">
-      <button class="btn-ov-improve" id="ovImpBtn" onclick="toggleOvImprove()">✏️ Modifications</button>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button class="btn-ov-improve" id="ovImpBtn" onclick="toggleOvImprove()">✏️ Modif.</button>
       <button class="btn-ov-approve" id="ovApprBtn" onclick="approveFromOv()">✅ Valider</button>
       <button class="btn-ov-close" onclick="closeOv()">✕</button>
     </div>
@@ -621,25 +597,23 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
 <div id="payOv">
   <div class="pay-card">
     <button class="pay-close" onclick="closePayOv()">✕</button>
-    <div style="text-align:center;font-size:2.2rem;margin-bottom:10px">💳</div>
+    <div style="text-align:center;font-size:2rem;margin-bottom:9px">💳</div>
     <h2>Finaliser le paiement</h2>
-    <p class="pay-sub">Réglez votre commande pour recevoir la version finale de votre application.</p>
-    <div class="pay-amount">
-      <div class="pa-price" id="payAmt">—</div>
-      <div class="pa-lbl">Montant estimé</div>
-    </div>
+    <p class="pay-sub">Réglez votre commande pour recevoir la version finale.</p>
+    <div class="pay-amount"><div class="pa-price" id="payAmt">—</div><div class="pa-lbl">Montant estimé</div></div>
     <div class="pay-methods">
-      <div class="pay-method" onclick="selPay(this,'virement')"><div class="pm-icon">🏦</div><div><div class="pm-name">Virement bancaire</div><div class="pm-desc">RIB fourni après confirmation</div></div></div>
+      <div class="pay-method" onclick="selPay(this,'virement')"><div class="pm-icon">🏦</div><div><div class="pm-name">Virement bancaire</div><div class="pm-desc">RIB après confirmation</div></div></div>
       <div class="pay-method" onclick="selPay(this,'cash')"><div class="pm-icon">💵</div><div><div class="pm-name">Espèces</div><div class="pm-desc">En agence ou livraison</div></div></div>
-      <div class="pay-method" onclick="selPay(this,'d17')"><div class="pm-icon">📱</div><div><div class="pm-name">D17 / ClickPay</div><div class="pm-desc">Paiement mobile tunisien</div></div></div>
+      <div class="pay-method" onclick="selPay(this,'d17')"><div class="pm-icon">📱</div><div><div class="pm-name">D17 / ClickPay</div><div class="pm-desc">Paiement mobile</div></div></div>
     </div>
-    <button class="btn-pay-confirm" onclick="confirmPay()">✅ Confirmer le paiement</button>
-    <p style="font-size:.66rem;color:var(--mu2);text-align:center;margin-top:10px">Paiement vérifié avant livraison finale.</p>
+    <button class="btn-pay-confirm" onclick="confirmPay()">✅ Confirmer</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
 <script>
+
 
 /* ══ FIREBASE ══ */
 const FC={apiKey:"AIzaSyC3bwhZRIksakjHjmJ1j_baBJjFV3GLG7k",authDomain:"bizflow-5b1e2.firebaseapp.com",projectId:"bizflow-5b1e2",storageBucket:"bizflow-5b1e2.firebasestorage.app",messagingSenderId:"788764741062",appId:"1:788764741062:web:0353d4bac230a3e22b36c7"};
@@ -798,12 +772,11 @@ function setDashUser(u,name){
 }
 
 /* AUTH STATE */
-let unsubL=null, unsubM=null, currentLeadId=null, currentUserId=null;
 
 
 
 /* ══ DASHBOARD LOAD ══ */
-const SC={new:{l:'🔵 Nouvelle demande',c:'pn',s:1,p:10},contacted:{l:'🟣 En discussion',c:'pc',s:2,p:35},demo:{l:'🟡 Démo(s) envoyée(s)',c:'pd',s:3,p:60},validated:{l:'🟢 App validée !',c:'pv',s:4,p:85},converted:{l:'✅ Application livrée !',c:'pv',s:5,p:100},closed:{l:'⚫ Fermé',c:'px',s:1,p:0}};
+
 
 function updProg(status){
   const c=SC[status]||SC.new;
@@ -813,10 +786,8 @@ function updProg(status){
 }
 
 
-const PACK_LABELS={essentiel:'🟢 Essentiel',pro:'🔵 Pro',partenaire:'🔴 Partenaire'};
-const PACK_PRICES={essentiel:'500–800 DT',pro:'900–1500 DT',partenaire:'1600–2500 DT'};
-const urlPack=new URLSearchParams(location.search).get('pack')||'';
-if(urlPack) sessionStorage.setItem('bz_pack',urlPack);
+
+
 
 applyT(localStorage.getItem('bzt')||'dark');
 
@@ -860,7 +831,6 @@ auth.getRedirectResult().then(r=>{
 });
 
 /* ══ AUTH STATE ══ */
-let _unsubL=null,_unsubM=null,_curLeadId=null,_curUserId=null,_curLead=null;
 
 auth.onAuthStateChanged(async u=>{
   if(!u){showView('authView');return;}
@@ -869,37 +839,35 @@ auth.onAuthStateChanged(async u=>{
     name:u.displayName||u.email||'Client',email:u.email||null,phone:u.phoneNumber||null,
     photoURL:u.photoURL||null,updatedAt:FS.serverTimestamp()
   },{merge:true}).catch(()=>{});
-
   const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
-  sessionStorage.removeItem('bz_goto_form');
-
   try{
-    // Check existing leads
-    const ex=await db.collection('leads').where('userId','==',u.uid).limit(1).get();
-    let hasLeads=!ex.empty;
-    if(!hasLeads&&u.email){
+    let snap=await db.collection('leads').where('userId','==',u.uid).limit(1).get();
+    if(!snap.empty){
+      setDashUser(u,name);showView('dashView');loadDash(u.uid);return;
+    }
+    if(u.email){
       const byEmail=await db.collection('leads').where('userEmail','==',u.email).limit(1).get();
       if(!byEmail.empty){
-        hasLeads=true;
         const batch=db.batch();
         byEmail.docs.forEach(d=>{if(!d.data().userId)batch.update(d.ref,{userId:u.uid});});
         await batch.commit().catch(()=>{});
+        setDashUser(u,name);showView('dashView');loadDash(u.uid);return;
       }
     }
-    // Auto-create lead if coming from estimateur
     const _pack=sessionStorage.getItem('bz_pack')||'';
     const _prompt=sessionStorage.getItem('bz_prompt')||'';
     const _feats=sessionStorage.getItem('bz_features')||'';
     const _complexity=sessionStorage.getItem('bz_complexity')||'';
     const _monetize=sessionStorage.getItem('bz_monetize')||'0';
+    const _domain=sessionStorage.getItem('bz_domain')||'';
     if(_pack){
       const ref=await db.collection('leads').add({
         name:u.displayName||name,phone:u.phoneNumber||'',type:'A definir',
         categories:_feats?JSON.parse(_feats).join(', '):'',description:'',
         userId:u.uid,userEmail:u.email||null,userPhone:u.phoneNumber||null,
-        pack:_pack,packLabel:PACK_LABELS[_pack]||'',
-        claudePrompt:_prompt,features:_feats?JSON.parse(_feats):[],
-        complexity:_complexity,monetize:_monetize==='1',
+        pack:_pack,packLabel:PACK_LABELS[_pack]||'',claudePrompt:_prompt,
+        features:_feats?JSON.parse(_feats):[],complexity:_complexity,
+        monetize:_monetize==='1',domain:_domain,
         status:'new',lang:'fr',createdAt:FS.serverTimestamp()
       });
       await db.collection('messages').add({
@@ -907,19 +875,10 @@ auth.onAuthStateChanged(async u=>{
         text:'Demande reçue !'+(PACK_LABELS[_pack]?' Pack '+PACK_LABELS[_pack]+'.':'')+' Notre équipe vous contactera dans les 24h.',
         createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
       });
-      ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize'].forEach(k=>sessionStorage.removeItem(k));
-      hasLeads=true;
+      ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize','bz_domain'].forEach(k=>sessionStorage.removeItem(k));
     }
-    // Show dashboard
-    setDashUser(u,name,hasLeads);
-    showView('dashView');
-    loadDash(u.uid,u.email,hasLeads);
-  }catch(e){
-    console.warn(e);
-    setDashUser(u,(u.displayName||u.email||'Client').split(' ')[0],false);
-    showView('dashView');
-    loadDash(u.uid,u.email||'',false);
-  }
+    setDashUser(u,name);showView('dashView');loadDash(u.uid);
+  }catch(e){console.warn(e);setDashUser(u,name);showView('dashView');loadDash(u.uid);}
 });
 
 /* ══ SET DASH USER ══ */
@@ -939,53 +898,173 @@ function setDashUser(u,name,hasLeads){
 }
 
 /* ══ LOAD DASH ══ */
-function loadDash(uid,userEmail,hasLeads){
-  if(!hasLeads){
-    $('dashLoader').style.display='none';
-    $('noLeadState').style.display='block';
-    $('hasLeadState').style.display='none';
-    $('demosWrap').style.display='none';
-    $('awaitDemo').style.display='none';
-    return;
+/* ════════════════════════════════════════
+   BIZFLOW TN — ESPACE CLIENT DASHBOARD
+════════════════════════════════════════ */
+// PACK_LABELS, PACK_PRICES from auth module above
+const PACK_PRICES={essentiel:'500–800 DT',pro:'900–1500 DT',partenaire:'1600–2500 DT'};
+
+const SC={
+  new:{l:'🔵 Nouvelle demande',c:'pn',s:1,p:10},
+  contacted:{l:'🟣 En discussion',c:'pc',s:2,p:35},
+  demo:{l:'🟡 Démo envoyée',c:'pd',s:3,p:60},
+  validated:{l:'🟢 Démo validée',c:'pv',s:4,p:78},
+  payment_requested:{l:'💳 Paiement requis',c:'ppay',s:4,p:82},
+  payment_confirmed:{l:'💳 Paiement reçu',c:'ppay',s:4,p:88},
+  converted:{l:'✅ App livrée !',c:'pv',s:5,p:100},
+  closed:{l:'✅ Terminée',c:'pv',s:5,p:100}
+};
+
+/* ── Helpers ── */
+let _curLeadId=null,_curLead=null,_curUserId=null;
+let _unsubLeads=null,_unsubMsgs=null;
+let _allLeads=[];
+
+function updProg(status){
+  const cfg=SC[status]||SC.new;
+  const sp=$('spill');
+  if(sp){sp.textContent=cfg.l;sp.className='pill '+cfg.c;}
+  const pf=$('pf');if(pf)pf.style.width=cfg.p+'%';
+  for(let i=1;i<=5;i++){
+    const el=$('ps'+i);if(!el)continue;
+    el.classList.remove('done','act');
+    if(i<cfg.s)el.classList.add('done');
+    else if(i===cfg.s)el.classList.add('act');
   }
+}
+
+function spLabel(s){return(SC[s]||SC.new).l;}
+function spClass(s){return's-'+(s||'new');}
+
+/* ── Set dashboard user ── */
+function setDashUser(u,name){
+  $('dNm').textContent=name;
+  if(u.photoURL){$('dAv').src=u.photoURL;$('dAv').style.display='block';}
+  else{$('dAvFb').textContent=(name[0]||'?').toUpperCase();$('dAvFb').style.display='flex';}
+  // Strip profile
+  ['profAv','nlProfAv'].forEach(id=>{const el=$(id);if(el&&u.photoURL){el.src=u.photoURL;el.style.display='block';}});
+  ['profAvFb','nlProfAvFb'].forEach(id=>{const el=$(id);if(el&&!u.photoURL){el.textContent=(name[0]||'?').toUpperCase();el.style.display='flex';}});
+  ['profName','nlProfName'].forEach(id=>{const el=$(id);if(el)el.textContent=u.displayName||name;});
+  ['profEmail','nlProfEmail'].forEach(id=>{const el=$(id);if(el)el.textContent=u.email||u.phoneNumber||'';});
+}
+
+/* ════════════════════════════════════════
+   LOAD DASHBOARD — all projects
+════════════════════════════════════════ */
+function loadDash(uid){
   $('dashLoader').style.display='flex';
-  if(_unsubL)_unsubL();
-  _unsubL=db.collection('leads').where('userId','==',uid)
-    .onSnapshot(rawSnap=>{
+  if(_unsubLeads)_unsubLeads();
+  _unsubLeads=db.collection('leads').where('userId','==',uid)
+    .onSnapshot(snap=>{
       $('dashLoader').style.display='none';
-      if(rawSnap.empty){$('noLeadState').style.display='block';return;}
-      const docs=[...rawSnap.docs].sort((a,b)=>(b.data().createdAt?.toMillis()||0)-(a.data().createdAt?.toMillis()||0));
-      const lead={id:docs[0].id,...docs[0].data()};
-      _curLeadId=lead.id;_curLead=lead;
-      // Show has-lead state
+      _allLeads=[...snap.docs]
+        .map(d=>({id:d.id,...d.data()}))
+        .sort((a,b)=>(b.createdAt?.toMillis()||0)-(a.createdAt?.toMillis()||0));
+
+      if(!_allLeads.length){
+        $('noLeadState').style.display='block';
+        $('hasLeadState').style.display='none';
+        return;
+      }
       $('noLeadState').style.display='none';
-      $('hasLeadState').style.display='block';
-      // Prog
-      $('progTitle').textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')+(lead.packLabel?' — '+lead.packLabel:'');
-      $('progSub').textContent=lead.createdAt?'Soumise le '+fmtD(lead.createdAt):'';
-      updProg(lead.status||'new');
-      if(lead.packLabel){$('profPack').textContent=lead.packLabel;$('profPack').style.display='inline-flex';}
-      // App details
-      renderAppDetails(lead);
-      // Payment banner
-      const payB=$('payBanner');
-      const payStatuses=['payment_requested','payment_confirmed'];
-      if(payStatuses.includes(lead.status)){
-        payB.classList.add('on');
-        // Update banner text based on status
-        const pb_desc=payB.querySelector('.pb-desc');
-        if(pb_desc){
-          pb_desc.textContent=lead.status==='payment_confirmed'
-            ?'Paiement reçu ! Votre application finale sera livrée très prochainement.'
-            :'Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
-        }
-      }else payB.classList.remove('on');
-      // Load messages
-      loadMessages(lead.id,uid);
+      $('hasLeadState').style.display='flex';
+      $('projCount').textContent=_allLeads.length;
+
+      renderProjectsList();
+
+      // Auto-select first (most recent) if none selected or refresh current
+      const toSelect=_curLeadId&&_allLeads.find(l=>l.id===_curLeadId)
+        ?_curLeadId
+        :_allLeads[0].id;
+      selectProject(toSelect);
     },e=>console.error(e));
 }
 
-/* ══ APP DETAILS ══ */
+/* ── Render left sidebar list ── */
+function renderProjectsList(){
+  const list=$('projectsList');
+  if(!list)return;
+  list.innerHTML='';
+  _allLeads.forEach(lead=>{
+    const isActive=lead.id===_curLeadId;
+    const packColors={essentiel:'var(--green)',pro:'var(--ac)',partenaire:'var(--red)'};
+    const col=packColors[lead.pack]||'var(--mu)';
+    const div=document.createElement('div');
+    div.className='proj-item'+(isActive?' active':'');
+    div.onclick=()=>selectProject(lead.id);
+    const title=(lead.type&&lead.type!=='A definir'?lead.type:'App sur mesure')
+                 +(lead.packLabel?' · '+lead.packLabel:'');
+    div.innerHTML=`
+      <div class="pi-top">
+        <div class="pi-name">${title}</div>
+        <div class="pi-date">${fmtDShort(lead.createdAt)}</div>
+      </div>
+      <span class="pi-status ${spClass(lead.status)}">${spLabel(lead.status)}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function fmtDShort(ts){
+  if(!ts)return'';
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+}
+
+/* ── Select a project ── */
+function selectProject(leadId){
+  _curLeadId=leadId;
+  _curLead=_allLeads.find(l=>l.id===leadId);
+  if(!_curLead)return;
+
+  // Update sidebar active state
+  renderProjectsList();
+
+  // Show center content
+  $('centerEmpty').style.display='none';
+  $('centerContent').style.display='flex';
+
+  // Status card
+  const lead=_curLead;
+  $('scTitle').textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')
+    +(lead.packLabel?' — '+lead.packLabel:'');
+  $('scSub').textContent=lead.createdAt?'Soumise le '+fmtD(lead.createdAt):'';
+  updProg(lead.status||'new');
+
+  // Payment banner
+  const payB=$('payBanner');
+  if(payB){
+    const payStatuses=['payment_requested','payment_confirmed'];
+    if(payStatuses.includes(lead.status)){
+      payB.classList.add('on');
+      const desc=$('pbDesc');
+      if(desc)desc.textContent=lead.status==='payment_confirmed'
+        ?'Paiement reçu ✅ Votre application finale sera livrée très prochainement.'
+        :'Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
+    }else payB.classList.remove('on');
+  }
+
+  // App details
+  renderAppDetails(lead);
+
+  // Show chat input
+  const ciw=$('chatInputWrap');
+  if(ciw)ciw.style.display='block';
+  const hdSub=$('chatHdSub');
+  if(hdSub)hdSub.textContent=(lead.type&&lead.type!=='A definir'?lead.type:'App sur mesure')+(lead.packLabel?' · '+lead.packLabel:'');
+
+  // Load messages
+  loadMessages(leadId);
+}
+
+/* ── App details ── */
+let _detailOpen=false;
+function toggleDetail(){
+  _detailOpen=!_detailOpen;
+  const bd=$('appDetails'),arrow=$('dcArrow');
+  if(bd)bd.style.display=_detailOpen?'block':'none';
+  if(arrow)arrow.className='dc-arrow'+(_detailOpen?' open':'');
+}
 function renderAppDetails(lead){
   const feats=Array.isArray(lead.features)&&lead.features.length?lead.features
     :(lead.categories?lead.categories.split(',').map(s=>s.trim()).filter(Boolean):[]);
@@ -993,38 +1072,42 @@ function renderAppDetails(lead){
   if(lead.pack)h+=`<div class="detail-row"><span class="dk">Pack</span><span class="dv" style="font-weight:700;color:var(--ac)">${lead.packLabel||lead.pack}</span></div>`;
   if(lead.type&&lead.type!=='A definir')h+=`<div class="detail-row"><span class="dk">Type</span><span class="dv">${lead.type}</span></div>`;
   if(lead.complexity)h+=`<div class="detail-row"><span class="dk">Complexité</span><span class="dv">${lead.complexity}</span></div>`;
+  if(lead.domain)h+=`<div class="detail-row"><span class="dk">Secteur</span><span class="dv">${lead.domain}</span></div>`;
   if(lead.phone)h+=`<div class="detail-row"><span class="dk">Tél</span><span class="dv">${lead.phone}</span></div>`;
   if(lead.monetize)h+=`<div class="detail-row"><span class="dk">Monétisation</span><span class="dv" style="color:var(--green)">✓ Activée</span></div>`;
-  if(feats.length)h+=`<div class="detail-row" style="flex-direction:column;gap:6px"><span class="dk">Fonctionnalités</span><div class="feat-tags">${feats.map(f=>`<span class="feat-tag">${f}</span>`).join('')}</div></div>`;
+  if(feats.length)h+=`<div class="detail-row" style="flex-direction:column;gap:5px"><span class="dk">Fonctionnalités</span><div class="feat-tags">${feats.map(f=>`<span class="feat-tag">${f}</span>`).join('')}</div></div>`;
   if(lead.description)h+=`<div class="detail-row"><span class="dk">Description</span><span class="dv" style="font-style:italic;color:var(--mu)">${lead.description}</span></div>`;
-  $('appDetails').innerHTML=h||'<div style="color:var(--mu);font-size:.76rem">Informations en attente de traitement.</div>';
+  const el=$('appDetails');
+  if(el)el.innerHTML=h||'<div style="color:var(--mu);font-size:.75rem">Informations en cours de traitement.</div>';
 }
 
-/* ══ MESSAGES ══ */
-function loadMessages(leadId,uid){
-  if(_unsubM)_unsubM();
-  _unsubM=db.collection('messages').where('leadId','==',leadId)
-    .onSnapshot(rawSnap=>{
-      const msgs=[...rawSnap.docs].map(d=>({id:d.id,...d.data()}))
+/* ════════════════════════════════════════
+   MESSAGES
+════════════════════════════════════════ */
+function loadMessages(leadId){
+  if(_unsubMsgs)_unsubMsgs();
+  $('chatMsgs').innerHTML='<div class="chat-empty"><div class="splg" style="margin:0 auto 8px"></div>Chargement...</div>';
+  _unsubMsgs=db.collection('messages').where('leadId','==',leadId)
+    .onSnapshot(snap=>{
+      const msgs=[...snap.docs].map(d=>({id:d.id,...d.data()}))
         .sort((a,b)=>(a.createdAt?.toMillis()||0)-(b.createdAt?.toMillis()||0));
-      renderChat(msgs,uid,leadId);
+      renderChat(msgs,leadId);
       renderDemos(msgs,leadId);
-      // Mark as read
-      const unread=rawSnap.docs.filter(d=>!d.data().readByClient&&d.data().from!=='client');
+      // Mark read
+      const unread=snap.docs.filter(d=>!d.data().readByClient&&d.data().from!=='client');
       if(unread.length){const b=db.batch();unread.forEach(d=>b.update(d.ref,{readByClient:true}));b.commit().catch(()=>{});}
       // Unread badge
       const ur=msgs.filter(m=>!m.readByClient&&m.from!=='client'&&m.from!=='system').length;
       const badge=$('chatUnread');
-      if(ur>0){badge.textContent=ur>9?'9+':ur;badge.className='chat-unread on';}
-      else badge.className='chat-unread';
-    },e=>console.error('Messages:',e));
+      if(badge){if(ur>0){badge.textContent=ur>9?'9+':ur;badge.className='chat-unread on';}else badge.className='chat-unread';}
+    },e=>console.error(e));
 }
 
-/* ══ RENDER CHAT ══ */
-function renderChat(msgs,uid,leadId){
+/* ── renderChat ── */
+function renderChat(msgs,leadId){
   const el=$('chatMsgs');
   const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;
-  if(!msgs.length){el.innerHTML='<div class="chat-empty">Aucun message.<br>Posez vos questions à l\'équipe BizFlow !</div>';return;}
+  if(!msgs.length){el.innerHTML='<div class="chat-empty">Aucun message. Posez vos questions à l\'équipe BizFlow !</div>';return;}
   el.innerHTML='';
   const allDemos=msgs.filter(m=>m.type==='demo'||m.type==='final');
   const anyApproved=allDemos.some(m=>m.approvedByClient);
@@ -1037,9 +1120,9 @@ function renderChat(msgs,uid,leadId){
     if(m.type==='system'){
       html=`<div class="sys-msg">${m.text}</div>`;
     }else if(m.type==='payment'){
-      html=`<div class="pay-bubble">💳 ${m.text}<div style="font-size:.6rem;opacity:.6;margin-top:2px">${fmtD(m.createdAt)}</div></div>`;
+      html=`<div class="pay-bubble">💳 ${m.text}<div style="font-size:.59rem;opacity:.6;margin-top:2px">${fmtD(m.createdAt)}</div></div>`;
     }else if(m.type==='approval'){
-      html=`<div class="approval-bubble">✅ ${m.text}<div style="font-size:.6rem;opacity:.6;margin-top:2px">${fmtD(m.createdAt)}</div></div>`;
+      html=`<div class="approval-bubble">✅ ${m.text}<div style="font-size:.59rem;opacity:.6;margin-top:2px">${fmtD(m.createdAt)}</div></div>`;
     }else if(m.type==='final'){
       const conf=m.approvedByClient;
       html=`<div class="demo-bubble final">
@@ -1054,13 +1137,13 @@ function renderChat(msgs,uid,leadId){
     }else if(m.type==='demo'){
       const approved=m.approvedByClient;
       const isLatest=m.id===latestDemoId&&!hasFinal;
-      const isActive=approved||(isLatest&&!anyApproved);
-      const canApprove=isLatest&&!anyApproved&&!hasFinal;
-      const testBtn=isActive?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Non disponible</span>';
+      const canTest=!hasFinal&&(approved||(isLatest&&!anyApproved));
+      const testBtn=canTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Indispo</span>';
       let actionBtn='';
       if(approved)actionBtn='<span class="final-badge">✅ Validée</span>';
-      else if(hasFinal||anyApproved)actionBtn='<span class="locked-badge">🔒 Remplacée</span>';
-      else if(canApprove)actionBtn=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button><button class="btn-improve" onclick="openOvImprove('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}')">✏️ Modifier</button>`;
+      else if(hasFinal)actionBtn='';
+      else if(anyApproved)actionBtn='<span class="locked-badge">Remplacée</span>';
+      else if(isLatest)actionBtn=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button><button class="btn-improve" onclick="openOvImprove('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}')">✏️ Modif.</button>`;
       else actionBtn='<span class="locked-badge">⬆️ Ancienne</span>';
       html=`<div class="demo-bubble${approved?' approved':''}">
         <div class="db-ver">${approved?'✅':'🎯'} Démo ${m.demoVersion||''}</div>
@@ -1070,7 +1153,7 @@ function renderChat(msgs,uid,leadId){
       </div>`;
     }else if(m.type==='image'){
       html=`<div class="bubble ${isClient?'mine':'theirs'}">
-        <div class="bubble-body"><img src="${m.imageData||''}" class="msg-img" onclick="window.open(this.src,'_blank')" alt="${m.imageName||'image'}"><div style="font-size:.68rem;margin-top:2px;opacity:.65">${m.imageName||'image'}</div></div>
+        <div class="bubble-body"><img src="${m.imageData||''}" class="msg-img" onclick="window.open(this.src,'_blank')" alt="${m.imageName||'image'}"><div style="font-size:.67rem;margin-top:2px;opacity:.65">${m.imageName||'image'}</div></div>
         <div class="bubble-meta">${isClient?'Vous':'BizFlow'} · ${fmtD(m.createdAt)}</div>
       </div>`;
     }else if(m.type==='voice'){
@@ -1089,36 +1172,26 @@ function renderChat(msgs,uid,leadId){
   if(atBottom)el.scrollTop=el.scrollHeight;
 }
 
-/* ══ RENDER DEMOS ══ */
+/* ── renderDemos ── */
 function renderDemos(msgs,leadId){
   const demoMsgs=msgs.filter(m=>m.type==='demo');
   const finalMsg=msgs.find(m=>m.type==='final');
   const hasContent=demoMsgs.length||finalMsg;
   $('demosWrap').style.display=hasContent?'block':'none';
-  $('awaitDemo').style.display=hasContent?'none':'block';
+  $('awaitDemo').style.display=(!hasContent&&_curLead&&['contacted','new'].includes(_curLead.status||'new'))?'block':'none';
   if(!hasContent)return;
 
   $('demoCnt').textContent=demoMsgs.length+(finalMsg?'+F':'');
-
   const modifUsed=msgs.filter(m=>m.type==='text'&&m.from==='client'&&m.text&&m.text.startsWith('\uD83D\uDD27')).length;
   const modifLeft=3-modifUsed;
   const mc=$('modifLeft');
-  if(mc){
-    mc.textContent=modifLeft+' modif. restante'+(modifLeft>1?'s':'');
-    mc.className='modif-counter'+(modifLeft===0?' blocked':modifLeft===1?' warn':'');
-  }
+  if(mc){mc.textContent=modifLeft+' modif. restante'+(modifLeft>1?'s':'');mc.className='modif-counter'+(modifLeft===0?' blocked':modifLeft===1?' warn':'');}
 
-  // Determine state
   const anyApproved=demoMsgs.some(m=>m.approvedByClient);
-  const approvedMsg=demoMsgs.find(m=>m.approvedByClient);
-  // Sort by version number, latest last
   const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||0)-(b.versionNumber||0));
   const latestDemo=sorted[sorted.length-1];
-  const reversed=[...sorted].reverse();
-
   $('demosList').innerHTML='';
 
-  // Final version at top
   if(finalMsg){
     const conf=finalMsg.approvedByClient;
     $('demosList').innerHTML+=`<div class="demo-item approved" style="border-top:2px solid var(--green)">
@@ -1132,77 +1205,42 @@ function renderDemos(msgs,leadId){
     </div>`;
   }
 
-  reversed.forEach(m=>{
-    const approved=m.approvedByClient;
-    const isLatest=m.id===latestDemo.id;
+  [...sorted].reverse().forEach(m=>{
+    const approved=m.approvedByClient,isLatest=m.id===latestDemo.id;
     const vNum=m.demoVersion||m.versionNumber||'—';
-
-    // LOCKING RULES (strict):
-    // 1. Final sent → ALL demos locked
-    // 2. A version approved → ONLY approved testable, others locked
-    // 3. No approval yet → ONLY latest (last sent) testable
     const canTest=!finalMsg&&(approved||(isLatest&&!anyApproved));
-
-    const testBtn=canTest
-      ?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`
-      :`<span class="locked-badge">🔒 ${finalMsg?'Remplacée':'Non disponible'}</span>`;
-
+    const testBtn=canTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:`<span class="locked-badge">🔒 ${finalMsg?'Remplacée':'Indispo'}</span>`;
     let actionHtml='';
-    if(finalMsg){
-      actionHtml='<span style="font-size:.65rem;color:var(--mu2)">Remplacée par la finale</span>';
-    }else if(approved){
-      actionHtml='<span class="final-badge">✅ Validée</span>';
-    }else if(anyApproved){
-      actionHtml='<span class="locked-badge">Remplacée</span>';
-    }else if(isLatest){
-      actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider cette version</button>`;
-    }else{
-      actionHtml='<span class="locked-badge">Version antérieure</span>';
-    }
-
-    const dimmed=!canTest&&!approved;
+    if(finalMsg)actionHtml='<span style="font-size:.64rem;color:var(--mu2)">Remplacée par la finale</span>';
+    else if(approved)actionHtml='<span class="final-badge">✅ Validée</span>';
+    else if(anyApproved)actionHtml='<span class="locked-badge">Remplacée</span>';
+    else if(isLatest)actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button>`;
+    else actionHtml='<span class="locked-badge">Version antérieure</span>';
     $('demosList').innerHTML+=`<div class="demo-item${approved?' approved':''}${isLatest&&!anyApproved?' latest':''}">
-      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest?'<span class="modif-warn">⚠️ Dernière démo</span>':''}</div>
-      <div class="di-msg" style="${dimmed?'opacity:.35':'color:var(--tx)'}">${m.text||'Démo disponible'}</div>
+      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest?'<span class="modif-warn" style="margin-left:5px">⚠️ Dernière démo</span>':''}</div>
+      <div class="di-msg" style="${!canTest&&!approved?'opacity:.35':''}">${m.text||'Démo disponible'}</div>
       <div class="di-date">${fmtD(m.createdAt)}</div>
       <div class="di-actions">${testBtn}${actionHtml}</div>
     </div>`;
   });
 }
 
-
-/* ══ APPROVE DEMO ══ */
+/* ── Approve demo ── */
 async function approveDemoMsg(msgId,leadId){
   const u=auth.currentUser;if(!u)return;
   try{
     const demoSnap=await db.collection('messages').where('leadId','==',leadId).where('type','==','demo').get();
     const demoCount=demoSnap.size;
-    // Mark approved version
     await db.collection('messages').doc(msgId).update({approvedByClient:true,approvedAt:FS.serverTimestamp()});
-    // Determine next status
     const isV3=demoCount>=3;
     const newStatus=isV3?'payment_requested':'validated';
     await db.collection('leads').doc(leadId).update({status:newStatus,clientApprovedAt:FS.serverTimestamp()});
-    // Send approval message
-    const txt=isV3
-      ?'✅ Version validée ! En attente du paiement pour recevoir la version finale.'
-      :'✅ Démo validée ! Notre équipe prépare la version suivante.';
-    await db.collection('messages').add({
-      leadId,userId:u.uid,from:'client',type:'approval',text:txt,
-      createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
-    });
-    if(isV3){
-      await db.collection('notifications').add({
-        userId:'admin',leadId,
-        title:'💳 Paiement requis — v3 validée',
-        message:(u.displayName||u.email||'Client')+' a validé la démo v3. Envoyez la demande de paiement.',
-        type:'payment_needed',read:false,createdAt:FS.serverTimestamp()
-      });
-    }
-    toast(isV3?'✅ Version validée ! Procédez au paiement pour recevoir votre app finale.':'✅ Démo validée !');
+    const txt=isV3?'✅ Version validée ! En attente du paiement pour la version finale.':'✅ Démo validée ! Notre équipe prépare la prochaine version.';
+    await db.collection('messages').add({leadId,userId:u.uid,from:'client',type:'approval',text:txt,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
+    if(isV3)await db.collection('notifications').add({userId:'admin',leadId,title:'💳 Paiement requis — v3 validée',message:(u.displayName||u.email||'Client')+' a validé la démo v3.',type:'payment_needed',read:false,createdAt:FS.serverTimestamp()});
+    toast(isV3?'✅ Version validée ! Procédez au paiement.':'✅ Démo validée !');
   }catch(e){toast('Erreur: '+e.message,'err');}
 }
-
 async function approveFinal(msgId,leadId){
   const u=auth.currentUser;if(!u)return;
   try{
@@ -1212,7 +1250,7 @@ async function approveFinal(msgId,leadId){
   }catch(e){toast('Erreur','err');}
 }
 
-/* ══ SEND MSG ══ */
+/* ── Send message ── */
 async function sendMsg(){
   const u=auth.currentUser;if(!u||!_curLeadId)return;
   const text=$('chatInput').value.trim();if(!text)return;
@@ -1220,23 +1258,19 @@ async function sendMsg(){
   try{await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'text',text,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});}
   catch(e){toast('Erreur envoi','err');$('chatInput').value=text;}
 }
-
-/* ══ IMAGE ══ */
+/* ── Image ── */
 async function sendImage(input){
   const u=auth.currentUser;if(!u||!_curLeadId||!input.files[0])return;
   const file=input.files[0];
   if(file.size>5*1024*1024){toast('Image max 5MB','err');return;}
   const reader=new FileReader();
   reader.onload=async e=>{
-    try{
-      await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'image',imageData:e.target.result,imageName:file.name,text:'📷 '+file.name,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-      toast('✅ Image envoyée');
-    }catch(err){toast('Erreur upload','err');}
+    try{await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'image',imageData:e.target.result,imageName:file.name,text:'📷 '+file.name,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});toast('✅ Image envoyée');}
+    catch(err){toast('Erreur','err');}
   };
   reader.readAsDataURL(file);input.value='';
 }
-
-/* ══ VOICE ══ */
+/* ── Voice ── */
 let _mRec=null,_rChunks=[],_rTimer=null,_rSecs=0,_rStream=null;
 async function toggleVoice(){
   if(_mRec&&_mRec.state==='recording'){_mRec.stop();return;}
@@ -1247,15 +1281,12 @@ async function toggleVoice(){
     _mRec.onstop=async()=>{
       clearInterval(_rTimer);$('voiceBtn').classList.remove('rec');$('recTimer').style.display='none';
       _rStream.getTracks().forEach(t=>t.stop());
-      const blob=new Blob(_rChunks,{type:'audio/webm'});
-      if(blob.size<500)return;
+      const blob=new Blob(_rChunks,{type:'audio/webm'});if(blob.size<500)return;
       const reader=new FileReader();
       reader.onload=async e=>{
         const u=auth.currentUser;if(!u||!_curLeadId)return;
-        try{
-          await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'voice',audioData:e.target.result,duration:_rSecs,text:'🎤 Vocal ('+_rSecs+'s)',createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-          toast('✅ Message vocal envoyé');
-        }catch(err){toast('Erreur','err');}
+        try{await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'voice',audioData:e.target.result,duration:_rSecs,text:'🎤 Vocal ('+_rSecs+'s)',createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});toast('✅ Message vocal envoyé');}
+        catch(err){toast('Erreur','err');}
       };
       reader.readAsDataURL(blob);
     };
@@ -1267,7 +1298,7 @@ async function toggleVoice(){
 let _audCache={};
 function playVoice(id,data){if(_audCache[id]){_audCache[id].pause();delete _audCache[id];return;}const a=new Audio(data);_audCache[id]=a;a.play().catch(()=>{});a.onended=()=>delete _audCache[id];}
 
-/* ══ DEMO OVERLAY ══ */
+/* ── Demo overlay ── */
 let _ovMsgId='',_ovLeadId='',_ovApproved=false;
 function openOv(url,ver,msgId,leadId,approved){
   _ovMsgId=msgId;_ovLeadId=leadId;_ovApproved=approved;
@@ -1284,43 +1315,25 @@ function openOvImprove(url,ver,msgId,leadId){
   $('ovImproveBar').classList.add('open');
   setTimeout(()=>$('ovImpText').focus(),300);
 }
-function closeOv(){
-  $('demoOv').classList.remove('open');
-  $('ovFrame').src='';
-  $('ovImproveBar').classList.remove('open');
-  $('ovImpText').value='';
-  document.body.style.overflow='';
-}
+function closeOv(){$('demoOv').classList.remove('open');$('ovFrame').src='';$('ovImproveBar').classList.remove('open');$('ovImpText').value='';document.body.style.overflow='';}
 async function approveFromOv(){closeOv();await approveDemoMsg(_ovMsgId,_ovLeadId);}
-function toggleOvImprove(){
-  $('ovImproveBar').classList.toggle('open');
-  if($('ovImproveBar').classList.contains('open'))$('ovImpText').focus();
-}
+function toggleOvImprove(){$('ovImproveBar').classList.toggle('open');if($('ovImproveBar').classList.contains('open'))$('ovImpText').focus();}
 async function sendImproveMsg(){
-  // Check modif limit (3 max)
   const u=auth.currentUser;if(!u||!_ovLeadId)return;
   const text=$('ovImpText').value.trim();if(!text)return;
-  // Count existing modif requests
-  const modifSnap=await db.collection('messages').where('leadId','==',_ovLeadId).where('from','==','client').get();
-  const modifCount=modifSnap.docs.filter(d=>d.data().text&&d.data().text.startsWith('🔧')).length;
-  if(modifCount>=3){toast('⚠️ Limite de 3 modifications atteinte. Validez ou contactez BizFlow.','err');return;}
-  $('ovImpText').value='';
-  closeOv();
-  try{
-    await db.collection('messages').add({leadId:_ovLeadId,userId:u.uid,from:'client',type:'text',text:'🔧 Modifications demandées ('+(modifCount+1)+'/3) : '+text,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-    toast('✅ Modifications envoyées ('+(modifCount+1)+'/3)');
-  }catch(e){toast('Erreur','err');}
+  const snap=await db.collection('messages').where('leadId','==',_ovLeadId).where('from','==','client').get();
+  const modifCount=snap.docs.filter(d=>d.data().text&&d.data().text.startsWith('\uD83D\uDD27')).length;
+  if(modifCount>=3){toast('⚠️ Limite de 3 modifications atteinte.','err');return;}
+  $('ovImpText').value='';closeOv();
+  try{await db.collection('messages').add({leadId:_ovLeadId,userId:u.uid,from:'client',type:'text',text:'🔧 Modifications ('+(modifCount+1)+'/3) : '+text,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});toast('✅ Modifications envoyées ('+(modifCount+1)+'/3)');}
+  catch(e){toast('Erreur','err');}
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv();});
 
-/* ══ PAYMENT ══ */
+/* ── Payment ── */
 let _selPayMethod='';
 function selPay(el,m){document.querySelectorAll('.pay-method').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');_selPayMethod=m;}
-function openPayOv(){
-  $('payAmt').textContent=(_curLead?.pack&&PACK_PRICES[_curLead.pack])||'À définir';
-  $('payOv').classList.add('open');
-  document.body.style.overflow='hidden';
-}
+function openPayOv(){$('payAmt').textContent=(_curLead?.pack&&PACK_PRICES[_curLead.pack])||'À définir';$('payOv').classList.add('open');document.body.style.overflow='hidden';}
 function closePayOv(){$('payOv').classList.remove('open');document.body.style.overflow='';}
 async function confirmPay(){
   if(!_selPayMethod){toast('Choisissez un moyen de paiement','err');return;}
@@ -1334,10 +1347,11 @@ async function confirmPay(){
   }catch(e){toast('Erreur','err');}
 }
 
-/* ══ SIGN OUT ══ */
+/* ── Sign out ── */
 function doSignOut(){
-  if(_unsubL)_unsubL();if(_unsubM)_unsubM();
-  auth.signOut().then(()=>{showView('authView');clearMsg();history.replaceState({},'',location.pathname);});
+  if(_unsubLeads)_unsubLeads();
+  if(_unsubMsgs)_unsubMsgs();
+  auth.signOut().then(()=>{showView('authView');history.replaceState({},'',location.pathname);});
 }
 
 </script>
