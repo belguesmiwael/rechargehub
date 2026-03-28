@@ -1207,18 +1207,28 @@ function renderChat(msgs,leadId){
       </div>`;
     }else if(m.type==='demo'){
       const approved=m.approvedByClient;
-      const isLatest=m.id===latestDemoId&&!hasFinal;
-      const canTest=!hasFinal&&(approved||(isLatest&&!anyApproved));
-      // Approved demo stays testable even after final sent
+      // Latest = highest versionNumber (most recently sent by admin)
+      const isLatest=m.id===latestDemoId;
+      // Testable: approved version always testable; latest testable if no approval yet and no final
       const realCanTest=approved||(isLatest&&!anyApproved&&!hasFinal);
-      const testBtn=realCanTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Verrouillée</span>';
+      const testBtn=realCanTest
+        ?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`
+        :'<span class="locked-badge">🔒 Verrouillée</span>';
       let actionBtn='';
-      if(approved)actionBtn='<span class="final-badge">✅ Validée</span>';
-      else if(hasFinal)actionBtn='<span style="font-size:.64rem;color:var(--mu2)">Remplacée</span>';
-      else if(anyApproved)actionBtn='<span class="locked-badge">Remplacée</span>';
-      else if(isLatest)actionBtn=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button><button class="btn-improve" onclick="openOvImprove('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}')">✏️ Modif.</button>`;
-      else actionBtn='<span class="locked-badge">⬆️ Ancienne</span>';
-      html=`<div class="demo-bubble${approved?' approved':''}">
+      if(approved){
+        actionBtn='<span class="final-badge">✅ Validée</span>';
+      }else if(hasFinal){
+        actionBtn='<span style="font-size:.63rem;color:var(--mu2)">Remplacée</span>';
+      }else if(anyApproved){
+        // Another version was approved — this one is inactive
+        actionBtn='<span class="locked-badge">Non retenue</span>';
+      }else if(isLatest){
+        // Latest, not yet approved — client can validate or request changes
+        actionBtn=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button><button class="btn-improve" onclick="openOvImprove('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}')">✏️ Modif.</button>`;
+      }else{
+        actionBtn='<span class="locked-badge">⬆️ Ancienne</span>';
+      }
+      html=`<div class="demo-bubble${approved?' approved':''}${isLatest&&!anyApproved?' latest':''}">
         <div class="db-ver">${approved?'✅':'🎯'} Démo ${m.demoVersion||''}</div>
         <div class="db-msg">${m.text||''}</div>
         <div class="db-date">${fmtD(m.createdAt)}</div>
@@ -1251,7 +1261,7 @@ function renderDemos(msgs,leadId){
   const finalMsg=msgs.find(m=>m.type==='final');
   const hasContent=demoMsgs.length||finalMsg;
   $('demosWrap').style.display=hasContent?'block':'none';
-  $('awaitDemo').style.display=(!hasContent&&_curLead&&['contacted','new'].includes(_curLead.status||'new'))?'block':'none';
+  $('awaitDemo').style.display=(!hasContent&&_curLead&&['new','contacted'].includes(_curLead.status||'new'))?'block':'none';
   if(!hasContent)return;
 
   $('demoCnt').textContent=demoMsgs.length+(finalMsg?'+F':'');
@@ -1260,15 +1270,14 @@ function renderDemos(msgs,leadId){
   const mc=$('modifLeft');
   if(mc){mc.textContent=modifLeft+' modif. restante'+(modifLeft>1?'s':'');mc.className='modif-counter'+(modifLeft===0?' blocked':modifLeft===1?' warn':'');}
 
-  // Sort demos by versionNumber / createdAt
-  const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||a.createdAt?.toMillis()||0)-(b.versionNumber||b.createdAt?.toMillis()||0));
+  // Sort demos by versionNumber ascending
+  const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||0)-(b.versionNumber||0));
   const latestDemo=sorted[sorted.length-1];
   const anyApproved=demoMsgs.some(m=>m.approvedByClient);
-  const approvedDemo=demoMsgs.find(m=>m.approvedByClient);
 
   $('demosList').innerHTML='';
 
-  // ── VERSION FINALE (top, always openable) ──
+  // ── VERSION FINALE (always at top) ──
   if(finalMsg){
     const conf=finalMsg.approvedByClient;
     $('demosList').innerHTML+=`<div class="demo-item approved" style="border-top:2px solid var(--green)">
@@ -1282,41 +1291,31 @@ function renderDemos(msgs,leadId){
     </div>`;
   }
 
-  // ── DEMO VERSIONS ──
+  // ── DEMO VERSIONS (newest first) ──
   [...sorted].reverse().forEach(m=>{
     const approved=m.approvedByClient;
     const isLatest=m.id===latestDemo.id;
     const vNum=m.demoVersion||m.versionNumber||'—';
-
-    // LOCKING RULES:
-    // - Approved demo: always testable (even after final sent) — shows ✅ Validée
-    // - Latest demo (not yet approved, no approval yet): testable
-    // - All other demos: locked
-    // - If final sent: only final is openable, approved demo stays visible as ✅ Validée
-    //   but test button only for approved (not locked if approved)
+    // Testable: approved always; latest testable if nothing approved yet and no final
     const canTest=approved||(isLatest&&!anyApproved&&!finalMsg);
-
     const testBtn=canTest
       ?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`
       :`<span class="locked-badge">🔒 Verrouillée</span>`;
-
     let actionHtml='';
     if(approved){
       actionHtml='<span class="final-badge">✅ Validée</span>';
     }else if(finalMsg){
-      // Final sent — other non-approved demos are locked
-      actionHtml='<span class="locked-badge" style="opacity:.5">Remplacée</span>';
+      actionHtml='<span style="font-size:.63rem;color:var(--mu2);opacity:.6">Remplacée</span>';
     }else if(anyApproved){
-      actionHtml='<span class="locked-badge">Remplacée</span>';
+      actionHtml='<span class="locked-badge">Non retenue</span>';
     }else if(isLatest){
       actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button>`;
     }else{
       actionHtml='<span class="locked-badge">Version antérieure</span>';
     }
-
-    $('demosList').innerHTML+=`<div class="demo-item${approved?' approved':''}${isLatest&&!anyApproved?' latest':''}">
-      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved&&!finalMsg?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest&&!finalMsg?'<span class="modif-warn" style="margin-left:5px">⚠️ Dernière démo</span>':''}</div>
-      <div class="di-msg" style="${!canTest&&!approved?'opacity:.35':''}">${m.text||'Démo disponible'}</div>
+    $('demosList').innerHTML+=`<div class="demo-item${approved?' approved':''}${isLatest&&!anyApproved&&!finalMsg?' latest':''}">
+      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved&&!finalMsg?'🆕':''} Version ${vNum}</div>
+      <div class="di-msg" style="${!canTest&&!approved?'opacity:.3':''}">${m.text||'Démo disponible'}</div>
       <div class="di-date">${fmtD(m.createdAt)}</div>
       <div class="di-actions">${testBtn}${actionHtml}</div>
     </div>`;

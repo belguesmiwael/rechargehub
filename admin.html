@@ -901,16 +901,72 @@ async function sendDemoMsg(){
   const url=document.getElementById('demoUrlIn').value.trim();
   const ver=document.getElementById('demoVerIn').value.trim();
   const msg=document.getElementById('demoMsgIn').value.trim();
-  if(!url){toast('Entrez l\'URL de la démo','err');return;}
+  const isFinal=document.getElementById('isFinalChk')?document.getElementById('isFinalChk').checked:false;
+  if(!url){toast('Entrez l\'URL de la démo/finale','err');return;}
+
   const existing=await db.collection('messages').where('leadId','==',curLeadId).where('type','==','demo').get();
   const vNum=existing.size+1;
+
+  if(isFinal){
+    try{
+      await db.collection('messages').add({
+        leadId:curLeadId,userId:lead&&lead.userId||null,from:'admin',type:'final',
+        text:msg||'🏁 Votre application finale est prête !',
+        demoUrl:url,demoVersion:'finale',versionNumber:vNum,
+        approvedByClient:false,createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true
+      });
+      await db.collection('leads').doc(curLeadId).update({status:'converted',updatedAt:FS.serverTimestamp()});
+      if(lead&&lead.userId){
+        await db.collection('notifications').add({
+          userId:lead.userId,leadId:curLeadId,
+          title:'🏁 Votre application finale est prête !',
+          message:'Votre app est terminée — ouvrez-la dans votre espace client.',
+          type:'final_ready',read:false,createdAt:FS.serverTimestamp()
+        });
+        await db.collection('messages').add({
+          leadId:curLeadId,from:'system',type:'system',
+          text:'🏁 Version finale livrée ! Confirmez la réception dans votre espace.',
+          createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true
+        });
+      }
+      document.getElementById('demoUrlIn').value='';
+      document.getElementById('demoMsgIn').value='';
+      var chk=document.getElementById('isFinalChk');if(chk)chk.checked=false;
+      toast('🏁 Version finale envoyée !');
+    }catch(e){toast('Erreur: '+e.message,'err');}
+    return;
+  }
+
+  if(existing.size>=3){
+    toast('⚠️ Max 3 démos. Cochez "🏁 Version finale" pour la livraison.','err');
+    return;
+  }
+
   try{
-    await db.collection('messages').add({leadId:curLeadId,userId:lead?.userId||null,from:'admin',type:'demo',text:msg||'Nouvelle version de votre application — testez et dites-nous ce que vous en pensez !',demoUrl:url,demoVersion:ver||'v'+vNum,versionNumber:vNum,approvedByClient:false,createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true});
+    await db.collection('messages').add({
+      leadId:curLeadId,userId:lead&&lead.userId||null,from:'admin',type:'demo',
+      text:msg||'Nouvelle version disponible — testez et dites-nous ce que vous en pensez !',
+      demoUrl:url,demoVersion:ver||'v'+vNum,versionNumber:vNum,
+      approvedByClient:false,createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true
+    });
     await db.collection('leads').doc(curLeadId).update({status:'demo',updatedAt:FS.serverTimestamp()});
-    if(lead?.userId)await db.collection('notifications').add({userId:lead.userId,leadId:curLeadId,title:'🎯 Nouvelle démo disponible !',message:'Version '+(ver||vNum)+' prête — testez-la dans votre espace client.',type:'demo_ready',read:false,createdAt:FS.serverTimestamp()});
-    document.getElementById('demoUrlIn').value='';document.getElementById('demoMsgIn').value='';
-    document.getElementById('demoVerNum').textContent=vNum+1;document.getElementById('demoVerIn').value='v'+(vNum+1);
-    toast('🎯 Démo envoyée !');
+    if(lead&&lead.userId){
+      await db.collection('notifications').add({
+        userId:lead.userId,leadId:curLeadId,
+        title:'🎯 Nouvelle démo disponible !',
+        message:'Version '+(ver||'v'+vNum)+' prête — testez-la dans votre espace client.',
+        type:'demo_ready',read:false,createdAt:FS.serverTimestamp()
+      });
+    }
+    document.getElementById('demoUrlIn').value='';
+    document.getElementById('demoMsgIn').value='';
+    var nxt=vNum+1;
+    var el_num=document.getElementById('demoVerNum');if(el_num)el_num.textContent=nxt;
+    var el_in=document.getElementById('demoVerIn');if(el_in)el_in.value='v'+nxt;
+    var el_rem=document.getElementById('demoRemain');
+    if(el_rem){var left=3-vNum;el_rem.textContent=left>0?'('+left+' restante'+(left>1?'s':'')+'  )':'(max atteint — cochez finale)';}
+    if(vNum>=3)toast('🎯 Démo v'+vNum+' envoyée. Max atteint — prochaine version = finale.');
+    else toast('🎯 Démo v'+vNum+' envoyée !');
   }catch(e){toast('Erreur: '+e.message,'err');}
 }
 
@@ -992,8 +1048,14 @@ async function selectLead(id){
   renderPromptPanel(lead);
   // Demo version counter
   const dSnap=await db.collection('messages').where('leadId','==',id).where('type','==','demo').get();
-  document.getElementById('demoVerNum').textContent=dSnap.size+1;
-  document.getElementById('demoVerIn').value='v'+(dSnap.size+1);
+  var dNum=dSnap.size+1;
+  var el_dnum=document.getElementById('demoVerNum');if(el_dnum)el_dnum.textContent=dNum;
+  var el_dvin=document.getElementById('demoVerIn');if(el_dvin)el_dvin.value='v'+dNum;
+  var el_rem=document.getElementById('demoRemain');
+  if(el_rem){var rem=3-dSnap.size;el_rem.textContent=rem>0?'('+rem+' restante'+(rem>1?'s':'')+')':'(max atteint — cochez finale)';el_rem.style.color=rem<=0?'var(--red)':rem===1?'var(--yellow)':'var(--mu)';}
+  // If already 3 demos → pre-check final checkbox
+  var fchk=document.getElementById('isFinalChk');
+  if(fchk)fchk.checked=dSnap.size>=3;
   // Payment alert
   const payAlert=document.getElementById('payAlertBanner');
   if(payAlert){
