@@ -969,8 +969,16 @@ function loadDash(uid,userEmail,hasLeads){
       renderAppDetails(lead);
       // Payment banner
       const payB=$('payBanner');
-      if(lead.status==='payment_requested'||lead.status==='payment_confirmed'){
+      const payStatuses=['payment_requested','payment_confirmed'];
+      if(payStatuses.includes(lead.status)){
         payB.classList.add('on');
+        // Update banner text based on status
+        const pb_desc=payB.querySelector('.pb-desc');
+        if(pb_desc){
+          pb_desc.textContent=lead.status==='payment_confirmed'
+            ?'Paiement reçu ! Votre application finale sera livrée très prochainement.'
+            :'Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
+        }
       }else payB.classList.remove('on');
       // Load messages
       loadMessages(lead.id,uid);
@@ -1092,25 +1100,30 @@ function renderDemos(msgs,leadId){
 
   $('demoCnt').textContent=demoMsgs.length+(finalMsg?'+F':'');
 
-  // Modif counter
-  const modifUsed=msgs.filter(m=>m.type==='text'&&m.from==='client'&&m.text&&m.text.startsWith('🔧')).length;
+  const modifUsed=msgs.filter(m=>m.type==='text'&&m.from==='client'&&m.text&&m.text.startsWith('\uD83D\uDD27')).length;
   const modifLeft=3-modifUsed;
   const mc=$('modifLeft');
   if(mc){
-    mc.textContent=`${modifLeft} modif. restante${modifLeft>1?'s':''}`;
+    mc.textContent=modifLeft+' modif. restante'+(modifLeft>1?'s':'');
     mc.className='modif-counter'+(modifLeft===0?' blocked':modifLeft===1?' warn':'');
   }
 
+  // Determine state
   const anyApproved=demoMsgs.some(m=>m.approvedByClient);
-  const reversed=[...demoMsgs].reverse();
+  const approvedMsg=demoMsgs.find(m=>m.approvedByClient);
+  // Sort by version number, latest last
+  const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||0)-(b.versionNumber||0));
+  const latestDemo=sorted[sorted.length-1];
+  const reversed=[...sorted].reverse();
+
   $('demosList').innerHTML='';
 
-  // Final version card at top
+  // Final version at top
   if(finalMsg){
     const conf=finalMsg.approvedByClient;
     $('demosList').innerHTML+=`<div class="demo-item approved" style="border-top:2px solid var(--green)">
       <div class="di-ver">🏁 <span class="final-badge">VERSION FINALE</span></div>
-      <div class="di-msg">${finalMsg.text||'Votre application finale'}</div>
+      <div class="di-msg">${finalMsg.text||'Votre application finale est prête !'}</div>
       <div class="di-date">${fmtD(finalMsg.createdAt)}</div>
       <div class="di-actions">
         <a href="${finalMsg.demoUrl||'#'}" target="_blank" class="btn-test" style="background:var(--green);color:#000">🚀 Ouvrir mon app</a>
@@ -1119,27 +1132,44 @@ function renderDemos(msgs,leadId){
     </div>`;
   }
 
-  reversed.forEach((m,i)=>{
-    const isLatest=i===0,approved=m.approvedByClient;
-    const isActive=(isLatest&&!anyApproved)||approved;
-    const vNum=m.demoVersion||String(demoMsgs.length-i);
-    const isLast3=demoMsgs.length>=3&&isLatest;
-    const testBtn=(isActive&&!finalMsg)?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Indispo</span>';
-    let actionHtml='';
-    if(finalMsg)actionHtml='';
-    else if(approved)actionHtml='<span class="final-badge">✅ Validée</span>';
-    else if(anyApproved)actionHtml='<span class="locked-badge">🔒 Remplacée</span>';
-    else if(isLatest)actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button>`;
-    else actionHtml='<span class="locked-badge">⬆️ Ancienne</span>';
+  reversed.forEach(m=>{
+    const approved=m.approvedByClient;
+    const isLatest=m.id===latestDemo.id;
+    const vNum=m.demoVersion||m.versionNumber||'—';
 
-    $('demosList').innerHTML+=`<div class="demo-item${isLatest&&!anyApproved?' latest':''}${approved?' approved':''}">
-      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved?'🆕':''} Version ${vNum}${isLast3?'<span class="modif-warn">⚠️ Dernière démo</span>':''}</div>
-      <div class="di-msg" style="${!isActive?'opacity:.45':''}">${m.text||'Démo disponible'}</div>
+    // LOCKING RULES (strict):
+    // 1. Final sent → ALL demos locked
+    // 2. A version approved → ONLY approved testable, others locked
+    // 3. No approval yet → ONLY latest (last sent) testable
+    const canTest=!finalMsg&&(approved||(isLatest&&!anyApproved));
+
+    const testBtn=canTest
+      ?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`
+      :`<span class="locked-badge">🔒 ${finalMsg?'Remplacée':'Non disponible'}</span>`;
+
+    let actionHtml='';
+    if(finalMsg){
+      actionHtml='<span style="font-size:.65rem;color:var(--mu2)">Remplacée par la finale</span>';
+    }else if(approved){
+      actionHtml='<span class="final-badge">✅ Validée</span>';
+    }else if(anyApproved){
+      actionHtml='<span class="locked-badge">Remplacée</span>';
+    }else if(isLatest){
+      actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider cette version</button>`;
+    }else{
+      actionHtml='<span class="locked-badge">Version antérieure</span>';
+    }
+
+    const dimmed=!canTest&&!approved;
+    $('demosList').innerHTML+=`<div class="demo-item${approved?' approved':''}${isLatest&&!anyApproved?' latest':''}">
+      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest?'<span class="modif-warn">⚠️ Dernière démo</span>':''}</div>
+      <div class="di-msg" style="${dimmed?'opacity:.35':'color:var(--tx)'}">${m.text||'Démo disponible'}</div>
       <div class="di-date">${fmtD(m.createdAt)}</div>
       <div class="di-actions">${testBtn}${actionHtml}</div>
     </div>`;
   });
 }
+
 
 /* ══ APPROVE DEMO ══ */
 async function approveDemoMsg(msgId,leadId){
@@ -1147,17 +1177,30 @@ async function approveDemoMsg(msgId,leadId){
   try{
     const demoSnap=await db.collection('messages').where('leadId','==',leadId).where('type','==','demo').get();
     const demoCount=demoSnap.size;
+    // Mark approved version
     await db.collection('messages').doc(msgId).update({approvedByClient:true,approvedAt:FS.serverTimestamp()});
+    // Determine next status
     const isV3=demoCount>=3;
     const newStatus=isV3?'payment_requested':'validated';
     await db.collection('leads').doc(leadId).update({status:newStatus,clientApprovedAt:FS.serverTimestamp()});
-    const txt=isV3?'✅ Version validée ! Paiement requis pour la version finale.':'✅ Démo validée ! Notre équipe prépare la version suivante.';
-    await db.collection('messages').add({leadId,userId:u.uid,from:'client',type:'approval',text:txt,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
+    // Send approval message
+    const txt=isV3
+      ?'✅ Version validée ! En attente du paiement pour recevoir la version finale.'
+      :'✅ Démo validée ! Notre équipe prépare la version suivante.';
+    await db.collection('messages').add({
+      leadId,userId:u.uid,from:'client',type:'approval',text:txt,
+      createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
+    });
     if(isV3){
-      await db.collection('notifications').add({userId:'admin',leadId,title:'💳 Paiement requis',message:(u.displayName||u.email||'Client')+' a validé la v3 — demandez le paiement.',type:'payment_needed',read:false,createdAt:FS.serverTimestamp()});
+      await db.collection('notifications').add({
+        userId:'admin',leadId,
+        title:'💳 Paiement requis — v3 validée',
+        message:(u.displayName||u.email||'Client')+' a validé la démo v3. Envoyez la demande de paiement.',
+        type:'payment_needed',read:false,createdAt:FS.serverTimestamp()
+      });
     }
-    toast(isV3?'✅ Version validée ! Procédez au paiement.':'✅ Démo validée !');
-  }catch(e){toast('Erreur','err');}
+    toast(isV3?'✅ Version validée ! Procédez au paiement pour recevoir votre app finale.':'✅ Démo validée !');
+  }catch(e){toast('Erreur: '+e.message,'err');}
 }
 
 async function approveFinal(msgId,leadId){

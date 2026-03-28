@@ -652,6 +652,29 @@ function showAdmin(){
   showTab('dash',document.querySelector('.nav-tab'));
 }
 function logout(){sessionStorage.removeItem('bzAdmin');document.getElementById('adminView').style.display='none';document.getElementById('loginView').style.display='flex';}
+
+/* ══ ADMIN DEMO MANAGEMENT ══ */
+async function resetDemoApproval(msgId){
+  if(!window.confirm('Réinitialiser la validation de cette démo ?'))return;
+  try{
+    await db.collection('messages').doc(msgId).update({approvedByClient:false,approvedAt:null});
+    await db.collection('leads').doc(curLeadId).update({status:'demo',clientApprovedAt:null});
+    toast('✅ Validation réinitialisée');
+  }catch(e){toast('Erreur','err');}
+}
+
+async function forceApproveDemoAdmin(msgId){
+  try{
+    // First unapprove all others
+    const snap=await db.collection('messages').where('leadId','==',curLeadId).where('type','==','demo').get();
+    const batch=db.batch();
+    snap.docs.forEach(d=>{if(d.id!==msgId)batch.update(d.ref,{approvedByClient:false,approvedAt:null});});
+    batch.update(db.collection('messages').doc(msgId),{approvedByClient:true,approvedAt:FS.serverTimestamp()});
+    await batch.commit();
+    toast('✅ Validation déplacée sur cette version');
+  }catch(e){toast('Erreur','err');}
+}
+
 if(sessionStorage.getItem('bzAdmin')==='1')showAdmin();
 
 /* Tab switch */
@@ -668,7 +691,7 @@ function showTab(tab,btn){
 }
 
 /* ── LEADS ── */
-let allLeads=[],curFilter='all',curLeadId=null,unsubMsgs=null;
+let allLeads=[],curFilter='all',curLeadId=null,unsubMsgs=null,_ppOpen=false;
 
 function loadLeads(){
   db.collection('leads').onSnapshot(snap=>{
@@ -885,7 +908,7 @@ async function deleteClient(){
 
 
 async function selectLead(id){
-  curLeadId=id;renderLeads();
+  curLeadId=id;_ppOpen=false;renderLeads();
   const lead=allLeads.find(l=>l.id===id);if(!lead)return;
   document.getElementById('cdEmpty').style.display='none';
   const cont=document.getElementById('cdContent');cont.style.display='flex';cont.style.flexDirection='column';
@@ -940,19 +963,31 @@ function togglePrompt(){
 }
 
 
+function buildAutoPrompt(lead){
+  const feats=Array.isArray(lead.features)&&lead.features.length?lead.features:[];
+  const pack=lead.packLabel||lead.pack||'Non précisé';
+  const comp=lead.complexity||'simple';
+  const domain=lead.domain||lead.categories||'';
+  const desc=lead.description||lead.categories||'';
+  const mono=lead.monetize?'\n• Prévoir un système de monétisation / abonnements':'';
+  return `Crée une application web complète pour ce client BizFlow TN :\n\n━━━ CLIENT ━━━\nNom : ${lead.name||'—'}\nPack : ${pack}\nSecteur : ${domain||'Non précisé'}\n\n━━━ DESCRIPTION ━━━\n${desc||'Application sur mesure'}\n\n━━━ FONCTIONNALITÉS ━━━\n${feats.length?feats.map(f=>'• '+f).join('\n'):'• À définir selon description'}\n${mono}\n\n━━━ COMPLEXITÉ ━━━\n${comp==='simple'?'Simple — logique basique':comp==='moyenne'?'Moyenne — auth + plusieurs modules':'Avancée — multi-utilisateurs + logique métier'}\n\n━━━ STACK TECHNIQUE ━━━\n• Fichier HTML unique autonome (HTML + CSS + JS)\n• Firebase Firestore + Auth\n• Design moderne responsive, mode dark/light\n• Données tunisiennes (DT, +216, prénoms locaux)\n\n━━━ LIVRABLE ━━━\nFichier HTML complet prêt à déployer sur GitHub Pages.`;
+}
+
 function renderPromptPanel(lead){
   const ppText=document.getElementById('ppText');
   const ppNo=document.getElementById('ppNoPrompt');
   const ppFeats=document.getElementById('ppFeats');
-  if(lead.claudePrompt){
-    ppText.style.display='block';ppNo.style.display='none';
-    ppText.value=lead.claudePrompt;
-  }else{
-    ppText.style.display='none';ppNo.style.display='block';
-  }
+  if(!ppText||!ppNo||!ppFeats)return;
+  // Use saved prompt or auto-generate from lead data
+  const prompt=lead.claudePrompt||buildAutoPrompt(lead);
+  ppText.style.display='block';
+  ppNo.style.display='none';
+  ppText.value=prompt;
+  // Features tags
   const feats=Array.isArray(lead.features)&&lead.features.length?lead.features:[];
   ppFeats.innerHTML=feats.length?feats.map(f=>`<span class="feat-tag">${f}</span>`).join(''):'';
-  if(lead.claudePrompt&&!_ppOpen){togglePrompt();}
+  // Auto-open if closed
+  if(!_ppOpen){_ppOpen=false;togglePrompt();}
 }
 
 

@@ -745,21 +745,32 @@ function showContinueBanner(pack,label){
 
 function goToClient(pack){
   const desc=document.getElementById('descInput').value.trim();
-  const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(desc);
+  const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(desc||'Application sur mesure');
   // Save all data to sessionStorage
   sessionStorage.setItem('bz_pack',pack);
   sessionStorage.setItem('bz_prompt',prompt);
   sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
-  sessionStorage.setItem('bz_complexity',complexity);
+  sessionStorage.setItem('bz_complexity',complexity||'simple');
   sessionStorage.setItem('bz_monetize',monetize?'1':'0');
   sessionStorage.setItem('bz_domain',selectedDomain||'');
-  // Navigate — window.top handles both iframe and standalone
-  if(window.parent!==window){
-    // In iframe (modal) : notify parent then navigate top
-    try{window.parent.postMessage({type:'bz_pack_chosen',pack,prompt,features:[...selected],complexity,monetize},'*');}catch(e){}
+  // Build client URL from current location (works on GitHub Pages with any subfolder)
+  const base=window.location.href.substring(0,window.location.href.lastIndexOf('/')+1);
+  const clientUrl=base+'client.html?pack='+encodeURIComponent(pack);
+  console.log('Navigating to:', clientUrl);
+  // Navigate — handle both iframe and standalone
+  try{
+    if(window.top&&window.top!==window){
+      // Inside iframe: postMessage to parent then navigate top
+      try{window.parent.postMessage({type:'bz_pack_chosen',pack},'*');}catch(e){}
+      window.top.location.href=clientUrl;
+    }else{
+      // Standalone page
+      window.location.href=clientUrl;
+    }
+  }catch(e){
+    // Fallback: navigate current window
+    window.location.href='client.html?pack='+encodeURIComponent(pack);
   }
-  // Always navigate the top window
-  window.top.location.href='client.html?pack='+pack;
 }
 
 // ══════════════════════════════════════════════
