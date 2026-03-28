@@ -646,6 +646,10 @@ firebase.initializeApp(FC);
 const db=firebase.firestore(), auth=firebase.auth();
 const FS=firebase.firestore.FieldValue;
 
+/* ══ PACK CONSTANTS — must be declared before onAuthStateChanged ══ */
+const PACK_LABELS={essentiel:'🟢 Essentiel',pro:'🔵 Pro',partenaire:'🔴 Partenaire'};
+
+
 if(!['http:','https:','chrome-extension:'].includes(location.protocol)){
   document.getElementById('protoWarn').style.display='flex';
 }
@@ -934,7 +938,6 @@ function setDashUser(u,name,hasLeads){
 /* ════════════════════════════════════════
    BIZFLOW TN — ESPACE CLIENT DASHBOARD
 ════════════════════════════════════════ */
-// PACK_LABELS, PACK_PRICES from auth module above
 const PACK_PRICES={essentiel:'500–800 DT',pro:'900–1500 DT',partenaire:'1600–2500 DT'};
 
 const SC={
