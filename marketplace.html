@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>BizFlow TN — Applications partenaires</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#03030d;--bg2:#07071a;--sf:rgba(255,255,255,.04);--sf2:rgba(255,255,255,.07);--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);--ac:#5c8eff;--ac2:#a78bfa;--ac3:#34d399;--glow:rgba(92,142,255,.22);--tx:#f0efff;--mu:rgba(220,218,255,.55);--mu2:rgba(220,218,255,.22)}
 [data-theme=light]{--bg:#f0f0ff;--bg2:#e8e8fa;--sf:rgba(255,255,255,.8);--sf2:rgba(255,255,255,.95);--bd:rgba(0,0,60,.07);--bd2:rgba(0,0,60,.13);--tx:#0a0a1a;--mu:rgba(40,40,120,.55);--mu2:rgba(40,40,120,.22);--ac:#4060ff;--ac2:#7c3aed}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:'Syne',sans-serif}
 a{text-decoration:none;color:inherit}
 .mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
@@ -37,7 +37,7 @@ nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items
 
 /* FILTERS */
 .filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;position:relative;z-index:1}
-.filter-btn{padding:7px 16px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--mu);transition:all .2s;font-family:'Manrope',sans-serif}
+.filter-btn{padding:7px 16px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--mu);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
 .filter-btn:hover,.filter-btn.on{border-color:var(--ac);background:rgba(92,142,255,.1);color:var(--ac)}
 
 /* GRID */
@@ -55,9 +55,9 @@ nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items
 .ac-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--ac)}
 .ac-price .ac-orig{font-size:.72rem;color:var(--mu);font-weight:400;text-decoration:line-through;margin-right:5px}
 .ac-btns{display:flex;gap:6px}
-.btn-try{padding:7px 13px;border-radius:8px;border:1px solid var(--bd2);background:var(--sf);color:var(--tx);font-size:.75rem;font-weight:600;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.btn-try{padding:7px 13px;border-radius:8px;border:1px solid var(--bd2);background:var(--sf);color:var(--tx);font-size:.75rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
 .btn-try:hover{border-color:var(--ac);color:var(--ac)}
-.btn-buy{padding:7px 13px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;box-shadow:0 3px 10px var(--glow)}
+.btn-buy{padding:7px 13px;border-radius:8px;border:none;background:var(--ac);color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 3px 10px var(--glow)}
 .btn-buy:hover{transform:translateY(-1px);box-shadow:0 5px 16px var(--glow)}
 .partner-badge{position:absolute;top:14px;right:14px;font-size:.64rem;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(52,211,153,.12);color:var(--ac3);border:1px solid rgba(52,211,153,.25)}
 
@@ -80,10 +80,26 @@ nav{position:sticky;top:0;z-index:100;padding:14px 24px;display:flex;align-items
 .toast.suc{border-left:3px solid var(--ac3)}
 
 @media(max-width:600px){.market-grid{grid-template-columns:1fr;padding:0 14px 40px}.hero{padding:50px 14px 36px}.nav-links .nav-link:not(.btn-client){display:none}}
+
+/* ── DOT GRID ── */
+.dot-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+}
+.glow-line{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(92,142,255,.5) 40%,rgba(167,139,250,.55) 60%,transparent);z-index:2;pointer-events:none;animation:glowline 9s ease-in-out infinite alternate}
+@keyframes glowline{0%{opacity:.25;transform:scaleX(.6)}50%{opacity:.65;transform:scaleX(1)}100%{opacity:.3;transform:scaleX(.8)}}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(92,142,255,.3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(92,142,255,.6)}
+::selection{background:rgba(92,142,255,.35);color:#fff}
+*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 </style>
 </head>
 <body>
-<div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<div class="glow-line"></div><div class="dot-grid"></div><div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
 
 <nav>
   <a href="index.html" class="nav-logo"><div class="nav-logo-icon">⚡</div>Biz<em>Flow</em> TN</a>
@@ -200,6 +216,256 @@ function buyApp(i){
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDemoOv();});
 renderGrid();
+</script>
+
+<script>
+/* ══ BIZFLOW SOUND ENGINE v2 ══
+   Captivating CTA sounds + fluid hover feedback
+   Pure Web Audio API — zero external files
+════════════════════════════════════════════ */
+(function(){
+  var ctx=null, muted=false, lastScroll=0, scrollTick=false;
+
+  function ac(){
+    if(!ctx){try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+    if(ctx.state==='suspended')ctx.resume().catch(function(){});
+    return ctx;
+  }
+
+  /* ── UTILITY: create envelope ── */
+  function env(gainNode,t,attack,peak,decay){
+    gainNode.gain.setValueAtTime(0.001,t);
+    gainNode.gain.linearRampToValueAtTime(peak,t+attack);
+    gainNode.gain.exponentialRampToValueAtTime(0.001,t+attack+decay);
+  }
+
+  /* ── 1. CTA CLICK — rich harmonic whoosh ── */
+  function playCtaClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    // Layer 1: punchy sine
+    var o1=a.createOscillator(),g1=a.createGain();
+    o1.connect(g1);g1.connect(a.destination);
+    o1.type='sine';
+    o1.frequency.setValueAtTime(200,t);
+    o1.frequency.exponentialRampToValueAtTime(900,t+0.04);
+    o1.frequency.exponentialRampToValueAtTime(600,t+0.12);
+    env(g1,t,0.01,0.12,0.15);
+    o1.start(t);o1.stop(t+0.2);
+    // Layer 2: shimmer overtone
+    var o2=a.createOscillator(),g2=a.createGain();
+    o2.connect(g2);g2.connect(a.destination);
+    o2.type='triangle';
+    o2.frequency.setValueAtTime(1200,t);
+    o2.frequency.exponentialRampToValueAtTime(1800,t+0.08);
+    env(g2,t,0.01,0.06,0.12);
+    o2.start(t);o2.stop(t+0.15);
+    // Layer 3: sub thump
+    var o3=a.createOscillator(),g3=a.createGain();
+    o3.connect(g3);g3.connect(a.destination);
+    o3.type='sine';
+    o3.frequency.setValueAtTime(80,t);
+    o3.frequency.exponentialRampToValueAtTime(40,t+0.1);
+    env(g3,t,0.005,0.09,0.1);
+    o3.start(t);o3.stop(t+0.12);
+  }
+
+  /* ── 2. SUCCESS / VALIDATE — ascending sparkle chord ── */
+  function playSuccess(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var freqs=[523.25,659.25,783.99,1046.5];
+    var delays=[0,0.06,0.12,0.18];
+    freqs.forEach(function(freq,i){
+      var o=a.createOscillator(),g=a.createGain();
+      var pan=a.createStereoPanner?a.createStereoPanner():null;
+      o.connect(g);
+      if(pan){g.connect(pan);pan.connect(a.destination);pan.pan.value=(i-1.5)/2;}
+      else g.connect(a.destination);
+      o.type='sine';
+      o.frequency.setValueAtTime(freq*0.97,t+delays[i]);
+      o.frequency.exponentialRampToValueAtTime(freq,t+delays[i]+0.03);
+      g.gain.setValueAtTime(0,t+delays[i]);
+      g.gain.linearRampToValueAtTime(0.07,t+delays[i]+0.025);
+      g.gain.exponentialRampToValueAtTime(0.001,t+delays[i]+0.28);
+      o.start(t+delays[i]);
+      o.stop(t+delays[i]+0.3);
+    });
+  }
+
+  /* ── 3. STANDARD CLICK — crisp tap ── */
+  function playClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(800,t);
+    o.frequency.exponentialRampToValueAtTime(400,t+0.06);
+    env(g,t,0.005,0.07,0.07);
+    o.start(t);o.stop(t+0.08);
+  }
+
+  /* ── 4. CARD HOVER — ultra-subtle silk glide ── */
+  var _hoverCooldown={};
+  function playCardHover(id){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();
+    if(_hoverCooldown[id]&&now-_hoverCooldown[id]<500)return;
+    _hoverCooldown[id]=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sine';
+    f.type='lowpass';f.frequency.value=1200;f.Q.value=0.5;
+    o.frequency.setValueAtTime(600,t);
+    o.frequency.linearRampToValueAtTime(900,t+0.09);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.022,t+0.03);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+    o.start(t);o.stop(t+0.15);
+  }
+
+  /* ── 5. BANNER HOVER — warm breeze sweep ── */
+  function playBannerHover(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    f.type='bandpass';f.frequency.value=400;f.Q.value=1.5;
+    o.frequency.setValueAtTime(300,t);
+    o.frequency.linearRampToValueAtTime(500,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.018,t+0.05);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── 6. CTA HOVER — electric anticipation ── */
+  var _ctaHoverTs=0;
+  function playCtaHover(){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();if(now-_ctaHoverTs<400)return;
+    _ctaHoverTs=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(660,t);
+    o.frequency.exponentialRampToValueAtTime(990,t+0.07);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.035,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+    o.start(t);o.stop(t+0.11);
+  }
+
+  /* ── 7. SCROLL TICK — light depth pulse ── */
+  function playScroll(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    o.frequency.setValueAtTime(220,t);
+    o.frequency.exponentialRampToValueAtTime(140,t+0.1);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.015,t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+    o.start(t);o.stop(t+0.13);
+  }
+
+  /* ── 8. OPEN MODAL — portal whoosh ── */
+  function playOpen(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sawtooth';
+    f.type='lowpass';
+    f.frequency.setValueAtTime(300,t);
+    f.frequency.exponentialRampToValueAtTime(2000,t+0.18);
+    o.frequency.setValueAtTime(120,t);
+    o.frequency.exponentialRampToValueAtTime(600,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.05,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── SCROLL LISTENER ── */
+  window.addEventListener('scroll',function(){
+    if(scrollTick)return;
+    scrollTick=true;
+    setTimeout(function(){
+      var y=window.scrollY||window.pageYOffset||0;
+      if(Math.abs(y-lastScroll)>100){playScroll();lastScroll=y;}
+      scrollTick=false;
+    },280);
+  },{passive:true});
+
+  /* ── CLICK LISTENER ── */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,a[href],input[type="submit"]');
+    if(!t||t.id==='soundToggle')return;
+    var txt=(t.textContent||'').toLowerCase();
+    var isCta=t.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay,.btn-pay-confirm,.btn-ov-approve,.btn-approve,.add-btn,.send-btn');
+    var isSuccess=txt.match(/confirm|valid|envo|payer|créer|démarrer|commencer|lancer|soumettre/);
+    if(isSuccess){playSuccess();}
+    else if(isCta){playCtaClick();}
+    else{playClick();}
+  },{capture:false,passive:true});
+
+  /* ── HOVER LISTENERS ── */
+  document.addEventListener('mouseover',function(e){
+    // CTA buttons
+    var cta=e.target.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay');
+    if(cta){playCtaHover();return;}
+    // Cards
+    var card=e.target.closest('.sol-card,.step-card,.app-card,.pack,.proj-item,.client-item,.demo-item,.testi-row,.stat-card,.tarif-section,.pack-card');
+    if(card){playCardHover(card.className||'card');return;}
+    // Banners / highlighted sections
+    var banner=e.target.closest('.pay-banner,.pay-req-banner,.h-tag,.slbl,.trust-row,.await-card,.no-lead-card');
+    if(banner){playBannerHover();return;}
+  },{passive:true});
+
+  /* ── PUBLIC API ── */
+  window.BizSound={
+    playCtaClick:playCtaClick,
+    playSuccess:playSuccess,
+    playClick:playClick,
+    playCardHover:playCardHover,
+    playBannerHover:playBannerHover,
+    playCtaHover:playCtaHover,
+    playScroll:playScroll,
+    playOpen:playOpen,
+    mute:function(){muted=true;},
+    unmute:function(){muted=false;},
+    toggle:function(){muted=!muted;return !muted;}
+  };
+
+  /* ── MUTE BUTTON ── */
+  window.addEventListener('DOMContentLoaded',function(){
+    var btn=document.createElement('button');
+    btn.id='soundToggle';
+    btn.innerHTML='🔊';
+    btn.title='Son — cliquer pour couper';
+    btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(7,7,26,.88);color:rgba(255,255,255,.75);font-size:.88rem;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all .25s;box-shadow:0 4px 18px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:0';
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var on=window.BizSound.toggle();
+      btn.innerHTML=on?'🔊':'🔇';
+      btn.style.opacity=on?'1':'.38';
+      btn.title=on?'Son activé — cliquer pour couper':'Son coupé — cliquer pour activer';
+    });
+    btn.addEventListener('mouseenter',function(){btn.style.transform='scale(1.15)';btn.style.boxShadow='0 6px 22px rgba(92,142,255,.35)';});
+    btn.addEventListener('mouseleave',function(){btn.style.transform='scale(1)';btn.style.boxShadow='0 4px 18px rgba(0,0,0,.45)';});
+    document.body.appendChild(btn);
+    // Unlock AudioContext on first user gesture
+    document.body.addEventListener('click',function(){ac();},{once:true,passive:true});
+  });
+})();
+
 </script>
 </body>
 </html>

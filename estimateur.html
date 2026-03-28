@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Estimateur · App Sur Mesure</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#07090f;--s1:#0c1018;--s2:#111622;--s3:#16202f;
@@ -14,7 +14,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:auto}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden;min-height:100vh}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 90% 45% at 15% -5%,rgba(0,212,255,.055) 0%,transparent 55%),
@@ -33,8 +33,8 @@ h1 em{font-style:normal;background:linear-gradient(90deg,var(--c-cyan),#5bf);-we
 .card:hover{border-color:rgba(0,212,255,.18)}.card:hover .card-shine{opacity:1}
 .c-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .stepn{min-width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);color:var(--c-cyan);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif}
-.rhint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
-textarea{width:100%;min-height:110px;resize:vertical;background:var(--s2);border:1px solid var(--border);border-radius:13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:14px 16px;outline:none;transition:border-color .25s,box-shadow .25s}
+.rhint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:400;font-family:'Plus Jakarta Sans',sans-serif}
+textarea{width:100%;min-height:110px;resize:vertical;background:var(--s2);border:1px solid var(--border);border-radius:13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:14px 16px;outline:none;transition:border-color .25s,box-shadow .25s}
 textarea:focus{border-color:var(--c-cyan);box-shadow:0 0 0 3px rgba(0,212,255,.07)}
 textarea::placeholder{color:var(--muted)}
 .btn-gen{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;width:100%;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(124,58,237,.14));border:1px solid rgba(0,212,255,.35);border-radius:13px;padding:14px 24px;color:var(--c-cyan);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s;letter-spacing:.025em}
@@ -50,7 +50,7 @@ textarea::placeholder{color:var(--muted)}
 .feat-price{font-size:12px;color:var(--c-cyan);font-weight:600}
 .comp-row{display:flex;gap:10px;flex-wrap:wrap}
 .comp-btn{flex:1;min-width:90px;padding:13px 10px;border-radius:13px;background:var(--s2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;transition:all .2s;text-align:center}
-.comp-btn .extra{font-size:11px;opacity:.6;margin-top:3px;font-weight:400;font-family:'DM Sans',sans-serif}
+.comp-btn .extra{font-size:11px;opacity:.6;margin-top:3px;font-weight:400;font-family:'Plus Jakarta Sans',sans-serif}
 .comp-btn:hover{border-color:rgba(255,255,255,.15)}
 .comp-btn.act.simple{border-color:var(--c-green);background:rgba(16,185,129,.1);color:var(--c-green)}
 .comp-btn.act.moyenne{border-color:var(--c-amber);background:rgba(245,158,11,.1);color:var(--c-amber)}
@@ -164,7 +164,7 @@ input[type=range]{flex:1;min-width:100px;accent-color:var(--c-amber);cursor:poin
 .price-inputs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
 .pf{display:flex;flex-direction:column;gap:5px}
 .pf label{font-size:11.5px;color:var(--muted)}
-.pf input{background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s;width:100%}
+.pf input{background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s;width:100%}
 .pf input:focus{border-color:var(--c-cyan)}
 .btn-save{margin-top:16px;padding:10px 22px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.28);border-radius:10px;color:var(--c-cyan);font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;font-family:'Syne',sans-serif}
 .btn-save:hover{background:rgba(0,212,255,.18)}
@@ -173,11 +173,26 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 @media(max-width:720px){.packs-grid{grid-template-columns:1fr}.price-bar{flex-direction:column}.price-stats{margin-left:0}.revenue-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){header{padding:36px 0 24px}.card{padding:20px}.feat-grid{grid-template-columns:1fr 1fr}.revenue-grid{grid-template-columns:1fr}.rc-slider-row label{width:100%}}
+
+/* ── DOT GRID ── */
+.dot-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+}
+.glow-line{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.5) 40%,rgba(124,58,237,.55) 60%,transparent);z-index:2;pointer-events:none;animation:glowline 9s ease-in-out infinite alternate}
+@keyframes glowline{0%{opacity:.25;transform:scaleX(.6)}50%{opacity:.65;transform:scaleX(1)}100%{opacity:.3;transform:scaleX(.8)}}
+/* ── PREMIUM ── */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,212,255,.25);border-radius:3px}
+::selection{background:rgba(0,212,255,.3);color:#fff}
+*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 </head>
 <body>
+<div class="glow-line"></div><div class="dot-grid"></div>
 <div class="wrap">
 
 <header>
@@ -820,6 +835,256 @@ buildGrids(); updateCompLabels(); calcRevenue();
     if(el){el.classList.add('chosen');showContinueBanner(saved,labels[saved]||saved);}
   });
 })();
+</script>
+
+<script>
+/* ══ BIZFLOW SOUND ENGINE v2 ══
+   Captivating CTA sounds + fluid hover feedback
+   Pure Web Audio API — zero external files
+════════════════════════════════════════════ */
+(function(){
+  var ctx=null, muted=false, lastScroll=0, scrollTick=false;
+
+  function ac(){
+    if(!ctx){try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+    if(ctx.state==='suspended')ctx.resume().catch(function(){});
+    return ctx;
+  }
+
+  /* ── UTILITY: create envelope ── */
+  function env(gainNode,t,attack,peak,decay){
+    gainNode.gain.setValueAtTime(0.001,t);
+    gainNode.gain.linearRampToValueAtTime(peak,t+attack);
+    gainNode.gain.exponentialRampToValueAtTime(0.001,t+attack+decay);
+  }
+
+  /* ── 1. CTA CLICK — rich harmonic whoosh ── */
+  function playCtaClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    // Layer 1: punchy sine
+    var o1=a.createOscillator(),g1=a.createGain();
+    o1.connect(g1);g1.connect(a.destination);
+    o1.type='sine';
+    o1.frequency.setValueAtTime(200,t);
+    o1.frequency.exponentialRampToValueAtTime(900,t+0.04);
+    o1.frequency.exponentialRampToValueAtTime(600,t+0.12);
+    env(g1,t,0.01,0.12,0.15);
+    o1.start(t);o1.stop(t+0.2);
+    // Layer 2: shimmer overtone
+    var o2=a.createOscillator(),g2=a.createGain();
+    o2.connect(g2);g2.connect(a.destination);
+    o2.type='triangle';
+    o2.frequency.setValueAtTime(1200,t);
+    o2.frequency.exponentialRampToValueAtTime(1800,t+0.08);
+    env(g2,t,0.01,0.06,0.12);
+    o2.start(t);o2.stop(t+0.15);
+    // Layer 3: sub thump
+    var o3=a.createOscillator(),g3=a.createGain();
+    o3.connect(g3);g3.connect(a.destination);
+    o3.type='sine';
+    o3.frequency.setValueAtTime(80,t);
+    o3.frequency.exponentialRampToValueAtTime(40,t+0.1);
+    env(g3,t,0.005,0.09,0.1);
+    o3.start(t);o3.stop(t+0.12);
+  }
+
+  /* ── 2. SUCCESS / VALIDATE — ascending sparkle chord ── */
+  function playSuccess(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var freqs=[523.25,659.25,783.99,1046.5];
+    var delays=[0,0.06,0.12,0.18];
+    freqs.forEach(function(freq,i){
+      var o=a.createOscillator(),g=a.createGain();
+      var pan=a.createStereoPanner?a.createStereoPanner():null;
+      o.connect(g);
+      if(pan){g.connect(pan);pan.connect(a.destination);pan.pan.value=(i-1.5)/2;}
+      else g.connect(a.destination);
+      o.type='sine';
+      o.frequency.setValueAtTime(freq*0.97,t+delays[i]);
+      o.frequency.exponentialRampToValueAtTime(freq,t+delays[i]+0.03);
+      g.gain.setValueAtTime(0,t+delays[i]);
+      g.gain.linearRampToValueAtTime(0.07,t+delays[i]+0.025);
+      g.gain.exponentialRampToValueAtTime(0.001,t+delays[i]+0.28);
+      o.start(t+delays[i]);
+      o.stop(t+delays[i]+0.3);
+    });
+  }
+
+  /* ── 3. STANDARD CLICK — crisp tap ── */
+  function playClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(800,t);
+    o.frequency.exponentialRampToValueAtTime(400,t+0.06);
+    env(g,t,0.005,0.07,0.07);
+    o.start(t);o.stop(t+0.08);
+  }
+
+  /* ── 4. CARD HOVER — ultra-subtle silk glide ── */
+  var _hoverCooldown={};
+  function playCardHover(id){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();
+    if(_hoverCooldown[id]&&now-_hoverCooldown[id]<500)return;
+    _hoverCooldown[id]=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sine';
+    f.type='lowpass';f.frequency.value=1200;f.Q.value=0.5;
+    o.frequency.setValueAtTime(600,t);
+    o.frequency.linearRampToValueAtTime(900,t+0.09);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.022,t+0.03);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+    o.start(t);o.stop(t+0.15);
+  }
+
+  /* ── 5. BANNER HOVER — warm breeze sweep ── */
+  function playBannerHover(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    f.type='bandpass';f.frequency.value=400;f.Q.value=1.5;
+    o.frequency.setValueAtTime(300,t);
+    o.frequency.linearRampToValueAtTime(500,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.018,t+0.05);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── 6. CTA HOVER — electric anticipation ── */
+  var _ctaHoverTs=0;
+  function playCtaHover(){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();if(now-_ctaHoverTs<400)return;
+    _ctaHoverTs=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(660,t);
+    o.frequency.exponentialRampToValueAtTime(990,t+0.07);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.035,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+    o.start(t);o.stop(t+0.11);
+  }
+
+  /* ── 7. SCROLL TICK — light depth pulse ── */
+  function playScroll(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    o.frequency.setValueAtTime(220,t);
+    o.frequency.exponentialRampToValueAtTime(140,t+0.1);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.015,t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+    o.start(t);o.stop(t+0.13);
+  }
+
+  /* ── 8. OPEN MODAL — portal whoosh ── */
+  function playOpen(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sawtooth';
+    f.type='lowpass';
+    f.frequency.setValueAtTime(300,t);
+    f.frequency.exponentialRampToValueAtTime(2000,t+0.18);
+    o.frequency.setValueAtTime(120,t);
+    o.frequency.exponentialRampToValueAtTime(600,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.05,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── SCROLL LISTENER ── */
+  window.addEventListener('scroll',function(){
+    if(scrollTick)return;
+    scrollTick=true;
+    setTimeout(function(){
+      var y=window.scrollY||window.pageYOffset||0;
+      if(Math.abs(y-lastScroll)>100){playScroll();lastScroll=y;}
+      scrollTick=false;
+    },280);
+  },{passive:true});
+
+  /* ── CLICK LISTENER ── */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,a[href],input[type="submit"]');
+    if(!t||t.id==='soundToggle')return;
+    var txt=(t.textContent||'').toLowerCase();
+    var isCta=t.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay,.btn-pay-confirm,.btn-ov-approve,.btn-approve,.add-btn,.send-btn');
+    var isSuccess=txt.match(/confirm|valid|envo|payer|créer|démarrer|commencer|lancer|soumettre/);
+    if(isSuccess){playSuccess();}
+    else if(isCta){playCtaClick();}
+    else{playClick();}
+  },{capture:false,passive:true});
+
+  /* ── HOVER LISTENERS ── */
+  document.addEventListener('mouseover',function(e){
+    // CTA buttons
+    var cta=e.target.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay');
+    if(cta){playCtaHover();return;}
+    // Cards
+    var card=e.target.closest('.sol-card,.step-card,.app-card,.pack,.proj-item,.client-item,.demo-item,.testi-row,.stat-card,.tarif-section,.pack-card');
+    if(card){playCardHover(card.className||'card');return;}
+    // Banners / highlighted sections
+    var banner=e.target.closest('.pay-banner,.pay-req-banner,.h-tag,.slbl,.trust-row,.await-card,.no-lead-card');
+    if(banner){playBannerHover();return;}
+  },{passive:true});
+
+  /* ── PUBLIC API ── */
+  window.BizSound={
+    playCtaClick:playCtaClick,
+    playSuccess:playSuccess,
+    playClick:playClick,
+    playCardHover:playCardHover,
+    playBannerHover:playBannerHover,
+    playCtaHover:playCtaHover,
+    playScroll:playScroll,
+    playOpen:playOpen,
+    mute:function(){muted=true;},
+    unmute:function(){muted=false;},
+    toggle:function(){muted=!muted;return !muted;}
+  };
+
+  /* ── MUTE BUTTON ── */
+  window.addEventListener('DOMContentLoaded',function(){
+    var btn=document.createElement('button');
+    btn.id='soundToggle';
+    btn.innerHTML='🔊';
+    btn.title='Son — cliquer pour couper';
+    btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(7,7,26,.88);color:rgba(255,255,255,.75);font-size:.88rem;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all .25s;box-shadow:0 4px 18px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:0';
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var on=window.BizSound.toggle();
+      btn.innerHTML=on?'🔊':'🔇';
+      btn.style.opacity=on?'1':'.38';
+      btn.title=on?'Son activé — cliquer pour couper':'Son coupé — cliquer pour activer';
+    });
+    btn.addEventListener('mouseenter',function(){btn.style.transform='scale(1.15)';btn.style.boxShadow='0 6px 22px rgba(92,142,255,.35)';});
+    btn.addEventListener('mouseleave',function(){btn.style.transform='scale(1)';btn.style.boxShadow='0 4px 18px rgba(0,0,0,.45)';});
+    document.body.appendChild(btn);
+    // Unlock AudioContext on first user gesture
+    document.body.addEventListener('click',function(){ac();},{once:true,passive:true});
+  });
+})();
+
 </script>
 </body>
 </html>

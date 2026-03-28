@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>BizFlow TN — Mon Espace</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -30,17 +30,18 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:'Syne',sans-serif}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:2px}
 ::-webkit-scrollbar-track{background:transparent}
 /* mesh */
 .mesh{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.08}
-.orb1{width:500px;height:500px;top:-150px;right:-80px;background:#5c8eff;animation:oa 20s ease-in-out infinite alternate}
-.orb2{width:400px;height:400px;bottom:-80px;left:-60px;background:#a78bfa;animation:oa 26s ease-in-out infinite alternate-reverse}
-@keyframes oa{from{transform:translate(0,0)}to{transform:translate(25px,-20px)}}
+.orb{position:absolute;border-radius:50%;filter:blur(120px);animation:oa 20s ease-in-out infinite alternate}
+.orb1{width:600px;height:600px;top:-180px;right:-100px;background:#4f7bff;opacity:.12;animation-duration:24s}
+.orb2{width:500px;height:500px;bottom:-100px;left:-80px;background:#9d63ff;opacity:.1;animation-duration:30s;animation-direction:alternate-reverse}
+.orb3{width:350px;height:350px;top:50%;left:40%;background:#3dd9ac;opacity:.06;animation-duration:18s;animation-delay:-8s}
+@keyframes oa{0%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-15px) scale(1.03)}100%{transform:translate(-10px,25px) scale(.97)}}
 /* proto */
 #protoWarn{display:none;position:fixed;inset:0;z-index:9999;background:rgba(3,3,13,.97);align-items:center;justify-content:center;padding:20px}
 .pw-card{background:var(--sf2);border:1px solid rgba(248,113,113,.3);border-radius:18px;padding:28px;max-width:420px;width:100%;text-align:center}
@@ -59,19 +60,19 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .auth-card h2{font-size:1rem;font-weight:800;text-align:center;margin-bottom:4px}
 .auth-card .sub{font-size:.78rem;color:var(--mu);text-align:center;margin-bottom:16px;line-height:1.6}
 .tabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;gap:3px;margin-bottom:15px}
-.tab{flex:1;padding:7px 4px;border:none;border-radius:7px;font-family:'Manrope',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
+.tab{flex:1;padding:7px 4px;border:none;border-radius:7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
 .tab.on{background:var(--ac);color:#fff;box-shadow:0 2px 8px var(--glow)}
 .panel{display:none}.panel.on{display:block}
 .fg{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
 .fg label{font-size:.63rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
-.fg input{padding:10px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.87rem;outline:none;transition:all .2s;width:100%}
+.fg input{padding:10px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:.87rem;outline:none;transition:all .2s;width:100%}
 .fg input:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--glow)}
 .ph-row{display:flex;gap:7px}
 .ph-pfx{padding:10px 11px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);font-size:.83rem;font-weight:700;white-space:nowrap;color:var(--tx)}
 .btn-main{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .25s;box-shadow:0 5px 18px var(--glow);margin-top:2px}
 .btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 26px var(--glow)}
 .btn-main:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--tx);font-family:'Manrope',sans-serif;transition:all .2s;margin-bottom:11px}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--sf2);border:1px solid var(--bd2);border-radius:10px;padding:11px;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:11px}
 .btn-google:hover{border-color:rgba(66,133,244,.4)}.btn-google:disabled{opacity:.5;cursor:not-allowed}
 .btn-google svg{width:18px;height:18px;flex-shrink:0}
 .otp-row{display:flex;gap:6px;justify-content:center;margin:11px 0}
@@ -83,10 +84,10 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .sp{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .back-ln{display:block;text-align:center;font-size:.72rem;color:var(--mu);cursor:pointer;margin-top:7px}
-.resend-b{background:none;border:none;color:var(--ac);font-size:.73rem;cursor:pointer;font-family:'Manrope',sans-serif}
+.resend-b{background:none;border:none;color:var(--ac);font-size:.73rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif}
 .resend-b:disabled{opacity:.4;cursor:not-allowed}
 .etabs{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:3px;gap:3px;margin-bottom:11px}
-.etab{flex:1;padding:6px 4px;border:none;border-radius:6px;font-family:'Manrope',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
+.etab{flex:1;padding:6px 4px;border:none;border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .2s;background:none;color:var(--mu)}
 .etab.on{background:var(--ac);color:#fff}
 #recaptcha-container{min-height:0}
 /* ══ TOPBAR ══ */
@@ -102,7 +103,7 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .uav{width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0}
 .uavfb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;color:#fff;flex-shrink:0}
 .unm{font-size:.77rem;font-weight:600;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sout{font-size:.72rem;color:var(--mu);background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;white-space:nowrap}
+.sout{font-size:.72rem;color:var(--mu);background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .sout:hover{color:var(--red);border-color:rgba(248,113,113,.4)}
 /* ══ DASH LAYOUT ══ */
 .dash-body{display:grid;grid-template-columns:280px 1fr 300px;height:calc(100vh - var(--topbar-h));overflow:hidden}
@@ -214,11 +215,11 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .di-msg{font-size:.77rem;color:var(--tx);margin-bottom:3px;line-height:1.5}
 .di-date{font-size:.62rem;color:var(--mu2);margin-bottom:8px}
 .di-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-test{display:inline-flex;align-items:center;gap:5px;background:var(--ac);color:#fff;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;border:none;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.btn-test{display:inline-flex;align-items:center;gap:5px;background:var(--ac);color:#fff;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
 .btn-test:hover{transform:translateY(-1px);box-shadow:0 4px 14px var(--glow)}
-.btn-approve{display:inline-flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.btn-approve{display:inline-flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
 .btn-approve:hover{background:rgba(52,211,153,.2)}
-.btn-improve{display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.22);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s}
+.btn-improve{display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.22);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
 .final-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:2px 7px;font-size:.65rem;font-weight:700;color:var(--green)}
 .locked-badge{font-size:.72rem;color:var(--mu);padding:4px 9px;border-radius:7px;border:1px solid var(--bd);display:inline-flex;align-items:center;gap:4px}
 .modif-counter{font-size:.67rem;color:var(--mu)}
@@ -270,7 +271,7 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 @keyframes precord{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.3)}50%{box-shadow:0 0 0 4px rgba(248,113,113,0)}}
 .rec-timer{font-size:.67rem;color:var(--red);display:none;align-items:center;gap:3px}
 .chat-row{display:flex;gap:6px;align-items:flex-end}
-.chat-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.8rem;outline:none;resize:none;line-height:1.5;max-height:80px;min-height:34px;transition:border-color .2s}
+.chat-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:.8rem;outline:none;resize:none;line-height:1.5;max-height:80px;min-height:34px;transition:border-color .2s}
 .chat-ta:focus{border-color:var(--ac)}
 .send-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--ac);color:#fff;cursor:pointer;font-size:.9rem;flex-shrink:0;transition:all .2s;box-shadow:0 3px 10px var(--glow);display:flex;align-items:center;justify-content:center}
 .send-btn:hover{transform:translateY(-1px)}
@@ -287,7 +288,7 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 .ov-frame{flex:1;border:none;width:100%;display:block}
 .ov-improve-bar{display:none;padding:10px 16px;background:rgba(7,7,26,.96);border-top:1px solid var(--bd);flex-shrink:0;gap:8px;align-items:flex-end}
 .ov-improve-bar.open{display:flex;animation:fadeIn .2s ease}
-.ov-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-family:'Manrope',sans-serif;font-size:.79rem;outline:none;resize:none;min-height:34px;max-height:70px;transition:border-color .2s}
+.ov-ta{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--bd2);background:var(--sf2);color:var(--tx);font-family:'Plus Jakarta Sans',sans-serif;font-size:.79rem;outline:none;resize:none;min-height:34px;max-height:70px;transition:border-color .2s}
 .ov-ta:focus{border-color:var(--yellow)}
 .btn-ov-send{padding:8px 14px;border-radius:9px;border:none;background:var(--yellow);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.77rem;cursor:pointer}
 /* Payment overlay */
@@ -333,10 +334,26 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
   .btn-ov-approve,.btn-ov-improve{font-size:.72rem;padding:6px 10px}
 }
 
+
+/* ── DOT GRID ── */
+.dot-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000 30%,transparent 100%);
+}
+.glow-line{position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(92,142,255,.5) 40%,rgba(167,139,250,.55) 60%,transparent);z-index:2;pointer-events:none;animation:glowline 9s ease-in-out infinite alternate}
+@keyframes glowline{0%{opacity:.25;transform:scaleX(.6)}50%{opacity:.65;transform:scaleX(1)}100%{opacity:.3;transform:scaleX(.8)}}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(92,142,255,.3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(92,142,255,.6)}
+::selection{background:rgba(92,142,255,.35);color:#fff}
+*{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 </style>
 </head>
 <body>
-<div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<div class="glow-line"></div><div class="dot-grid"></div><div class="mesh"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
 <!-- PROTOCOL WARNING -->
 <div id="protoWarn">
   <div class="pw-card">
@@ -1440,6 +1457,256 @@ function doSignOut(){
   if(_unsubMsgs)_unsubMsgs();
   auth.signOut().then(()=>{showView('authView');history.replaceState({},'',location.pathname);});
 }
+
+</script>
+
+<script>
+/* ══ BIZFLOW SOUND ENGINE v2 ══
+   Captivating CTA sounds + fluid hover feedback
+   Pure Web Audio API — zero external files
+════════════════════════════════════════════ */
+(function(){
+  var ctx=null, muted=false, lastScroll=0, scrollTick=false;
+
+  function ac(){
+    if(!ctx){try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+    if(ctx.state==='suspended')ctx.resume().catch(function(){});
+    return ctx;
+  }
+
+  /* ── UTILITY: create envelope ── */
+  function env(gainNode,t,attack,peak,decay){
+    gainNode.gain.setValueAtTime(0.001,t);
+    gainNode.gain.linearRampToValueAtTime(peak,t+attack);
+    gainNode.gain.exponentialRampToValueAtTime(0.001,t+attack+decay);
+  }
+
+  /* ── 1. CTA CLICK — rich harmonic whoosh ── */
+  function playCtaClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    // Layer 1: punchy sine
+    var o1=a.createOscillator(),g1=a.createGain();
+    o1.connect(g1);g1.connect(a.destination);
+    o1.type='sine';
+    o1.frequency.setValueAtTime(200,t);
+    o1.frequency.exponentialRampToValueAtTime(900,t+0.04);
+    o1.frequency.exponentialRampToValueAtTime(600,t+0.12);
+    env(g1,t,0.01,0.12,0.15);
+    o1.start(t);o1.stop(t+0.2);
+    // Layer 2: shimmer overtone
+    var o2=a.createOscillator(),g2=a.createGain();
+    o2.connect(g2);g2.connect(a.destination);
+    o2.type='triangle';
+    o2.frequency.setValueAtTime(1200,t);
+    o2.frequency.exponentialRampToValueAtTime(1800,t+0.08);
+    env(g2,t,0.01,0.06,0.12);
+    o2.start(t);o2.stop(t+0.15);
+    // Layer 3: sub thump
+    var o3=a.createOscillator(),g3=a.createGain();
+    o3.connect(g3);g3.connect(a.destination);
+    o3.type='sine';
+    o3.frequency.setValueAtTime(80,t);
+    o3.frequency.exponentialRampToValueAtTime(40,t+0.1);
+    env(g3,t,0.005,0.09,0.1);
+    o3.start(t);o3.stop(t+0.12);
+  }
+
+  /* ── 2. SUCCESS / VALIDATE — ascending sparkle chord ── */
+  function playSuccess(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var freqs=[523.25,659.25,783.99,1046.5];
+    var delays=[0,0.06,0.12,0.18];
+    freqs.forEach(function(freq,i){
+      var o=a.createOscillator(),g=a.createGain();
+      var pan=a.createStereoPanner?a.createStereoPanner():null;
+      o.connect(g);
+      if(pan){g.connect(pan);pan.connect(a.destination);pan.pan.value=(i-1.5)/2;}
+      else g.connect(a.destination);
+      o.type='sine';
+      o.frequency.setValueAtTime(freq*0.97,t+delays[i]);
+      o.frequency.exponentialRampToValueAtTime(freq,t+delays[i]+0.03);
+      g.gain.setValueAtTime(0,t+delays[i]);
+      g.gain.linearRampToValueAtTime(0.07,t+delays[i]+0.025);
+      g.gain.exponentialRampToValueAtTime(0.001,t+delays[i]+0.28);
+      o.start(t+delays[i]);
+      o.stop(t+delays[i]+0.3);
+    });
+  }
+
+  /* ── 3. STANDARD CLICK — crisp tap ── */
+  function playClick(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(800,t);
+    o.frequency.exponentialRampToValueAtTime(400,t+0.06);
+    env(g,t,0.005,0.07,0.07);
+    o.start(t);o.stop(t+0.08);
+  }
+
+  /* ── 4. CARD HOVER — ultra-subtle silk glide ── */
+  var _hoverCooldown={};
+  function playCardHover(id){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();
+    if(_hoverCooldown[id]&&now-_hoverCooldown[id]<500)return;
+    _hoverCooldown[id]=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sine';
+    f.type='lowpass';f.frequency.value=1200;f.Q.value=0.5;
+    o.frequency.setValueAtTime(600,t);
+    o.frequency.linearRampToValueAtTime(900,t+0.09);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.022,t+0.03);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+    o.start(t);o.stop(t+0.15);
+  }
+
+  /* ── 5. BANNER HOVER — warm breeze sweep ── */
+  function playBannerHover(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    f.type='bandpass';f.frequency.value=400;f.Q.value=1.5;
+    o.frequency.setValueAtTime(300,t);
+    o.frequency.linearRampToValueAtTime(500,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.018,t+0.05);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── 6. CTA HOVER — electric anticipation ── */
+  var _ctaHoverTs=0;
+  function playCtaHover(){
+    var a=ac();if(!a||muted)return;
+    var now=Date.now();if(now-_ctaHoverTs<400)return;
+    _ctaHoverTs=now;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(660,t);
+    o.frequency.exponentialRampToValueAtTime(990,t+0.07);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.035,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+    o.start(t);o.stop(t+0.11);
+  }
+
+  /* ── 7. SCROLL TICK — light depth pulse ── */
+  function playScroll(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='triangle';
+    o.frequency.setValueAtTime(220,t);
+    o.frequency.exponentialRampToValueAtTime(140,t+0.1);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.015,t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+    o.start(t);o.stop(t+0.13);
+  }
+
+  /* ── 8. OPEN MODAL — portal whoosh ── */
+  function playOpen(){
+    var a=ac();if(!a||muted)return;
+    var t=a.currentTime;
+    var o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+    o.connect(f);f.connect(g);g.connect(a.destination);
+    o.type='sawtooth';
+    f.type='lowpass';
+    f.frequency.setValueAtTime(300,t);
+    f.frequency.exponentialRampToValueAtTime(2000,t+0.18);
+    o.frequency.setValueAtTime(120,t);
+    o.frequency.exponentialRampToValueAtTime(600,t+0.18);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.05,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    o.start(t);o.stop(t+0.23);
+  }
+
+  /* ── SCROLL LISTENER ── */
+  window.addEventListener('scroll',function(){
+    if(scrollTick)return;
+    scrollTick=true;
+    setTimeout(function(){
+      var y=window.scrollY||window.pageYOffset||0;
+      if(Math.abs(y-lastScroll)>100){playScroll();lastScroll=y;}
+      scrollTick=false;
+    },280);
+  },{passive:true});
+
+  /* ── CLICK LISTENER ── */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,a[href],input[type="submit"]');
+    if(!t||t.id==='soundToggle')return;
+    var txt=(t.textContent||'').toLowerCase();
+    var isCta=t.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay,.btn-pay-confirm,.btn-ov-approve,.btn-approve,.add-btn,.send-btn');
+    var isSuccess=txt.match(/confirm|valid|envo|payer|créer|démarrer|commencer|lancer|soumettre/);
+    if(isSuccess){playSuccess();}
+    else if(isCta){playCtaClick();}
+    else{playClick();}
+  },{capture:false,passive:true});
+
+  /* ── HOVER LISTENERS ── */
+  document.addEventListener('mouseover',function(e){
+    // CTA buttons
+    var cta=e.target.closest('.nav-cta,.cta-btn,.btn-main,.btn-go-est,.btn-pay');
+    if(cta){playCtaHover();return;}
+    // Cards
+    var card=e.target.closest('.sol-card,.step-card,.app-card,.pack,.proj-item,.client-item,.demo-item,.testi-row,.stat-card,.tarif-section,.pack-card');
+    if(card){playCardHover(card.className||'card');return;}
+    // Banners / highlighted sections
+    var banner=e.target.closest('.pay-banner,.pay-req-banner,.h-tag,.slbl,.trust-row,.await-card,.no-lead-card');
+    if(banner){playBannerHover();return;}
+  },{passive:true});
+
+  /* ── PUBLIC API ── */
+  window.BizSound={
+    playCtaClick:playCtaClick,
+    playSuccess:playSuccess,
+    playClick:playClick,
+    playCardHover:playCardHover,
+    playBannerHover:playBannerHover,
+    playCtaHover:playCtaHover,
+    playScroll:playScroll,
+    playOpen:playOpen,
+    mute:function(){muted=true;},
+    unmute:function(){muted=false;},
+    toggle:function(){muted=!muted;return !muted;}
+  };
+
+  /* ── MUTE BUTTON ── */
+  window.addEventListener('DOMContentLoaded',function(){
+    var btn=document.createElement('button');
+    btn.id='soundToggle';
+    btn.innerHTML='🔊';
+    btn.title='Son — cliquer pour couper';
+    btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(7,7,26,.88);color:rgba(255,255,255,.75);font-size:.88rem;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all .25s;box-shadow:0 4px 18px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:0';
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var on=window.BizSound.toggle();
+      btn.innerHTML=on?'🔊':'🔇';
+      btn.style.opacity=on?'1':'.38';
+      btn.title=on?'Son activé — cliquer pour couper':'Son coupé — cliquer pour activer';
+    });
+    btn.addEventListener('mouseenter',function(){btn.style.transform='scale(1.15)';btn.style.boxShadow='0 6px 22px rgba(92,142,255,.35)';});
+    btn.addEventListener('mouseleave',function(){btn.style.transform='scale(1)';btn.style.boxShadow='0 4px 18px rgba(0,0,0,.45)';});
+    document.body.appendChild(btn);
+    // Unlock AudioContext on first user gesture
+    document.body.addEventListener('click',function(){ac();},{once:true,passive:true});
+  });
+})();
 
 </script>
 </body>
