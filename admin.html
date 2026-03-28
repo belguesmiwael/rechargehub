@@ -407,13 +407,24 @@ tr:hover td{background:var(--sf)}
                   <option value="contacted">🟣 Contacté</option>
                   <option value="demo">🟡 Démo</option>
                   <option value="validated">🟢 Validée</option>
-                  <option value="payment_requested">💳 Demande paiement</option>
+                  <option value="payment_requested">💳 Paiement requis</option>
                   <option value="payment_confirmed">💳 Paiement confirmé</option>
                   <option value="converted">✅ Livrée</option>
                   <option value="closed">⚫ Fermé</option>
                 </select>
                 <button class="btn-sm" onclick="copyClientInfo()">📋 Copier</button>
                 <button class="btn-sm danger" onclick="deleteClient()">🗑 Supprimer</button>
+              </div>
+              <!-- Payment alert -->
+              <div id="payAlertBanner" style="display:none;width:100%;background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(251,191,36,.06));border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:11px 14px;margin-top:7px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <div style="font-size:.78rem;font-weight:800;color:var(--yellow);margin-bottom:2px" id="payAlertTitle">💳 Démo validée</div>
+                  <div style="font-size:.7rem;color:var(--mu)" id="payAlertSub">Le client a validé la démo — envoyez la version finale.</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <button onclick="requestPayment()" style="padding:7px 13px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;cursor:pointer">💳 Confirmer paiement reçu</button>
+                  <button onclick="switchInputTab('demo',document.querySelector('.itab:nth-child(2)'))" style="padding:7px 13px;border-radius:8px;border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.1);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:.74rem;cursor:pointer">🏁 Envoyer version finale</button>
+                </div>
               </div>
             </div>
             <div class="cd-body">
@@ -658,20 +669,41 @@ async function resetDemoApproval(msgId){
   if(!window.confirm('Réinitialiser la validation de cette démo ?'))return;
   try{
     await db.collection('messages').doc(msgId).update({approvedByClient:false,approvedAt:null});
-    await db.collection('leads').doc(curLeadId).update({status:'demo',clientApprovedAt:null});
-    toast('✅ Validation réinitialisée');
+    // Check if any demo remains approved
+    const snap=await db.collection('messages').where('leadId','==',curLeadId).where('approvedByClient','==',true).get();
+    const newStatus=snap.empty?'demo':'validated';
+    await db.collection('leads').doc(curLeadId).update({status:newStatus,clientApprovedAt:null});
+    toast('✅ Validation réinitialisée — statut: '+newStatus);
   }catch(e){toast('Erreur','err');}
 }
 
 async function forceApproveDemoAdmin(msgId){
   try{
-    // First unapprove all others
     const snap=await db.collection('messages').where('leadId','==',curLeadId).where('type','==','demo').get();
     const batch=db.batch();
     snap.docs.forEach(d=>{if(d.id!==msgId)batch.update(d.ref,{approvedByClient:false,approvedAt:null});});
     batch.update(db.collection('messages').doc(msgId),{approvedByClient:true,approvedAt:FS.serverTimestamp()});
     await batch.commit();
-    toast('✅ Validation déplacée sur cette version');
+    await db.collection('leads').doc(curLeadId).update({status:'payment_requested',clientApprovedAt:FS.serverTimestamp()});
+    toast('✅ Validation déplacée — statut: payment_requested');
+  }catch(e){toast('Erreur','err');}
+}
+
+async function requestPayment(){
+  if(!curLeadId)return;
+  try{
+    await db.collection('leads').doc(curLeadId).update({status:'payment_confirmed',updatedAt:FS.serverTimestamp()});
+    // Notify client
+    const lead=allLeads.find(l=>l.id===curLeadId);
+    if(lead?.userId){
+      await db.collection('notifications').add({
+        userId:lead.userId,leadId:curLeadId,
+        title:'✅ Paiement confirmé !',
+        message:'Votre paiement a été confirmé. Votre version finale est en préparation.',
+        type:'payment_ok',read:false,createdAt:FS.serverTimestamp()
+      });
+    }
+    toast('✅ Paiement confirmé — prêt à envoyer la version finale');
   }catch(e){toast('Erreur','err');}
 }
 
@@ -789,9 +821,24 @@ function renderAdminChat(msgs,leadId){
   c.innerHTML='';
   msgs.forEach(m=>{
     if(m.type==='system'){c.innerHTML+=`<div class="msg-bubble from-system"><div class="bubble-inner">⚙️ ${m.text}</div><div class="bubble-meta">${fmtD(m.createdAt)}</div></div>`;}
-    else if(m.type==='demo'){
+    else if(m.type==='demo'||m.type==='final'){
       const approved=m.approvedByClient;
-      c.innerHTML+=`<div class="demo-bubble-a"><div class="dba-ver">🎯 Démo ${m.demoVersion||''}</div><div class="dba-msg">${m.text||'Démo envoyée'}</div><div class="dba-url"><a href="${m.demoUrl}" target="_blank" style="color:var(--ac)">${m.demoUrl}</a></div><div class="dba-meta">${approved?'<span class="approved-badge">✅ Validée par le client</span>':'<span style="color:var(--mu)">En attente de validation</span>'}<span>${fmtD(m.createdAt)}</span></div></div>`;
+      const isFin=m.type==='final';
+      const adminBtns=!isFin
+        ?(approved
+            ?`<button onclick="resetDemoApproval('${m.id}')" style="padding:4px 9px;border-radius:6px;border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.06);color:var(--red);font-size:.67rem;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600">↩ Annuler validation</button>`
+            :`<button onclick="forceApproveDemoAdmin('${m.id}')" style="padding:4px 9px;border-radius:6px;border:1px solid rgba(52,211,153,.3);background:rgba(52,211,153,.06);color:var(--green);font-size:.67rem;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600">✅ Valider cette version</button>`)
+        :'';
+      c.innerHTML+=`<div class="demo-bubble-a" style="${isFin?'border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.05)':approved?'border-color:rgba(52,211,153,.28);background:rgba(52,211,153,.03)':''}">
+        <div class="dba-ver">${isFin?'🏁 Version finale':'🎯 Démo '+(m.demoVersion||'')}</div>
+        <div class="dba-msg">${m.text||''}</div>
+        <div class="dba-url"><a href="${m.demoUrl}" target="_blank" style="color:var(--ac);font-size:.7rem;word-break:break-all">${m.demoUrl||''}</a></div>
+        <div class="dba-meta">
+          ${approved?'<span class="approved-badge">✅ '+(isFin?'Reçue':'Validée')+'</span>':'<span style="color:var(--mu);font-size:.68rem">⏳ En attente client</span>'}
+          <span style="font-size:.62rem;color:var(--mu2)">${fmtD(m.createdAt)}</span>
+        </div>
+        ${adminBtns?`<div style="display:flex;gap:5px;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;align-items:center"><span style="font-size:.63rem;color:var(--mu2)">Admin :</span>${adminBtns}<a href="${m.demoUrl}" target="_blank" style="padding:4px 9px;border-radius:6px;border:1px solid var(--bd2);background:var(--sf);color:var(--ac);font-size:.67rem;font-weight:600">🔗 Ouvrir</a></div>`:''}
+      </div>`;
     }else if(m.type==='approval'){c.innerHTML+=`<div class="approval-bub">✅ ${m.text}<div style="font-size:.63rem;opacity:.6;margin-top:3px">${fmtD(m.createdAt)}</div></div>`;}
     else if(m.type==='image'){
       const isAdmin=m.from==='admin';
@@ -924,6 +971,32 @@ async function selectLead(id){
   const dSnap=await db.collection('messages').where('leadId','==',id).where('type','==','demo').get();
   document.getElementById('demoVerNum').textContent=dSnap.size+1;
   document.getElementById('demoVerIn').value='v'+(dSnap.size+1);
+  // Payment alert
+  const payAlert=document.getElementById('payAlertBanner');
+  if(payAlert){
+    const payStatuses=['validated','payment_requested','payment_confirmed'];
+    if(payStatuses.includes(lead.status||'new')){
+      payAlert.style.display='flex';
+      const title=document.getElementById('payAlertTitle');
+      const sub=document.getElementById('payAlertSub');
+      if(lead.status==='validated'){
+        if(title)title.textContent='✅ Démo validée par le client';
+        if(sub)sub.textContent='Le client a validé sa démo. Demandez le paiement ou envoyez la version finale.';
+      }else if(lead.status==='payment_requested'){
+        if(title)title.textContent='💳 Paiement requis — en attente';
+        if(sub)sub.textContent='Le client est invité à régler. Confirmez quand le paiement est reçu.';
+      }else if(lead.status==='payment_confirmed'){
+        if(title)title.textContent='✅ Paiement confirmé !';
+        if(sub)sub.textContent='Paiement reçu. Envoyez la version finale de l\'application.';
+        if(payAlert)payAlert.style.background='linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.05))';
+        if(payAlert)payAlert.style.borderColor='rgba(52,211,153,.3)';
+        const ttl=document.getElementById('payAlertTitle');if(ttl)ttl.style.color='var(--green)';
+      }
+    }else{
+      payAlert.style.display='none';
+      payAlert.style.background='';payAlert.style.borderColor='';
+    }
+  }
   // Load chat
   loadAdminChat(id,lead.userId);
 }
