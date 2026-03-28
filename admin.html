@@ -818,7 +818,7 @@ function renderBars(containerId,entries){
 function spClass(s){return's-'+(s||'new');}
 
 
-function spLabel(s){const m={new:'🔵 Nouvelle',contacted:'🟣 Contacté',demo:'🟡 Démo',validated:'🟢 Validée',payment_requested:'💳 Paiement demandé',payment_confirmed:'💳 Paiement confirmé',converted:'✅ Livrée',closed:'⚫ Fermé'};return m[s]||'🔵 Nouvelle';}
+function spLabel(s){const m={new:'🔵 Nouvelle',contacted:'🟣 Contacté',demo:'🟡 Démo',validated:'🟢 Validée',payment_requested:'⏳ Paiement en attente',payment_confirmed:'✅ Paiement confirmé',converted:'✅ Livrée',closed:'⚫ Fermé'};return m[s]||'🔵 Nouvelle';}
 
 
 function setFilter(f,btn){curFilter=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderLeads();}
@@ -1314,7 +1314,7 @@ function renderPayments(){
   };
 
   const STATUS_MAP={
-    validated:       {cls:'ps-pending', label:'⏳ Démo validée',    desc:'En attente de paiement'},
+    validated:       {cls:'ps-pending', label:'✅ Démo validée',    desc:'En attente de paiement client'},
     payment_requested:{cls:'ps-pending', label:'💳 Paiement requis', desc:'Client invité à payer'},
     payment_confirmed:{cls:'ps-confirmed',label:'✅ Paiement reçu',  desc:'Paiement confirmé'},
     converted:       {cls:'ps-confirmed',label:'✅ Livré',           desc:'App livrée'},

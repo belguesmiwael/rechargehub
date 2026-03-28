@@ -936,9 +936,9 @@ const SC={
   contacted:{l:'🟣 En discussion',c:'pc',s:2,p:35},
   demo:{l:'🟡 Démo envoyée',c:'pd',s:3,p:60},
   validated:{l:'🟢 Démo validée',c:'pv',s:4,p:78},
-  payment_requested:{l:'💳 Paiement requis',c:'ppay',s:4,p:82},
-  payment_confirmed:{l:'💳 Paiement reçu',c:'ppay',s:4,p:88},
-  converted:{l:'✅ App livrée !',c:'pv',s:5,p:100},
+  payment_requested:{l:'⏳ Paiement en attente',c:'ppay',s:4,p:82},
+  payment_confirmed:{l:'✅ Paiement confirmé',c:'pv',s:4,p:88},
+  converted:{l:'🎉 App livrée !',c:'pv',s:5,p:100},
   closed:{l:'✅ Terminée',c:'pv',s:5,p:100}
 };
 
@@ -1117,12 +1117,23 @@ function refreshProjectStatus(lead){
   const paidB=$('payPaidBanner');
   if(payB){
     const needsPay=['validated','payment_requested'].includes(lead.status);
-    if(needsPay){payB.classList.add('on');const desc=$('pbDesc');if(desc)desc.textContent=lead.status==='payment_requested'?'💳 Votre commande est en attente de paiement. Réglez pour recevoir la version finale.':'✅ Démo validée ! Réglez votre commande pour recevoir votre application finale.';}
-    else payB.classList.remove('on');
+    if(needsPay){
+      payB.classList.add('on');
+      const desc=$('pbDesc');
+      if(desc){
+        if(lead.status==='payment_requested')
+          desc.textContent='⏳ Paiement en attente de confirmation. Notre équipe va vérifier et vous livrer votre application.';
+        else
+          desc.textContent='✅ Démo validée ! Réglez votre commande pour recevoir votre application finale.';
+      }
+    }else payB.classList.remove('on');
   }
   if(paidB){
-    if(lead.status==='payment_confirmed')paidB.classList.add('on');
-    else paidB.classList.remove('on');
+    if(lead.status==='payment_confirmed'||lead.status==='converted'||lead.status==='closed'){
+      paidB.classList.add('on');
+      const paidB_desc=paidB.querySelector('.pb-desc');
+      if(paidB_desc)paidB_desc.textContent='✅ Paiement confirmé par notre équipe ! Votre application finale est en cours de préparation.';
+    }else paidB.classList.remove('on');
   }
   renderProjectsList();
 }
@@ -1199,10 +1210,12 @@ function renderChat(msgs,leadId){
       const approved=m.approvedByClient;
       const isLatest=m.id===latestDemoId&&!hasFinal;
       const canTest=!hasFinal&&(approved||(isLatest&&!anyApproved));
-      const testBtn=canTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Indispo</span>';
+      // Approved demo stays testable even after final sent
+      const realCanTest=approved||(isLatest&&!anyApproved&&!hasFinal);
+      const testBtn=realCanTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:'<span class="locked-badge">🔒 Verrouillée</span>';
       let actionBtn='';
       if(approved)actionBtn='<span class="final-badge">✅ Validée</span>';
-      else if(hasFinal)actionBtn='';
+      else if(hasFinal)actionBtn='<span style="font-size:.64rem;color:var(--mu2)">Remplacée</span>';
       else if(anyApproved)actionBtn='<span class="locked-badge">Remplacée</span>';
       else if(isLatest)actionBtn=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button><button class="btn-improve" onclick="openOvImprove('${m.demoUrl}','${m.demoVersion||''}','${m.id}','${leadId}')">✏️ Modif.</button>`;
       else actionBtn='<span class="locked-badge">⬆️ Ancienne</span>';
@@ -1248,11 +1261,15 @@ function renderDemos(msgs,leadId){
   const mc=$('modifLeft');
   if(mc){mc.textContent=modifLeft+' modif. restante'+(modifLeft>1?'s':'');mc.className='modif-counter'+(modifLeft===0?' blocked':modifLeft===1?' warn':'');}
 
-  const anyApproved=demoMsgs.some(m=>m.approvedByClient);
-  const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||0)-(b.versionNumber||0));
+  // Sort demos by versionNumber / createdAt
+  const sorted=[...demoMsgs].sort((a,b)=>(a.versionNumber||a.createdAt?.toMillis()||0)-(b.versionNumber||b.createdAt?.toMillis()||0));
   const latestDemo=sorted[sorted.length-1];
+  const anyApproved=demoMsgs.some(m=>m.approvedByClient);
+  const approvedDemo=demoMsgs.find(m=>m.approvedByClient);
+
   $('demosList').innerHTML='';
 
+  // ── VERSION FINALE (top, always openable) ──
   if(finalMsg){
     const conf=finalMsg.approvedByClient;
     $('demosList').innerHTML+=`<div class="demo-item approved" style="border-top:2px solid var(--green)">
@@ -1266,19 +1283,40 @@ function renderDemos(msgs,leadId){
     </div>`;
   }
 
+  // ── DEMO VERSIONS ──
   [...sorted].reverse().forEach(m=>{
-    const approved=m.approvedByClient,isLatest=m.id===latestDemo.id;
+    const approved=m.approvedByClient;
+    const isLatest=m.id===latestDemo.id;
     const vNum=m.demoVersion||m.versionNumber||'—';
-    const canTest=!finalMsg&&(approved||(isLatest&&!anyApproved));
-    const testBtn=canTest?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`:`<span class="locked-badge">🔒 ${finalMsg?'Remplacée':'Indispo'}</span>`;
+
+    // LOCKING RULES:
+    // - Approved demo: always testable (even after final sent) — shows ✅ Validée
+    // - Latest demo (not yet approved, no approval yet): testable
+    // - All other demos: locked
+    // - If final sent: only final is openable, approved demo stays visible as ✅ Validée
+    //   but test button only for approved (not locked if approved)
+    const canTest=approved||(isLatest&&!anyApproved&&!finalMsg);
+
+    const testBtn=canTest
+      ?`<button class="btn-test" onclick="openOv('${m.demoUrl}','${vNum}','${m.id}','${leadId}',${approved})">🚀 Tester</button>`
+      :`<span class="locked-badge">🔒 Verrouillée</span>`;
+
     let actionHtml='';
-    if(finalMsg)actionHtml='<span style="font-size:.64rem;color:var(--mu2)">Remplacée par la finale</span>';
-    else if(approved)actionHtml='<span class="final-badge">✅ Validée</span>';
-    else if(anyApproved)actionHtml='<span class="locked-badge">Remplacée</span>';
-    else if(isLatest)actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button>`;
-    else actionHtml='<span class="locked-badge">Version antérieure</span>';
+    if(approved){
+      actionHtml='<span class="final-badge">✅ Validée</span>';
+    }else if(finalMsg){
+      // Final sent — other non-approved demos are locked
+      actionHtml='<span class="locked-badge" style="opacity:.5">Remplacée</span>';
+    }else if(anyApproved){
+      actionHtml='<span class="locked-badge">Remplacée</span>';
+    }else if(isLatest){
+      actionHtml=`<button class="btn-approve" onclick="approveDemoMsg('${m.id}','${leadId}')">✅ Valider</button>`;
+    }else{
+      actionHtml='<span class="locked-badge">Version antérieure</span>';
+    }
+
     $('demosList').innerHTML+=`<div class="demo-item${approved?' approved':''}${isLatest&&!anyApproved?' latest':''}">
-      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest?'<span class="modif-warn" style="margin-left:5px">⚠️ Dernière démo</span>':''}</div>
+      <div class="di-ver">${approved?'✅':''}${isLatest&&!anyApproved&&!finalMsg?'🆕':''} Version ${vNum}${demoMsgs.length>=3&&isLatest&&!finalMsg?'<span class="modif-warn" style="margin-left:5px">⚠️ Dernière démo</span>':''}</div>
       <div class="di-msg" style="${!canTest&&!approved?'opacity:.35':''}">${m.text||'Démo disponible'}</div>
       <div class="di-date">${fmtD(m.createdAt)}</div>
       <div class="di-actions">${testBtn}${actionHtml}</div>
@@ -1429,25 +1467,30 @@ async function confirmPay(){
     const price=_curLead?.estimatedPrice>0?(_curLead.estimatedPrice+' DT'):(PACK_PRICES[_curLead?.pack]||'—');
     await db.collection('messages').add({
       leadId:_curLeadId,userId:u.uid,from:'client',type:'payment',
-      text:'💳 Paiement de '+price+' confirmé via '+_selPayMethod+'. En attente de vérification.',
+      text:'💳 Paiement de '+price+' soumis via '+_selPayMethod+'. En attente de confirmation.',
       payMethod:_selPayMethod,paidAmount:price,
       createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
     });
+    // Status → payment_requested (client paid, admin must confirm)
     await db.collection('leads').doc(_curLeadId).update({
-      status:'payment_confirmed',payMethod:_selPayMethod,
-      payConfirmedAt:FS.serverTimestamp(),paidAmount:price
+      status:'payment_requested',payMethod:_selPayMethod,
+      clientPayedAt:FS.serverTimestamp(),paidAmount:price
     });
     await db.collection('notifications').add({
       userId:'admin',leadId:_curLeadId,
-      title:'💳 Paiement de '+price+' confirmé',
-      message:(u.displayName||u.email||'Client')+' a réglé '+price+' via '+_selPayMethod,
+      title:'💳 Paiement de '+price+' soumis',
+      message:(u.displayName||u.email||'Client')+' a soumis un paiement de '+price+' via '+_selPayMethod+' — à confirmer.',
       type:'payment',read:false,createdAt:FS.serverTimestamp()
     });
-    // Immediately hide banner
-    const payB=$('payBanner');if(payB)payB.classList.remove('on');
-    const paidB=$('payPaidBanner');if(paidB)paidB.classList.add('on');
-    if(_curLead)_curLead.status='payment_confirmed';
-    toast('✅ Paiement confirmé ! Notre équipe vous livrera votre application sous 24h.');
+    // Keep banner visible with "en attente" message
+    if(_curLead)_curLead.status='payment_requested';
+    const payB=$('payBanner');
+    if(payB){
+      payB.classList.add('on');
+      const desc=$('pbDesc');
+      if(desc)desc.textContent='⏳ Paiement en attente de confirmation par notre équipe.';
+    }
+    toast('✅ Paiement soumis ! Notre équipe va confirmer et livrer votre application sous 24h.');
   }catch(e){toast('Erreur','err');}
 }
 
