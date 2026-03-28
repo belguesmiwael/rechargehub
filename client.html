@@ -181,7 +181,8 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
 @keyframes ppulse{0%,100%{box-shadow:0 0 10px var(--glow)}50%{box-shadow:0 0 20px var(--glow)}}
 /* Payment banner */
 .pay-banner{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.05));border:1px solid rgba(251,191,36,.3);border-radius:13px;padding:14px 16px;display:none}
-.pay-banner.on{display:block;animation:fadeIn .3s ease}
+.pay-banner.on{display:block!important;animation:fadeIn .3s ease}
+#payPaidBanner.on{display:block!important;animation:fadeIn .3s ease}
 .pb-title{font-size:.82rem;font-weight:800;color:var(--yellow);margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .pb-desc{font-size:.75rem;color:var(--mu);line-height:1.6;margin-bottom:10px}
 .btn-pay{padding:9px 17px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .22s;box-shadow:0 4px 12px rgba(251,191,36,.3)}
@@ -510,6 +511,11 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
           <div class="pb-desc" id="pbDesc">Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.</div>
           <button class="btn-pay" onclick="openPayOv()">💳 Régler maintenant</button>
         </div>
+        <!-- Payment confirmed banner -->
+        <div id="payPaidBanner" style="display:none;background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.05));border:1px solid rgba(52,211,153,.3);border-radius:13px;padding:13px 16px" class="pay-banner">
+          <div class="pb-title" style="color:var(--green)">✅ Paiement confirmé !</div>
+          <div class="pb-desc">Votre paiement a été reçu. Notre équipe prépare votre application finale.</div>
+        </div>
 
         <!-- App details (collapsible) -->
         <div class="detail-card" id="detailCard">
@@ -601,6 +607,8 @@ h1,h2,h3,h4{font-family:'Syne',sans-serif}
     <h2>Finaliser le paiement</h2>
     <p class="pay-sub">Réglez votre commande pour recevoir la version finale.</p>
     <div class="pay-amount"><div class="pa-price" id="payAmt">—</div><div class="pa-lbl">Montant estimé</div></div>
+    <!-- Validated demo versions -->
+    <div id="payDemoList" style="margin-bottom:14px;padding:10px 0;border-bottom:1px solid var(--bd)"></div>
     <div class="pay-methods">
       <div class="pay-method" onclick="selPay(this,'virement')"><div class="pm-icon">🏦</div><div><div class="pm-name">Virement bancaire</div><div class="pm-desc">RIB après confirmation</div></div></div>
       <div class="pay-method" onclick="selPay(this,'cash')"><div class="pm-icon">💵</div><div><div class="pm-name">Espèces</div><div class="pm-desc">En agence ou livraison</div></div></div>
@@ -861,6 +869,7 @@ auth.onAuthStateChanged(async u=>{
     const _monetize=sessionStorage.getItem('bz_monetize')||'0';
     const _domain=sessionStorage.getItem('bz_domain')||'';
     if(_pack){
+      const _price=sessionStorage.getItem('bz_estimatedPrice')||'0';
       const ref=await db.collection('leads').add({
         name:u.displayName||name,phone:u.phoneNumber||'',type:'A definir',
         categories:_feats?JSON.parse(_feats).join(', '):'',description:'',
@@ -868,6 +877,7 @@ auth.onAuthStateChanged(async u=>{
         pack:_pack,packLabel:PACK_LABELS[_pack]||'',claudePrompt:_prompt,
         features:_feats?JSON.parse(_feats):[],complexity:_complexity,
         monetize:_monetize==='1',domain:_domain,
+        estimatedPrice:parseInt(_price)||0,
         status:'new',lang:'fr',createdAt:FS.serverTimestamp()
       });
       await db.collection('messages').add({
@@ -875,7 +885,7 @@ auth.onAuthStateChanged(async u=>{
         text:'Demande reçue !'+(PACK_LABELS[_pack]?' Pack '+PACK_LABELS[_pack]+'.':'')+' Notre équipe vous contactera dans les 24h.',
         createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
       });
-      ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize','bz_domain'].forEach(k=>sessionStorage.removeItem(k));
+      ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize','bz_domain','bz_estimatedPrice'].forEach(k=>sessionStorage.removeItem(k));
     }
     setDashUser(u,name);showView('dashView');loadDash(u.uid);
   }catch(e){console.warn(e);setDashUser(u,name);showView('dashView');loadDash(u.uid);}
@@ -1038,19 +1048,23 @@ function selectProject(leadId){
   // Payment banner
   const payB=$('payBanner');
   if(payB){
-    const showPay=['validated','payment_requested','payment_confirmed'].includes(lead.status);
+    const showPay=['validated','payment_requested'].includes(lead.status);
     if(showPay){
       payB.classList.add('on');
       const desc=$('pbDesc');
-      if(desc){
-        if(lead.status==='payment_confirmed')
-          desc.textContent='Paiement reçu ✅ Votre application finale sera livrée très prochainement.';
-        else if(lead.status==='payment_requested')
-          desc.textContent='Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
-        else
-          desc.textContent='Démo validée ! Procédez au paiement pour recevoir votre application finale.';
+      if(desc)desc.textContent=lead.status==='payment_requested'
+        ?'💳 Votre commande est en attente de paiement. Réglez pour recevoir votre application finale.'
+        :'✅ Démo validée ! Procédez au paiement pour recevoir votre application finale.';
+    }else{
+      payB.classList.remove('on');
+      if(lead.status==='payment_confirmed'){
+        const paid=$('payPaidBanner');
+        if(paid)paid.classList.add('on');
+      }else{
+        const paid=$('payPaidBanner');
+        if(paid)paid.classList.remove('on');
       }
-    }else payB.classList.remove('on');
+    }
   }
 
   // App details
@@ -1078,29 +1092,21 @@ function toggleDetail(){
 /* Refresh only status UI (no message listener reset) */
 function refreshProjectStatus(lead){
   if(!lead)return;
-  // Progress bar + pill
   const sc=$('scTitle');
-  if(sc)sc.textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')
-    +(lead.packLabel?' — '+lead.packLabel:'');
+  if(sc)sc.textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')+(lead.packLabel?' — '+lead.packLabel:'');
   updProg(lead.status||'new');
-  // Payment banner — show for validated, payment_requested, payment_confirmed
+  // Pay banner: only validated or payment_requested (NOT after confirmed)
   const payB=$('payBanner');
+  const paidB=$('payPaidBanner');
   if(payB){
-    const showPay=['validated','payment_requested','payment_confirmed'].includes(lead.status);
-    if(showPay){
-      payB.classList.add('on');
-      const desc=$('pbDesc');
-      if(desc){
-        if(lead.status==='payment_confirmed')
-          desc.textContent='Paiement reçu ✅ Votre application finale sera livrée très prochainement.';
-        else if(lead.status==='payment_requested')
-          desc.textContent='Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
-        else
-          desc.textContent='Votre démo a été validée ! Procédez au paiement pour recevoir votre application finale.';
-      }
-    }else payB.classList.remove('on');
+    const needsPay=['validated','payment_requested'].includes(lead.status);
+    if(needsPay){payB.classList.add('on');const desc=$('pbDesc');if(desc)desc.textContent=lead.status==='payment_requested'?'💳 Votre commande est en attente de paiement. Réglez pour recevoir la version finale.':'✅ Démo validée ! Réglez votre commande pour recevoir votre application finale.';}
+    else payB.classList.remove('on');
   }
-  // Sidebar status badge
+  if(paidB){
+    if(lead.status==='payment_confirmed')paidB.classList.add('on');
+    else paidB.classList.remove('on');
+  }
   renderProjectsList();
 }
 function renderAppDetails(lead){
@@ -1381,17 +1387,50 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv();});
 /* ── Payment ── */
 let _selPayMethod='';
 function selPay(el,m){document.querySelectorAll('.pay-method').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');_selPayMethod=m;}
-function openPayOv(){$('payAmt').textContent=(_curLead?.pack&&PACK_PRICES[_curLead.pack])||'À définir';$('payOv').classList.add('open');document.body.style.overflow='hidden';}
+async function openPayOv(){
+  const lead=_curLead;if(!lead)return;
+  // Show estimated price from estimateur
+  const price=lead.estimatedPrice>0?(lead.estimatedPrice+' DT'):(PACK_PRICES[lead.pack]||'À définir');
+  $('payAmt').textContent=price;
+  // Load approved demo versions for reference
+  const demoList=$('payDemoList');
+  if(demoList){
+    try{
+      const snap=await db.collection('messages').where('leadId','==',lead.id).where('type','==','demo').where('approvedByClient','==',true).get();
+      if(snap.empty){demoList.innerHTML='<div style="font-size:.72rem;color:var(--mu)">Démo validée</div>';}
+      else{demoList.innerHTML=snap.docs.map(d=>{const m=d.data();return`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd)"><span style="font-size:.75rem;font-weight:700">✅ Version ${m.demoVersion||'—'}</span><a href="${m.demoUrl||'#'}" target="_blank" style="font-size:.7rem;color:var(--ac)">Revoir →</a></div>`;}).join('');}
+    }catch(e){if(demoList)demoList.innerHTML='';}
+  }
+  $('payOv').classList.add('open');document.body.style.overflow='hidden';
+}
 function closePayOv(){$('payOv').classList.remove('open');document.body.style.overflow='';}
 async function confirmPay(){
   if(!_selPayMethod){toast('Choisissez un moyen de paiement','err');return;}
   const u=auth.currentUser;if(!u||!_curLeadId)return;
   closePayOv();
   try{
-    await db.collection('messages').add({leadId:_curLeadId,userId:u.uid,from:'client',type:'payment',text:'💳 Paiement confirmé via '+_selPayMethod+'. En attente de vérification.',payMethod:_selPayMethod,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-    await db.collection('leads').doc(_curLeadId).update({status:'payment_confirmed',payMethod:_selPayMethod,payConfirmedAt:FS.serverTimestamp()});
-    await db.collection('notifications').add({userId:'admin',leadId:_curLeadId,title:'💳 Paiement confirmé',message:(u.displayName||u.email||'Client')+' a confirmé le paiement via '+_selPayMethod,type:'payment',read:false,createdAt:FS.serverTimestamp()});
-    toast('✅ Paiement confirmé ! Votre app finale sera livrée sous 24h.');
+    const price=_curLead?.estimatedPrice>0?(_curLead.estimatedPrice+' DT'):(PACK_PRICES[_curLead?.pack]||'—');
+    await db.collection('messages').add({
+      leadId:_curLeadId,userId:u.uid,from:'client',type:'payment',
+      text:'💳 Paiement de '+price+' confirmé via '+_selPayMethod+'. En attente de vérification.',
+      payMethod:_selPayMethod,paidAmount:price,
+      createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
+    });
+    await db.collection('leads').doc(_curLeadId).update({
+      status:'payment_confirmed',payMethod:_selPayMethod,
+      payConfirmedAt:FS.serverTimestamp(),paidAmount:price
+    });
+    await db.collection('notifications').add({
+      userId:'admin',leadId:_curLeadId,
+      title:'💳 Paiement de '+price+' confirmé',
+      message:(u.displayName||u.email||'Client')+' a réglé '+price+' via '+_selPayMethod,
+      type:'payment',read:false,createdAt:FS.serverTimestamp()
+    });
+    // Immediately hide banner
+    const payB=$('payBanner');if(payB)payB.classList.remove('on');
+    const paidB=$('payPaidBanner');if(paidB)paidB.classList.add('on');
+    if(_curLead)_curLead.status='payment_confirmed';
+    toast('✅ Paiement confirmé ! Notre équipe vous livrera votre application sous 24h.');
   }catch(e){toast('Erreur','err');}
 }
 

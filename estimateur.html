@@ -746,6 +746,14 @@ function showContinueBanner(pack,label){
 function goToClient(pack){
   const desc=document.getElementById('descInput').value.trim();
   const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(desc||'Application sur mesure');
+  // Calculate price for selected pack
+  let priceBase=0;
+  selected.forEach(f=>priceBase+=prices[f]??0);
+  if(complexity==='moyenne')priceBase+=prices._comp_moyenne??100;
+  if(complexity==='avancee')priceBase+=prices._comp_avancee??300;
+  const priceMkt=monetize?(prices._marketplace_activation??150):0;
+  const pricePct={essentiel:prices._pack_essentiel_pct??100,pro:prices._pack_pro_pct??125,partenaire:prices._pack_partenaire_pct??160};
+  const estimatedPrice=Math.round(priceBase*(pricePct[pack]||100)/100)+(pack!=='essentiel'?priceMkt:0);
   // Save all data to sessionStorage
   sessionStorage.setItem('bz_pack',pack);
   sessionStorage.setItem('bz_prompt',prompt);
@@ -753,6 +761,7 @@ function goToClient(pack){
   sessionStorage.setItem('bz_complexity',complexity||'simple');
   sessionStorage.setItem('bz_monetize',monetize?'1':'0');
   sessionStorage.setItem('bz_domain',(window.selectedDomain||selectedDomain||''));
+  sessionStorage.setItem('bz_estimatedPrice',estimatedPrice>0?estimatedPrice+'':0);
   // Build client URL from current location (works on GitHub Pages with any subfolder)
   const base=window.location.href.substring(0,window.location.href.lastIndexOf('/')+1);
   const clientUrl=base+'client.html?pack='+encodeURIComponent(pack);

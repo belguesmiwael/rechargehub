@@ -587,14 +587,15 @@ tr:hover td{background:var(--sf)}
           <h3>💳 Historique des paiements</h3>
           <div class="pay-filter-row">
             <button class="pf-btn on" onclick="filterPay('all',this)">Tous</button>
-            <button class="pf-btn" onclick="filterPay('payment_confirmed',this)">Confirmés</button>
-            <button class="pf-btn" onclick="filterPay('payment_requested',this)">En attente</button>
+            <button class="pf-btn" onclick="filterPay('validated',this)">⏳ Démo validée</button>
+            <button class="pf-btn" onclick="filterPay('payment_requested',this)">💳 Requis</button>
+            <button class="pf-btn" onclick="filterPay('payment_confirmed',this)">✅ Confirmés</button>
           </div>
         </div>
         <div style="overflow-x:auto">
           <table>
             <thead>
-              <tr><th>Client</th><th>Pack</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th><th>Actions</th></tr>
+              <tr><th>Client</th><th>Pack</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th><th>Action</th></tr>
             </thead>
             <tbody id="payTable"></tbody>
           </table>
@@ -1248,46 +1249,123 @@ function filterPay(f,btn){
   renderPayments();
 }
 function renderPayments(){
-  const payLeads=allLeads.filter(l=>{
-    const sts=['payment_requested','payment_confirmed','converted','closed'];
-    if(!sts.includes(l.status))return false;
-    if(payFilter==='all')return true;
-    return l.status===payFilter;
-  });
-  // Stats
-  const confirmed=allLeads.filter(l=>l.status==='payment_confirmed'||l.status==='converted'||l.status==='closed');
-  const pending=allLeads.filter(l=>l.status==='payment_requested');
-  document.getElementById('payTotal').textContent=confirmed.length*0+'— DT';
-  document.getElementById('payPending').textContent=pending.length;
-  document.getElementById('payConfirmed').textContent=confirmed.length;
-  const now=new Date();const month=now.getMonth(),year=now.getFullYear();
+  // Include ALL leads with payment-relevant statuses
+  const PAY_STATUSES=['validated','payment_requested','payment_confirmed','converted','closed'];
+  const allPayLeads=allLeads.filter(l=>PAY_STATUSES.includes(l.status)||l.payMethod);
+
+  const payLeads=payFilter==='all'
+    ?allPayLeads
+    :allPayLeads.filter(l=>l.status===payFilter);
+
+  // ── Stats ──
+  const confirmed=allPayLeads.filter(l=>['payment_confirmed','converted','closed'].includes(l.status));
+  const pending=allPayLeads.filter(l=>['validated','payment_requested'].includes(l.status));
+  const now=new Date(),month=now.getMonth(),year=now.getFullYear();
   const monthConf=confirmed.filter(l=>{const d=l.payConfirmedAt?.toDate?.();return d&&d.getMonth()===month&&d.getFullYear()===year;});
-  document.getElementById('payMonth').textContent=monthConf.length+' conf.';
-  // Table
-  const tbody=document.getElementById('payTable');
-  if(!payLeads.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--mu)">Aucune transaction</td></tr>';return;}
-  const PC={essentiel:{color:'var(--green)',label:'🟢 Essentiel'},pro:{color:'var(--ac)',label:'🔵 Pro'},partenaire:{color:'var(--red)',label:'🔴 Partenaire'}};
-  const sMap={payment_requested:'pending',payment_confirmed:'confirmed',converted:'confirmed',closed:'confirmed'};
-  const sLabel={payment_requested:'En attente',payment_confirmed:'Confirmé',converted:'Livré',closed:'Terminé'};
-  tbody.innerHTML=payLeads.map(l=>`
-    <tr>
-      <td><strong>${l.name||'—'}</strong><div style="font-size:.68rem;color:var(--mu)">${l.userEmail||l.phone||'—'}</div></td>
-      <td><span style="font-size:.72rem;color:${(PC[l.pack]||{color:'var(--mu)'}).color};font-weight:700">${(PC[l.pack]||{label:'—'}).label}</span></td>
-      <td><strong>${l.packLabel||'—'}</strong></td>
-      <td><span class="pay-method-badge">${l.payMethod||'—'}</span></td>
-      <td><span class="pay-status ps-${sMap[l.status]||'pending'}">${sLabel[l.status]||l.status}</span></td>
-      <td style="font-size:.72rem">${fmtD(l.payConfirmedAt||l.createdAt)}</td>
-      <td><button class="btn-pay-action" onclick="selectLead('${l.id}');showTab('clients',document.querySelector('.nav-tab:nth-child(2)'))">Voir →</button></td>
-    </tr>`).join('');
-  // Update stats with pack prices
+
+  const el_total=document.getElementById('payTotal');
+  const el_pend=document.getElementById('payPending');
+  const el_conf=document.getElementById('payConfirmed');
+  const el_month=document.getElementById('payMonth');
+
+  if(el_pend)el_pend.textContent=pending.length;
+  if(el_conf)el_conf.textContent=confirmed.length;
+  if(el_month)el_month.textContent=monthConf.length+' ce mois';
+
+  // Calculate total from pack prices
   const totalEst=confirmed.reduce((s,l)=>{
     const price=(tarifs.packs[l.pack]||{fixed:0}).fixed||0;
     const remise=(tarifs.packs[l.pack]||{remise:0}).remise||0;
-    return s+price*(1-remise/100);
+    return s+Math.round(price*(1-remise/100));
   },0);
-  document.getElementById('payTotal').textContent=Math.round(totalEst)+' DT';
+  if(el_total)el_total.textContent=(totalEst||'—')+' DT';
+
+  // ── Table ──
+  const tbody=document.getElementById('payTable');
+  if(!tbody)return;
+  if(!payLeads.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--mu);font-size:.82rem">Aucune transaction à afficher</td></tr>';
+    return;
+  }
+
+  const PC={
+    essentiel:{color:'var(--green)',label:'🟢 Essentiel'},
+    pro:{color:'var(--ac)',label:'🔵 Pro'},
+    partenaire:{color:'var(--red)',label:'🔴 Partenaire'}
+  };
+
+  const STATUS_MAP={
+    validated:       {cls:'ps-pending', label:'⏳ Démo validée',    desc:'En attente de paiement'},
+    payment_requested:{cls:'ps-pending', label:'💳 Paiement requis', desc:'Client invité à payer'},
+    payment_confirmed:{cls:'ps-confirmed',label:'✅ Paiement reçu',  desc:'Paiement confirmé'},
+    converted:       {cls:'ps-confirmed',label:'✅ Livré',           desc:'App livrée'},
+    closed:          {cls:'ps-confirmed',label:'✅ Terminé',         desc:'Terminé'}
+  };
+
+  tbody.innerHTML=payLeads.map(l=>{
+    const st=STATUS_MAP[l.status]||{cls:'ps-pending',label:l.status,desc:''};
+    const packInfo=PC[l.pack]||{color:'var(--mu)',label:'—'};
+    const price=(() => {
+      const base=(tarifs.packs[l.pack]||{fixed:0}).fixed||0;
+      const rem=(tarifs.packs[l.pack]||{remise:0}).remise||0;
+      return base>0?Math.round(base*(1-rem/100))+' DT':'—';
+    })();
+    const isActionable=['validated','payment_requested'].includes(l.status);
+    const actionBtns=isActionable?`
+      <button onclick="confirmPaymentAdmin('${l.id}')"
+        style="padding:4px 9px;border-radius:6px;border:none;background:var(--green);color:#000;font-size:.67rem;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">
+        ✅ Confirmer
+      </button>`:
+      `<button onclick="selectLead('${l.id}');showTab('clients',document.querySelectorAll('.nav-tab')[1])"
+        style="padding:4px 9px;border-radius:6px;border:1px solid var(--bd2);background:none;color:var(--mu);font-size:.67rem;cursor:pointer;font-family:'Manrope',sans-serif">
+        Voir →
+      </button>`;
+    return `<tr>
+      <td>
+        <div style="font-weight:700;font-size:.82rem">${l.name||'—'}</div>
+        <div style="font-size:.67rem;color:var(--mu);margin-top:1px">${l.userEmail||l.userPhone||l.phone||'—'}</div>
+      </td>
+      <td><span style="font-size:.71rem;color:${packInfo.color};font-weight:700">${packInfo.label}</span></td>
+      <td style="font-weight:700;font-size:.8rem">${price}</td>
+      <td>
+        <span class="pay-method-badge">${l.payMethod||'—'}</span>
+      </td>
+      <td>
+        <span class="pay-status ${st.cls}">${st.label}</span>
+        <div style="font-size:.63rem;color:var(--mu);margin-top:2px">${st.desc}</div>
+      </td>
+      <td style="font-size:.71rem;color:var(--mu)">${fmtD(l.payConfirmedAt||l.clientApprovedAt||l.createdAt)}</td>
+      <td>${actionBtns}</td>
+    </tr>`;
+  }).join('');
 }
 
+/* Confirm payment directly from payments tab */
+async function confirmPaymentAdmin(leadId){
+  if(!window.confirm('Confirmer la réception du paiement pour ce client ?'))return;
+  try{
+    await db.collection('leads').doc(leadId).update({
+      status:'payment_confirmed',
+      payConfirmedAt:FS.serverTimestamp(),
+      updatedAt:FS.serverTimestamp()
+    });
+    const lead=allLeads.find(l=>l.id===leadId);
+    if(lead?.userId){
+      await db.collection('notifications').add({
+        userId:lead.userId,leadId,
+        title:'✅ Paiement confirmé !',
+        message:'Votre paiement a été reçu. Votre application finale est en préparation.',
+        type:'payment_ok',read:false,createdAt:FS.serverTimestamp()
+      });
+      await db.collection('messages').add({
+        leadId,from:'system',type:'system',
+        text:'✅ Paiement confirmé ! Votre application finale est en cours de préparation.',
+        createdAt:FS.serverTimestamp(),readByClient:false,readByAdmin:true
+      });
+    }
+    toast('✅ Paiement confirmé — prêt à envoyer la version finale');
+  }catch(e){toast('Erreur: '+e.message,'err');}
+}
 </script>
 </body>
 </html>
