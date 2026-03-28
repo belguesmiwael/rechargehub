@@ -181,23 +181,13 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
 <div class="wrap">
 
 <header>
-  <div class="live-badge"><div class="dot-pulse"></div>Estimation Instantanée · 0 clé API requise</div>
+  <div class="live-badge"><div class="dot-pulse"></div>Estimation de Prix · Gratuit</div>
   <h1>Votre application,<br>votre <em>investissement.</em></h1>
-  <p class="sub">Décrivez votre projet, sélectionnez vos fonctionnalités. Le prompt pour créer votre application est généré <strong style="color:var(--c-cyan)">instantanément</strong> — sans aucune clé API.</p>
+  <p class="sub">Décrivez votre projet et sélectionnez les fonctionnalités souhaitées — obtenez une <strong style="color:var(--c-cyan)">estimation de prix instantanée</strong> pour votre application sur mesure.</p>
 </header>
 
-<!-- ADMIN -->
-<button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-  Modifier la grille tarifaire (admin)
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-</button>
-<div class="admin-panel" id="adminPanel">
-  <div class="c-title" style="margin-bottom:20px"><span style="font-size:19px">⚙️</span> Grille tarifaire</div>
-  <div class="price-inputs" id="priceInputs"></div>
-  <button class="btn-save" onclick="savePrices()">💾 Sauvegarder les prix</button>
-  <div style="font-size:12px;color:var(--muted);margin-top:10px">Sauvegardé localement dans le navigateur.</div>
-</div>
+<div class="price-inputs" id="priceInputs"></div>
+  </div>
 
 <!-- STEP 1 : DESCRIPTION -->
 <div class="card">
@@ -207,28 +197,34 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     <span style="font-size:19px">✍️</span>
     Décrivez votre application
   </div>
-  <textarea id="descInput"
-    placeholder="Ex : J'ai un café avec 4 employés au centre-ville de Tunis. Je veux gérer les commandes par table, la caisse et les présences de mes employés.&#10;&#10;💡 Plus vous êtes précis (secteur, taille, besoins), plus le prompt généré sera détaillé et prêt à l'emploi."></textarea>
-
-  <button class="btn-gen" onclick="genererPrompt()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Générer l'estimation + Prompt prêt à l'emploi
-  </button>
-
-  <!-- PROMPT PANEL — affiché après clic -->
-  <div class="prompt-panel" id="promptPanel" style="display:none">
-    <div class="prompt-panel-title">
-      <span style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#00d4ff,#7c3aed);display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">⚡</span>
-      Prompt généré — décrit l'application de votre client
-    </div>
-    <div class="prompt-panel-sub">Basé sur votre description + fonctionnalités sélectionnées · Prêt à coller dans Claude ou ChatGPT</div>
-    <textarea class="prompt-ta" id="promptTa" readonly></textarea>
-    <div class="prompt-actions">
-      <button class="btn-copy" id="btnCopy" onclick="copyPrompt(this)">📋 Copier le prompt</button>
-      <button class="btn-open" onclick="ouvrirDans('claude')">🚀 Ouvrir dans Claude</button>
-      <button class="btn-gpt" onclick="ouvrirDans('chatgpt')">💬 Ouvrir dans ChatGPT</button>
+  <!-- Sélecteur domaine -->
+  <div style="margin-bottom:14px">
+    <label for="domainSelect" style="display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Secteur d'activité <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.7">(optionnel)</span></label>
+    <div style="position:relative">
+      <select id="domainSelect" onchange="selectDomain(this.value)" style="width:100%;padding:11px 38px 11px 14px;border-radius:10px;border:1px solid var(--c-border);background:rgba(255,255,255,.05);color:var(--tx);font-family:inherit;font-size:.88rem;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s">
+        <option value="">— Choisissez votre secteur —</option>
+        <option value="Café / Restaurant">☕ Café / Restaurant</option>
+        <option value="Commerce / Épicerie">🛒 Commerce / Épicerie</option>
+        <option value="Grossiste / Recharge">🔄 Grossiste / Recharge</option>
+        <option value="Pharmacie">💊 Pharmacie</option>
+        <option value="École / Crèche">🏫 École / Crèche</option>
+        <option value="Livraison">🍕 Livraison</option>
+        <option value="Salon / Beauté">💇 Salon / Beauté</option>
+        <option value="BTP / Chantier">🏗️ BTP / Chantier</option>
+        <option value="Garage / Auto">🚗 Garage / Auto</option>
+        <option value="Boutique / Mode">👗 Boutique / Mode</option>
+        <option value="Cabinet médical">🏥 Cabinet médical</option>
+        <option value="Services / Autre">⚙️ Services / Autre</option>
+      </select>
+      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:.75rem">▼</span>
     </div>
   </div>
+
+  <textarea id="descInput"
+    placeholder="Ex : J'ai un café avec 4 employés au centre-ville de Tunis. Je veux gérer les commandes par table, la caisse et les présences de mes employés.&#10;&#10;💡 Plus vous êtes précis sur votre activité et vos besoins, plus l'estimation sera précise."></textarea>
+
+
+
 </div>
 
 <!-- STEP 2 : FONCTIONNALITÉS -->
@@ -238,7 +234,7 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
     <div class="stepn">2</div>
     <span style="font-size:19px">🧩</span>
     Fonctionnalités
-    <span class="rhint">Cliquez pour sélectionner · le prompt se met à jour</span>
+    <span class="rhint">Cliquez pour sélectionner</span>
   </div>
   <div class="slbl">🔹 Base</div><div class="feat-grid" id="g-base"></div>
   <div class="slbl">🔹 Business</div><div class="feat-grid" id="g-business"></div>
@@ -457,7 +453,19 @@ function savePrices(){
     if(el) prices[k]=Number(el.value)||0;
   });
   localStorage.setItem('ep5_prices',JSON.stringify(prices));
-  buildGrids();updateCompLabels();calculate();
+  
+/* ══ DOMAIN SELECTOR ══ */
+let selectedDomain = '';
+function selectDomain(val){
+  selectedDomain = val;
+  // Update placeholder hint
+  const ta = document.getElementById('descInput');
+  if(!ta.value.trim() && val){
+    ta.placeholder = "Ex : J'ai un(e) "+val.toLowerCase()+" à Tunis. Je veux gérer...";
+  }
+  sessionStorage.setItem('bz_domain', val);
+}
+buildGrids();updateCompLabels();calculate();
   const b=document.querySelector('.btn-save');
   b.textContent='✅ Sauvegardé !';
   setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);
@@ -604,9 +612,10 @@ function buildPrompt(desc){
 • Isolation des données par client (multi-tenant)\n`
     : '';
 
+  const domainLine = selectedDomain ? `\nSecteur : ${selectedDomain}` : '';
   return `Crée une application web complète basée sur le besoin suivant :
 
-━━━ DESCRIPTION DU CLIENT ━━━
+━━━ DESCRIPTION DU CLIENT ━━━${domainLine}
 ${desc}
 
 ━━━ FONCTIONNALITÉS REQUISES ━━━
@@ -650,6 +659,7 @@ function genererPrompt(){
   const prompt = buildPrompt(desc);
 
   // Sauvegarder en session
+  sessionStorage.setItem('bz_domain', selectedDomain||'');
   sessionStorage.setItem('bz_prompt', prompt);
   sessionStorage.setItem('bz_features', JSON.stringify([...selected]));
   sessionStorage.setItem('bz_complexity', complexity);
