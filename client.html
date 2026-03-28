@@ -866,26 +866,24 @@ auth.onAuthStateChanged(async u=>{
   },{merge:true}).catch(()=>{});
   const name=(u.displayName||u.email||u.phoneNumber||'Client').split(' ')[0];
   try{
-    let snap=await db.collection('leads').where('userId','==',u.uid).limit(1).get();
-    if(!snap.empty){
-      setDashUser(u,name);showView('dashView');loadDash(u.uid);return;
-    }
+    // ── Link email leads if any ──
     if(u.email){
-      const byEmail=await db.collection('leads').where('userEmail','==',u.email).limit(1).get();
+      const byEmail=await db.collection('leads').where('userEmail','==',u.email)
+        .where('userId','==','').limit(5).get().catch(()=>({empty:true,docs:[]}));
       if(!byEmail.empty){
         const batch=db.batch();
         byEmail.docs.forEach(d=>{if(!d.data().userId)batch.update(d.ref,{userId:u.uid});});
         await batch.commit().catch(()=>{});
-        setDashUser(u,name);showView('dashView');loadDash(u.uid);return;
       }
     }
+    // ── Create new lead from estimateur if pack in sessionStorage ──
     const _pack=sessionStorage.getItem('bz_pack')||'';
-    const _prompt=sessionStorage.getItem('bz_prompt')||'';
-    const _feats=sessionStorage.getItem('bz_features')||'';
-    const _complexity=sessionStorage.getItem('bz_complexity')||'';
-    const _monetize=sessionStorage.getItem('bz_monetize')||'0';
-    const _domain=sessionStorage.getItem('bz_domain')||'';
     if(_pack){
+      const _prompt=sessionStorage.getItem('bz_prompt')||'';
+      const _feats=sessionStorage.getItem('bz_features')||'';
+      const _complexity=sessionStorage.getItem('bz_complexity')||'';
+      const _monetize=sessionStorage.getItem('bz_monetize')||'0';
+      const _domain=sessionStorage.getItem('bz_domain')||'';
       const _price=sessionStorage.getItem('bz_estimatedPrice')||'0';
       const ref=await db.collection('leads').add({
         name:u.displayName||name,phone:u.phoneNumber||'',type:'A definir',
@@ -904,8 +902,16 @@ auth.onAuthStateChanged(async u=>{
       });
       ['bz_pack','bz_prompt','bz_features','bz_complexity','bz_monetize','bz_domain','bz_estimatedPrice'].forEach(k=>sessionStorage.removeItem(k));
     }
-    setDashUser(u,name);showView('dashView');loadDash(u.uid);
-  }catch(e){console.warn(e);setDashUser(u,name);showView('dashView');loadDash(u.uid);}
+    // ── Show dashboard (always) ──
+    setDashUser(u,name);
+    showView('dashView');
+    loadDash(u.uid);
+  }catch(e){
+    console.warn(e);
+    setDashUser(u,name);
+    showView('dashView');
+    loadDash(u.uid);
+  }
 });
 
 /* ══ SET DASH USER ══ */
@@ -1064,24 +1070,21 @@ function selectProject(leadId){
 
   // Payment banner
   const payB=$('payBanner');
+  const paidB=$('payPaidBanner');
+  // Payment banner visibility
+  const hideBanner=['payment_confirmed','converted','closed'].includes(lead.status);
   if(payB){
-    const showPay=['validated','payment_requested'].includes(lead.status);
-    if(showPay){
+    if(!hideBanner&&['validated','payment_requested'].includes(lead.status)){
       payB.classList.add('on');
       const desc=$('pbDesc');
       if(desc)desc.textContent=lead.status==='payment_requested'
-        ?'💳 Votre commande est en attente de paiement. Réglez pour recevoir votre application finale.'
+        ?'⏳ Paiement en attente de confirmation par notre équipe.'
         :'✅ Démo validée ! Procédez au paiement pour recevoir votre application finale.';
-    }else{
-      payB.classList.remove('on');
-      if(lead.status==='payment_confirmed'){
-        const paid=$('payPaidBanner');
-        if(paid)paid.classList.add('on');
-      }else{
-        const paid=$('payPaidBanner');
-        if(paid)paid.classList.remove('on');
-      }
-    }
+    }else payB.classList.remove('on');
+  }
+  if(paidB){
+    if(lead.status==='payment_confirmed'){paidB.classList.add('on');}
+    else paidB.classList.remove('on');
   }
 
   // App details
@@ -1112,28 +1115,21 @@ function refreshProjectStatus(lead){
   const sc=$('scTitle');
   if(sc)sc.textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')+(lead.packLabel?' — '+lead.packLabel:'');
   updProg(lead.status||'new');
-  // Pay banner: only validated or payment_requested (NOT after confirmed)
   const payB=$('payBanner');
   const paidB=$('payPaidBanner');
+  const hideStatuses=['payment_confirmed','converted','closed'];
   if(payB){
-    const needsPay=['validated','payment_requested'].includes(lead.status);
-    if(needsPay){
+    if(!hideStatuses.includes(lead.status)&&['validated','payment_requested'].includes(lead.status)){
       payB.classList.add('on');
       const desc=$('pbDesc');
-      if(desc){
-        if(lead.status==='payment_requested')
-          desc.textContent='⏳ Paiement en attente de confirmation. Notre équipe va vérifier et vous livrer votre application.';
-        else
-          desc.textContent='✅ Démo validée ! Réglez votre commande pour recevoir votre application finale.';
-      }
+      if(desc)desc.textContent=lead.status==='payment_requested'
+        ?'⏳ Paiement en attente de confirmation par notre équipe.'
+        :'✅ Démo validée ! Procédez au paiement pour recevoir votre application finale.';
     }else payB.classList.remove('on');
   }
   if(paidB){
-    if(lead.status==='payment_confirmed'||lead.status==='converted'||lead.status==='closed'){
-      paidB.classList.add('on');
-      const paidB_desc=paidB.querySelector('.pb-desc');
-      if(paidB_desc)paidB_desc.textContent='✅ Paiement confirmé par notre équipe ! Votre application finale est en cours de préparation.';
-    }else paidB.classList.remove('on');
+    if(lead.status==='payment_confirmed'){paidB.classList.add('on');}
+    else paidB.classList.remove('on');
   }
   renderProjectsList();
 }
@@ -1328,26 +1324,25 @@ function renderDemos(msgs,leadId){
 async function approveDemoMsg(msgId,leadId){
   const u=auth.currentUser;if(!u)return;
   try{
-    const demoSnap=await db.collection('messages').where('leadId','==',leadId).where('type','==','demo').get();
-    const demoCount=demoSnap.size;
-    // Mark this version as approved
+    // Mark demo as approved
     await db.collection('messages').doc(msgId).update({approvedByClient:true,approvedAt:FS.serverTimestamp()});
-    // Always request payment after validation — admin then sends final version
-    const newStatus='payment_requested';
-    await db.collection('leads').doc(leadId).update({status:newStatus,clientApprovedAt:FS.serverTimestamp(),approvedDemoId:msgId,approvedDemoVersion:demoCount});
-    // Confirmation message
-    const txt='✅ Version validée ! Procédez au paiement pour recevoir votre application finale.';
-    await db.collection('messages').add({leadId,userId:u.uid,from:'client',type:'approval',text:txt,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-    // Notify admin
+    // Any demo validation → payment required immediately (next = final version)
+    await db.collection('leads').doc(leadId).update({
+      status:'payment_requested',clientApprovedAt:FS.serverTimestamp(),approvedDemoId:msgId
+    });
+    await db.collection('messages').add({
+      leadId,userId:u.uid,from:'client',type:'approval',
+      text:'✅ Version validée ! Procédez au paiement pour recevoir votre application finale.',
+      createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false
+    });
     await db.collection('notifications').add({
       userId:'admin',leadId,
       title:'✅ Démo validée — Paiement requis',
-      message:(u.displayName||u.email||'Client')+' a validé la démo v'+demoCount+'. Demandez le paiement.',
+      message:(u.displayName||u.email||'Client')+' a validé sa démo. Attendez le paiement client.',
       type:'payment_needed',read:false,createdAt:FS.serverTimestamp()
     });
-    // Immediately show payment banner (before snapshot fires)
     if(_curLead){_curLead.status='payment_requested';refreshProjectStatus(_curLead);}
-    toast('✅ Démo validée ! Procédez au paiement pour recevoir votre application.');
+    toast('✅ Démo validée ! Procédez au paiement pour recevoir votre application finale.');
   }catch(e){toast('Erreur: '+e.message,'err');}
 }
 async function approveFinal(msgId,leadId){
