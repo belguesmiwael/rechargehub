@@ -371,7 +371,18 @@ footer{text-align:center;padding:44px 0 28px;color:var(--muted);font-size:12.5px
 <footer>Estimation non contractuelle · Prix en Dinar Tunisien (DT)</footer>
 </div>
 
-<script>
+<script>/* ══ DOMAIN SELECTOR (global) ══ */
+window.selectedDomain = window.selectedDomain || '';
+window.selectDomain = function(val){
+  window.selectedDomain = val;
+  var ta = document.getElementById('descInput');
+  if(ta && !ta.value.trim() && val){
+    ta.placeholder = "Ex : J\'ai un(e) "+val.toLowerCase()+" à Tunis. Je veux gérer...";
+  }
+  try{ sessionStorage.setItem('bz_domain', val); }catch(e){}
+};
+
+
 // ══════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════
@@ -457,16 +468,7 @@ function savePrices(){
   if(b){b.textContent='✅ Sauvegardé !';setTimeout(()=>b.textContent='💾 Sauvegarder les prix',2200);}
 }
 
-/* ══ DOMAIN SELECTOR ══ */
-let selectedDomain = '';
-function selectDomain(val){
-  selectedDomain = val;
-  const ta = document.getElementById('descInput');
-  if(ta && !ta.value.trim() && val){
-    ta.placeholder = "Ex : J'ai un(e) "+val.toLowerCase()+" à Tunis. Je veux gérer...";
-  }
-  sessionStorage.setItem('bz_domain', val);
-}
+/* ══ DOMAIN SELECTOR — moved to top ══ */
 function toggleAdmin(){
   const p=document.getElementById('adminPanel'),b=document.getElementById('adminToggle');
   p.classList.toggle('open')&&buildAdmin();
@@ -609,7 +611,8 @@ function buildPrompt(desc){
 • Isolation des données par client (multi-tenant)\n`
     : '';
 
-  const domainLine = selectedDomain ? `\nSecteur : ${selectedDomain}` : '';
+  var _dom = (typeof selectedDomain !== 'undefined' ? selectedDomain : '') || (window.selectedDomain||'');
+  const domainLine = _dom ? ('\nSecteur : ' + _dom) : '';
   return `Crée une application web complète basée sur le besoin suivant :
 
 ━━━ DESCRIPTION DU CLIENT ━━━${domainLine}
@@ -749,7 +752,7 @@ function goToClient(pack){
   sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
   sessionStorage.setItem('bz_complexity',complexity||'simple');
   sessionStorage.setItem('bz_monetize',monetize?'1':'0');
-  sessionStorage.setItem('bz_domain',selectedDomain||'');
+  sessionStorage.setItem('bz_domain',(window.selectedDomain||selectedDomain||''));
   // Build client URL from current location (works on GitHub Pages with any subfolder)
   const base=window.location.href.substring(0,window.location.href.lastIndexOf('/')+1);
   const clientUrl=base+'client.html?pack='+encodeURIComponent(pack);
