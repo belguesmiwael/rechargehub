@@ -1054,13 +1054,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeEst()})
 // Listen for messages from estimateur iframe
 window.addEventListener('message',function(e){
   if(e.data&&e.data.type==='bz_pack_chosen'){
+    // estimateur navigates via window.top — just close the modal UI
     closeEst();
-    sessionStorage.setItem('bz_pack',e.data.pack);
-    if(e.data.prompt) sessionStorage.setItem('bz_prompt',e.data.prompt);
-    if(e.data.features) sessionStorage.setItem('bz_features',JSON.stringify(e.data.features));
-    if(e.data.complexity) sessionStorage.setItem('bz_complexity',e.data.complexity);
-    if(e.data.monetize!==undefined) sessionStorage.setItem('bz_monetize',e.data.monetize?'1':'0');
-    window.location.href='client.html?pack='+e.data.pack;
   }
   if(e.data&&e.data.type==='bz_close_est'){
     closeEst();

@@ -744,17 +744,22 @@ function showContinueBanner(pack,label){
 }
 
 function goToClient(pack){
-  const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(document.getElementById('descInput').value.trim());
+  const desc=document.getElementById('descInput').value.trim();
+  const prompt=sessionStorage.getItem('bz_prompt')||buildPrompt(desc);
+  // Save all data to sessionStorage
   sessionStorage.setItem('bz_pack',pack);
   sessionStorage.setItem('bz_prompt',prompt);
   sessionStorage.setItem('bz_features',JSON.stringify([...selected]));
   sessionStorage.setItem('bz_complexity',complexity);
   sessionStorage.setItem('bz_monetize',monetize?'1':'0');
+  sessionStorage.setItem('bz_domain',selectedDomain||'');
+  // Navigate — window.top handles both iframe and standalone
   if(window.parent!==window){
-    window.parent.postMessage({type:'bz_pack_chosen',pack,prompt,features:[...selected],complexity,monetize},'*');
-  }else{
-    window.location.href='client.html?pack='+pack;
+    // In iframe (modal) : notify parent then navigate top
+    try{window.parent.postMessage({type:'bz_pack_chosen',pack,prompt,features:[...selected],complexity,monetize},'*');}catch(e){}
   }
+  // Always navigate the top window
+  window.top.location.href='client.html?pack='+pack;
 }
 
 // ══════════════════════════════════════════════
