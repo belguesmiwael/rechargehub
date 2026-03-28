@@ -972,11 +972,15 @@ function loadDash(uid){
 
       renderProjectsList();
 
-      // Auto-select first (most recent) if none selected or refresh current
-      const toSelect=_curLeadId&&_allLeads.find(l=>l.id===_curLeadId)
-        ?_curLeadId
-        :_allLeads[0].id;
-      selectProject(toSelect);
+      // Auto-select or refresh current project
+      if(_curLeadId&&_allLeads.find(l=>l.id===_curLeadId)){
+        // Same project — just refresh status UI without recreating message listener
+        _curLead=_allLeads.find(l=>l.id===_curLeadId);
+        refreshProjectStatus(_curLead);
+      }else{
+        // New selection or first load
+        selectProject(_allLeads[0].id);
+      }
     },e=>console.error(e));
 }
 
@@ -1034,13 +1038,18 @@ function selectProject(leadId){
   // Payment banner
   const payB=$('payBanner');
   if(payB){
-    const payStatuses=['payment_requested','payment_confirmed'];
-    if(payStatuses.includes(lead.status)){
+    const showPay=['validated','payment_requested','payment_confirmed'].includes(lead.status);
+    if(showPay){
       payB.classList.add('on');
       const desc=$('pbDesc');
-      if(desc)desc.textContent=lead.status==='payment_confirmed'
-        ?'Paiement reçu ✅ Votre application finale sera livrée très prochainement.'
-        :'Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
+      if(desc){
+        if(lead.status==='payment_confirmed')
+          desc.textContent='Paiement reçu ✅ Votre application finale sera livrée très prochainement.';
+        else if(lead.status==='payment_requested')
+          desc.textContent='Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
+        else
+          desc.textContent='Démo validée ! Procédez au paiement pour recevoir votre application finale.';
+      }
     }else payB.classList.remove('on');
   }
 
@@ -1064,6 +1073,35 @@ function toggleDetail(){
   const bd=$('appDetails'),arrow=$('dcArrow');
   if(bd)bd.style.display=_detailOpen?'block':'none';
   if(arrow)arrow.className='dc-arrow'+(_detailOpen?' open':'');
+}
+
+/* Refresh only status UI (no message listener reset) */
+function refreshProjectStatus(lead){
+  if(!lead)return;
+  // Progress bar + pill
+  const sc=$('scTitle');
+  if(sc)sc.textContent=(lead.type&&lead.type!=='A definir'?lead.type:'Application')
+    +(lead.packLabel?' — '+lead.packLabel:'');
+  updProg(lead.status||'new');
+  // Payment banner — show for validated, payment_requested, payment_confirmed
+  const payB=$('payBanner');
+  if(payB){
+    const showPay=['validated','payment_requested','payment_confirmed'].includes(lead.status);
+    if(showPay){
+      payB.classList.add('on');
+      const desc=$('pbDesc');
+      if(desc){
+        if(lead.status==='payment_confirmed')
+          desc.textContent='Paiement reçu ✅ Votre application finale sera livrée très prochainement.';
+        else if(lead.status==='payment_requested')
+          desc.textContent='Votre démo a été validée ! Réglez votre commande pour recevoir la version finale.';
+        else
+          desc.textContent='Votre démo a été validée ! Procédez au paiement pour recevoir votre application finale.';
+      }
+    }else payB.classList.remove('on');
+  }
+  // Sidebar status badge
+  renderProjectsList();
 }
 function renderAppDetails(lead){
   const feats=Array.isArray(lead.features)&&lead.features.length?lead.features
@@ -1231,14 +1269,24 @@ async function approveDemoMsg(msgId,leadId){
   try{
     const demoSnap=await db.collection('messages').where('leadId','==',leadId).where('type','==','demo').get();
     const demoCount=demoSnap.size;
+    // Mark this version as approved
     await db.collection('messages').doc(msgId).update({approvedByClient:true,approvedAt:FS.serverTimestamp()});
-    const isV3=demoCount>=3;
-    const newStatus=isV3?'payment_requested':'validated';
-    await db.collection('leads').doc(leadId).update({status:newStatus,clientApprovedAt:FS.serverTimestamp()});
-    const txt=isV3?'✅ Version validée ! En attente du paiement pour la version finale.':'✅ Démo validée ! Notre équipe prépare la prochaine version.';
+    // Always request payment after validation — admin then sends final version
+    const newStatus='payment_requested';
+    await db.collection('leads').doc(leadId).update({status:newStatus,clientApprovedAt:FS.serverTimestamp(),approvedDemoId:msgId,approvedDemoVersion:demoCount});
+    // Confirmation message
+    const txt='✅ Version validée ! Procédez au paiement pour recevoir votre application finale.';
     await db.collection('messages').add({leadId,userId:u.uid,from:'client',type:'approval',text:txt,createdAt:FS.serverTimestamp(),readByClient:true,readByAdmin:false});
-    if(isV3)await db.collection('notifications').add({userId:'admin',leadId,title:'💳 Paiement requis — v3 validée',message:(u.displayName||u.email||'Client')+' a validé la démo v3.',type:'payment_needed',read:false,createdAt:FS.serverTimestamp()});
-    toast(isV3?'✅ Version validée ! Procédez au paiement.':'✅ Démo validée !');
+    // Notify admin
+    await db.collection('notifications').add({
+      userId:'admin',leadId,
+      title:'✅ Démo validée — Paiement requis',
+      message:(u.displayName||u.email||'Client')+' a validé la démo v'+demoCount+'. Demandez le paiement.',
+      type:'payment_needed',read:false,createdAt:FS.serverTimestamp()
+    });
+    // Immediately show payment banner (before snapshot fires)
+    if(_curLead){_curLead.status='payment_requested';refreshProjectStatus(_curLead);}
+    toast('✅ Démo validée ! Procédez au paiement pour recevoir votre application.');
   }catch(e){toast('Erreur: '+e.message,'err');}
 }
 async function approveFinal(msgId,leadId){
